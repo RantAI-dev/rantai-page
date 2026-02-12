@@ -56,11 +56,17 @@ export const metadata: Metadata = {
 	// 	creator: "@shadcn",
 	// },
 	icons: {
-		icon: "/favicon.ico",
-		shortcut: "/favicon-16x16.png",
-		apple: "/apple-touch-icon.png",
+		icon: [
+			{ url: "/favicon.ico" },
+			{ url: "/icon0.svg", type: "image/svg+xml" },
+			{ url: "/icon1.png", type: "image/png" },
+		],
+		apple: "/apple-icon.png",
 	},
-	manifest: `${siteConfig.url}/site.webmanifest`,
+	manifest: "/manifest.json",
+	appleWebApp: {
+		title: "RantAI",
+	},
 	alternates: {
 		types: {
 			"application/rss+xml": `${siteConfig.url}/rss.xml`,
@@ -91,6 +97,7 @@ export default function RootLayout({
 					}}
 				/>
 				<meta name="theme-color" content={META_THEME_COLORS.light} />
+				<meta name="apple-mobile-web-app-title" content="RantAI" />
 			</head>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}

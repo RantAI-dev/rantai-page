@@ -1,39 +1,20 @@
-// INCOMPLETE: This is a placeholder for the site config.
 export const siteConfig = {
-	name: "shadcn/ui",
-	url: "https://ui.shadcn.com",
-	ogImage: "https://ui.shadcn.com/og.jpg",
+	name: "RantAI",
+	url: "https://www.rantai.dev",
+	ogImage: "https://www.rantai.dev/og.jpg",
 	description:
-		"A set of beautifully designed components that you can customize, extend, and build on. Start here then make it your own. Open Source. Open Code.",
+		"Enterprise AI Products & Engineering — Building production-ready AI platforms for government and enterprise.",
 	links: {
-		twitter: "https://twitter.com/shadcn",
-		github: "https://github.com/shadcn-ui/ui",
+		website: "https://www.rantai.dev",
+		email: "admin@rantai.dev",
+		github: "https://github.com/rantai",
+		linkedin: "https://linkedin.com/company/rantai",
 	},
 	navItems: [
-		{
-			href: "/docs/installation",
-			label: "Docs",
-		},
-		{
-			href: "/docs/components",
-			label: "Components",
-		},
-		{
-			href: "/blocks",
-			label: "Blocks",
-		},
-		{
-			href: "/charts/area",
-			label: "Charts",
-		},
-		{
-			href: "/docs/directory",
-			label: "Directory",
-		},
-		{
-			href: "/create",
-			label: "Create",
-		},
+		{ href: "/", label: "Home" },
+		{ href: "/products", label: "Products" },
+		{ href: "/services", label: "Services" },
+		{ href: "/academy", label: "Academy" },
 	],
 };
 
