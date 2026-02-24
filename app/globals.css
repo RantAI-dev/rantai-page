@@ -127,3 +127,27 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+/* ---- Zigzag section: overlapping image compositions ---- */
+.zigzag-image-wrapper {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+}
+
+.zigzag-image-main {
+	width: 85%;
+	height: 85%;
+	object-fit: cover;
+	border-radius: 1rem;
+}
+
+.zigzag-image-overlay {
+	position: absolute;
+	width: 55%;
+	height: 55%;
+	object-fit: cover;
+	border-radius: 1rem;
+	border: 10px solid var(--background);
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}

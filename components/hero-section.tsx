@@ -18,8 +18,8 @@ export function HeroSection() {
 	const color = resolvedTheme === "dark" ? "#5CB6F9" : "#737373";
 
 	return (
-		<section className="relative overflow-hidden px-4 pt-16 pb-24 sm:px-6 sm:pt-24 sm:pb-32 lg:px-8">
-			<div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,var(--primary)/12%,transparent)]" />
+		<section className="relative h-dvh overflow-hidden px-4 pt-16 pb-24 sm:px-6 sm:pt-24 sm:pb-32 lg:px-8">
+			{/* <div className="absolute inset-0 z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,white/12%,transparent)]" /> */}
 			<Particles
 				className="absolute inset-0 z-0"
 				quantity={200}
@@ -28,7 +28,7 @@ export function HeroSection() {
 				color={color}
 				refresh
 			/>
-			<div className="mx-auto max-w-4xl text-center">
+			<div className="mx-auto max-w-4xl text-center flex flex-col justify-center items-center h-full">
 				<h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl lg:leading-[1.1]">
 					<motion.span
 						className="block"

@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { MotionInView } from "@/components/motion-in-view";
 import { HeroSection } from "@/components/hero-section";
+import { VisionMissionSection } from "@/components/vision-mission-section";
+import { WhyRantaiSection } from "@/components/why-rantai-section";
 import { TeamSection } from "@/components/team-section";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -13,7 +15,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
+
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,12 +27,6 @@ import {
 	BrainCircuitIcon,
 	ServerIcon,
 	GraduationCapIcon,
-	ShieldCheckIcon,
-	FactoryIcon,
-	MapPinIcon,
-	UnlockIcon,
-	SettingsIcon,
-	BookOpenIcon,
 	ArrowRightIcon,
 	CheckCircle2Icon,
 	HandshakeIcon,
@@ -97,45 +93,6 @@ const services = [
 	},
 ];
 
-const whyRantai = [
-	{
-		title: "Products, Not Just Services",
-		description:
-			"We build our own platforms to guarantee long-term roadmap continuity.",
-		icon: FactoryIcon,
-	},
-	{
-		title: "Production-Grade",
-		description:
-			"Deployed in real production environments — built for scale, security, and reliability.",
-		icon: ShieldCheckIcon,
-	},
-	{
-		title: "Local Expertise",
-		description:
-			"Deep understanding of Indonesian government regulations and compliance requirements.",
-		icon: MapPinIcon,
-	},
-	{
-		title: "No Vendor Lock-in",
-		description:
-			"Support for 100+ LLMs, allowing you to switch providers without rebuilding.",
-		icon: UnlockIcon,
-	},
-	{
-		title: "End-to-End Capability",
-		description:
-			"One partner for the full lifecycle, from AI strategy to deployment and support.",
-		icon: SettingsIcon,
-	},
-	{
-		title: "Open Standards",
-		description:
-			"Built on open-source foundations for full auditability and no black boxes.",
-		icon: BookOpenIcon,
-	},
-];
-
 const partners = [
 	{
 		name: "NexusQuantum Technologies",
@@ -154,13 +111,6 @@ const partners = [
 	},
 ];
 
-const missions = [
-	"Build AI products that are production-ready, not just demos — solving real business and government operational challenges.",
-	"Democratize access to AI capabilities through platforms that don't require deep technical expertise to use.",
-	"Provide engineering services that help organizations go from AI strategy to deployed, measurable outcomes.",
-	"Develop local AI talent through hands-on education in AI engineering and software development.",
-];
-
 /* ------------------------------------------------------------------ */
 /*  Page                                                               */
 /* ------------------------------------------------------------------ */
@@ -174,49 +124,7 @@ export default function Page() {
 				<HeroSection />
 
 				{/* Vision & Mission */}
-				<section className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-					<div className="mx-auto max-w-6xl">
-						<MotionInView>
-							<div className="grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16">
-								<div>
-									<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-										Vision & Mission
-									</h2>
-								</div>
-								<div className="space-y-8">
-									{/* Vision */}
-									<div>
-										<h3 className="text-foreground mb-3 text-xl font-semibold">
-											Our Vision
-										</h3>
-										<p className="text-muted-foreground text-base leading-relaxed">
-											To be Indonesia&apos;s leading AI products company —
-											enabling government and enterprise to operate
-											intelligently through production-grade AI platforms.
-										</p>
-									</div>
-
-									{/* Mission */}
-									<div>
-										<h3 className="text-foreground mb-4 text-xl font-semibold">
-											Our Mission
-										</h3>
-										<div className="grid gap-4 sm:grid-cols-2">
-											{missions.map((mission, idx) => (
-												<div key={idx} className="flex gap-3">
-													<CheckCircle2Icon className="text-primary mt-0.5 size-5 shrink-0" />
-													<p className="text-muted-foreground text-sm leading-relaxed">
-														{mission}
-													</p>
-												</div>
-											))}
-										</div>
-									</div>
-								</div>
-							</div>
-						</MotionInView>
-					</div>
-				</section>
+				<VisionMissionSection />
 
 				{/* What We Do */}
 				<section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -399,30 +307,7 @@ export default function Page() {
 				</section>
 
 				{/* Why RantAI */}
-				<section className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-					<div className="mx-auto max-w-6xl">
-						<MotionInView>
-							<h2 className="text-foreground mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-								Why RantAI?
-							</h2>
-							<p className="text-muted-foreground mx-auto mb-12 max-w-2xl text-center text-base">
-								What sets us apart as your AI technology partner.
-							</p>
-							<BentoGrid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-								{whyRantai.map((item) => (
-									<BentoCard
-										key={item.title}
-										name={item.title}
-										className="col-span-1"
-										background={<div className="absolute inset-0 opacity-10" />}
-										Icon={item.icon}
-										description={item.description}
-									/>
-								))}
-							</BentoGrid>
-						</MotionInView>
-					</div>
-				</section>
+				<WhyRantaiSection />
 
 				{/* Partners */}
 				<section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
