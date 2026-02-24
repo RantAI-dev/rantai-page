@@ -4,6 +4,7 @@ import { MotionInView } from "@/components/motion-in-view";
 import { HeroSection } from "@/components/hero-section";
 import { VisionMissionSection } from "@/components/vision-mission-section";
 import { WhyRantaiSection } from "@/components/why-rantai-section";
+import { PartnersSection } from "@/components/partners-section";
 import { TeamSection } from "@/components/team-section";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -29,7 +30,6 @@ import {
 	GraduationCapIcon,
 	ArrowRightIcon,
 	CheckCircle2Icon,
-	HandshakeIcon,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -90,24 +90,6 @@ const services = [
 		description:
 			"Cloud infrastructure, microservices, full-stack development, DevOps/SRE, system architecture, and API design.",
 		icon: ServerIcon,
-	},
-];
-
-const partners = [
-	{
-		name: "NexusQuantum Technologies",
-		description:
-			"NexusQuantum specializes in Rust-powered cloud infrastructure and AI platforms. RantAI provides engineering expertise in building NexusQuantum's data center software products.",
-	},
-	{
-		name: "Quantum Investa Utama (QIU)",
-		description:
-			"QIU partners with RantAI to deliver AI-powered solutions to Indonesian government institutions and private enterprises. RantAI provides the AI engineering and platform capabilities.",
-	},
-	{
-		name: "Bohrlabs",
-		description:
-			"Bohr Labs specializes in advanced technology research and experimental innovation. RantAI partners with Bohr Labs to conduct joint R&D, exploring emerging AI capabilities and next-generation software architectures.",
 	},
 ];
 
@@ -310,35 +292,7 @@ export default function Page() {
 				<WhyRantaiSection />
 
 				{/* Partners */}
-				<section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-					<MotionInView>
-						<h2 className="text-foreground mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-							Partners
-						</h2>
-						<p className="text-muted-foreground mx-auto mb-12 max-w-2xl text-center text-base">
-							We work closely with leading technology companies to deliver
-							impactful solutions.
-						</p>
-						<div className="grid gap-6 sm:grid-cols-3">
-							{partners.map((partner) => (
-								<Card
-									key={partner.name}
-									className="transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
-								>
-									<CardHeader>
-										<div className="text-primary mb-2">
-											<HandshakeIcon className="size-8" />
-										</div>
-										<CardTitle className="text-base">{partner.name}</CardTitle>
-										<CardDescription className="leading-relaxed">
-											{partner.description}
-										</CardDescription>
-									</CardHeader>
-								</Card>
-							))}
-						</div>
-					</MotionInView>
-				</section>
+				<PartnersSection />
 
 				{/* Team */}
 				<TeamSection />
