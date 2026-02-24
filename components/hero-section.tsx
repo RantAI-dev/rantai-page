@@ -4,8 +4,8 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Particles } from "@/components/ui/particles";
 import { useTheme } from "next-themes";
+import DarkVeil from "@/components/DarkVeil";
 
 const fadeInUp = {
 	initial: { opacity: 0, y: 20 },
@@ -15,20 +15,24 @@ const transition = { duration: 0.6, ease: "easeOut" as const };
 
 export function HeroSection() {
 	const { resolvedTheme } = useTheme();
-	const color = resolvedTheme === "dark" ? "#5CB6F9" : "#737373";
+	const isDark = resolvedTheme === "dark";
 
 	return (
-		<section className="relative h-dvh overflow-hidden px-4 pt-16 pb-24 sm:px-6 sm:pt-24 sm:pb-32 lg:px-8">
-			{/* <div className="absolute inset-0 z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,white/12%,transparent)]" /> */}
-			<Particles
-				className="absolute inset-0 z-0"
-				quantity={200}
-				ease={80}
-				size={1}
-				color={color}
-				refresh
-			/>
-			<div className="mx-auto max-w-4xl text-center flex flex-col justify-center items-center h-full">
+		<section className="relative h-dvh overflow-hidden -mt-16 px-4 pt-16 pb-24 sm:px-6 sm:pt-24 sm:pb-32 lg:px-8">
+			{/* Background — DarkVeil canvas */}
+			<div className="pointer-events-none absolute inset-0 z-0 h-full w-full dark:invert-0 invert dark:opacity-100 opacity-60 transition-opacity duration-300">
+				<DarkVeil
+					hueShift={isDark ? 35 : 200}
+					speed={0.3}
+					noiseIntensity={0.03}
+					scanlineIntensity={0}
+					scanlineFrequency={0}
+					warpAmount={0}
+					resolutionScale={1}
+				/>
+			</div>
+
+			<div className="relative z-10 mx-auto flex h-full max-w-4xl flex-col items-center justify-center text-center">
 				<h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl lg:leading-[1.1]">
 					<motion.span
 						className="block"
