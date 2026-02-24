@@ -22,8 +22,8 @@ export function Navbar() {
 	const [mobileOpen, setMobileOpen] = useState(false);
 
 	return (
-		<header className="border-border mx-auto max-w-4xl rounded-lg sticky top-4 z-50 border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-			<div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <header className="border-border mx-auto max-w-4xl rounded-lg sticky top-4 z-50 border bg-background/90 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div className="mx-auto flex h-14 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
 				<Link
 					href="/"
 					className="text-foreground flex items-center gap-2 font-semibold"
@@ -37,7 +37,7 @@ export function Navbar() {
 						className="h-8 w-auto"
 						priority
 					/>
-					<span>RantAI</span>
+					<span className="hidden sm:inline">RantAI</span>
 				</Link>
 
 				{/* Desktop nav */}

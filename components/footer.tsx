@@ -5,10 +5,10 @@ import { Badge } from "@/components/ui/badge";
 
 export function Footer() {
 	return (
-		<footer className="border-border border-t bg-muted/20 px-4 py-12 sm:px-6 lg:px-8">
-			<div className="mx-auto max-w-6xl">
-				<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-					{/* Brand */}
+		<footer className="border-border/40 border-t bg-muted/10 px-4 py-16 sm:px-6 lg:px-8">
+			<div className="mx-auto max-w-7xl">
+				<div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+					{/* Brand - Mastra-style: logo + tagline */}
 					<div className="space-y-3">
 						<Link
 							href="/"
@@ -20,8 +20,8 @@ export function Footer() {
 							</Badge>
 						</Link>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Enterprise AI Products & Engineering. Building
-							production-ready AI platforms for government and enterprise.
+							Enterprise AI Products & Engineering. Building production-ready AI
+							platforms for government and enterprise.
 						</p>
 					</div>
 
@@ -50,7 +50,7 @@ export function Footer() {
 						</nav>
 					</div>
 
-					{/* Company */}
+					{/* Developers / Company */}
 					<div className="space-y-3">
 						<h4 className="text-foreground text-sm font-semibold">Company</h4>
 						<nav className="flex flex-col gap-2">
