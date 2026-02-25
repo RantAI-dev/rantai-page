@@ -4,6 +4,7 @@ import { MotionInView } from "@/components/motion-in-view";
 import { HeroSection } from "@/components/hero-section";
 import { VisionMissionSection } from "@/components/vision-mission-section";
 import { WhyRantaiSection } from "@/components/why-rantai-section";
+import { WhatWeDoSection } from "@/components/what-we-do-section";
 import { PartnersSection } from "@/components/partners-section";
 import { TeamSection } from "@/components/team-section";
 import { Navbar } from "@/components/navbar";
@@ -21,62 +22,11 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-	BotIcon,
-	BarChart3Icon,
-	CodeIcon,
-	BrainCircuitIcon,
-	ServerIcon,
-	GraduationCapIcon,
-	ArrowRightIcon,
-	CheckCircle2Icon,
-} from "lucide-react";
+import { BrainCircuitIcon, ServerIcon, ArrowRightIcon } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
-
-const products = [
-	{
-		title: "RantAI Agents",
-		description:
-			"Enterprise-grade AI agent platform for building intelligent, knowledge-driven applications with RAG capabilities, multi-channel communication, and human-in-the-loop workflows.",
-		icon: BotIcon,
-		href: "/products#agents",
-		features: [
-			"Advanced RAG Pipeline",
-			"Multi-Channel Deployment",
-			"Human-in-the-Loop",
-			"Knowledge Base Management",
-		],
-	},
-	{
-		title: "RantAI Analytics",
-		description:
-			"Enterprise-grade analytics platform that enables anyone to query databases using natural language, powered by AI, RAG pipelines, and a semantic layer.",
-		icon: BarChart3Icon,
-		href: "/products#analytics",
-		features: [
-			"Natural Language to SQL",
-			"Semantic Layer (MDL)",
-			"Multi-LLM Support",
-			"40+ Data Connectors",
-		],
-	},
-	{
-		title: "RantAI ZeroCode",
-		description:
-			"A fully autonomous development environment where AI Agents manage projects and write production software using advanced agentic algorithms.",
-		icon: CodeIcon,
-		href: "/products#zerocode",
-		features: [
-			"Multi-Model Agentic Core",
-			"Autonomous Code Writing",
-			"AI Project Management",
-			"Full SDLC Automation",
-		],
-	},
-];
 
 const services = [
 	{
@@ -109,139 +59,7 @@ export default function Page() {
 				<VisionMissionSection />
 
 				{/* What We Do */}
-				<section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-					<MotionInView>
-						<h2 className="text-foreground mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-							What We Do
-						</h2>
-						<p className="text-muted-foreground mx-auto mb-12 max-w-2xl text-center text-base leading-relaxed">
-							We build enterprise AI platforms, deliver engineering services,
-							and educate the next generation of AI talent.
-						</p>
-						<div className="grid gap-6 sm:grid-cols-3">
-							<Link href="/products" className="block">
-								<Card className="group relative h-full cursor-pointer overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-									<CardHeader>
-										<div className="text-primary mb-2">
-											<BotIcon className="size-8" />
-										</div>
-										<CardTitle>AI Products</CardTitle>
-										<CardDescription>
-											Three enterprise AI platforms: Agents, Analytics, and
-											ZeroCode.
-										</CardDescription>
-									</CardHeader>
-									<CardContent className="mt-auto"></CardContent>
-									<CardFooter className="bg-card text-card-foreground border-0 opacity-0 group-hover:opacity-100 transition-opacity pt-0">
-										<Button variant="link" className="px-0 pointer-events-none">
-											Learn more <ArrowRightIcon className="ml-1 size-3" />
-										</Button>
-									</CardFooter>
-								</Card>
-							</Link>
-
-							<Link href="/services" className="block">
-								<Card className="group relative h-full cursor-pointer overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-									<CardHeader>
-										<div className="text-primary mb-2">
-											<ServerIcon className="size-8" />
-										</div>
-										<CardTitle>Engineering Services</CardTitle>
-										<CardDescription>
-											AI Engineering and Software Engineering — from strategy to
-											production deployment.
-										</CardDescription>
-									</CardHeader>
-									<CardContent className="mt-auto"></CardContent>
-									<CardFooter className="bg-card text-card-foreground border-0 opacity-0 group-hover:opacity-100 transition-opacity pt-0">
-										<Button variant="link" className="px-0 pointer-events-none">
-											Learn more <ArrowRightIcon className="ml-1 size-3" />
-										</Button>
-									</CardFooter>
-								</Card>
-							</Link>
-
-							<Link href="/academy" className="block">
-								<Card className="group relative h-full cursor-pointer overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-									<CardHeader>
-										<div className="text-primary mb-2">
-											<GraduationCapIcon className="size-8" />
-										</div>
-										<CardTitle>Academy</CardTitle>
-										<CardDescription>
-											Practical, project-based education in AI engineering,
-											software engineering, and data science.
-										</CardDescription>
-									</CardHeader>
-									<CardContent className="mt-auto"></CardContent>
-									<CardFooter className="bg-card text-card-foreground border-0 opacity-0 group-hover:opacity-100 transition-opacity pt-0">
-										<Button variant="link" className="px-0 pointer-events-none">
-											Learn more <ArrowRightIcon className="ml-1 size-3" />
-										</Button>
-									</CardFooter>
-								</Card>
-							</Link>
-						</div>
-					</MotionInView>
-				</section>
-
-				{/* Products Overview */}
-				<section
-					id="products"
-					className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
-				>
-					<div className="mx-auto max-w-6xl">
-						<MotionInView>
-							<h2 className="text-foreground mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-								Our Products
-							</h2>
-							<p className="text-muted-foreground mx-auto mb-12 max-w-2xl text-center text-base">
-								We build and maintain three enterprise AI platforms.
-							</p>
-							<div className="grid gap-8 lg:grid-cols-3">
-								{products.map((product) => (
-									<Card
-										key={product.title}
-										className="flex h-full flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-									>
-										<CardHeader>
-											<div className="text-primary mb-2">
-												<product.icon className="size-8" />
-											</div>
-											<CardTitle>{product.title}</CardTitle>
-											<CardDescription className="leading-relaxed">
-												{product.description}
-											</CardDescription>
-										</CardHeader>
-										<CardContent className="mt-auto space-y-3">
-											<ul className="space-y-2">
-												{product.features.map((feature) => (
-													<li
-														key={feature}
-														className="text-muted-foreground flex items-center gap-2 text-sm"
-													>
-														<CheckCircle2Icon className="text-primary size-4 shrink-0" />
-														{feature}
-													</li>
-												))}
-											</ul>
-											<Button
-												variant="outline"
-												size="sm"
-												className="mt-4 w-full"
-												asChild
-											>
-												<Link href={product.href}>
-													Learn More <ArrowRightIcon className="ml-1 size-3" />
-												</Link>
-											</Button>
-										</CardContent>
-									</Card>
-								))}
-							</div>
-						</MotionInView>
-					</div>
-				</section>
+				<WhatWeDoSection />
 
 				{/* Services */}
 				<section
