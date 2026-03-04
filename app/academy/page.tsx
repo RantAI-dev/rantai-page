@@ -14,6 +14,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
+	FadeUp,
+	ScaleIn,
+	StaggerContainer,
+	StaggerItem,
+	SlideIn,
+} from "@/components/motion";
+import {
 	GraduationCapIcon,
 	ArrowRightIcon,
 	BookMarkedIcon,
@@ -115,25 +122,33 @@ export default function AcademyPage() {
 				<section className="relative overflow-hidden px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
 					<div className="bg-primary/5 absolute inset-0 -z-10 opacity-40" />
 					<div className="mx-auto max-w-3xl text-center">
-						<Badge variant="outline" className="mb-4">
-							Book Publisher and Classes
-						</Badge>
-						<h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
-							RantAI Academy
-						</h1>
-						<p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-							Academy with GenAI Learning and Tailored Enterprise Solutions.
-						</p>
-						<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-							<Button size="lg" asChild>
-								<Link href="/#contact">
-									Enroll Now <ArrowRightIcon className="ml-2 size-4" />
-								</Link>
-							</Button>
-							<Button variant="outline" size="lg" asChild>
-								<Link href="#publications">View Publications</Link>
-							</Button>
-						</div>
+						<ScaleIn>
+							<Badge variant="outline" className="mb-4">
+								Book Publisher and Classes
+							</Badge>
+						</ScaleIn>
+						<FadeUp delay={0.1}>
+							<h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
+								RantAI Academy
+							</h1>
+						</FadeUp>
+						<FadeUp delay={0.2}>
+							<p className="text-muted-foreground mt-4 text-lg leading-relaxed">
+								Academy with GenAI Learning and Tailored Enterprise Solutions.
+							</p>
+						</FadeUp>
+						<FadeUp delay={0.3}>
+							<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+								<Button size="lg" asChild>
+									<Link href="/#contact">
+										Enroll Now <ArrowRightIcon className="ml-2 size-4" />
+									</Link>
+								</Button>
+								<Button variant="outline" size="lg" asChild>
+									<Link href="#publications">View Publications</Link>
+								</Button>
+							</div>
+						</FadeUp>
 					</div>
 				</section>
 
@@ -142,53 +157,63 @@ export default function AcademyPage() {
 				{/* Who Are We */}
 				<section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
 					<div className="grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16">
-						<div>
-							<div className="text-primary mb-4">
-								<GraduationCapIcon className="size-12" />
+						<SlideIn direction="left">
+							<div>
+								<div className="text-primary mb-4">
+									<GraduationCapIcon className="size-12" />
+								</div>
+								<Badge variant="outline" className="mb-4">
+									Who Are We?
+								</Badge>
+								<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+									Leading in Advanced Education
+								</h2>
 							</div>
-							<Badge variant="outline" className="mb-4">
-								Who Are We?
-							</Badge>
-							<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-								Leading in Advanced Education
-							</h2>
-						</div>
-						<div className="text-muted-foreground space-y-4 text-base leading-relaxed">
-							<p>
-								RantAI Academy delivers advanced education in modern Software,
-								AI, Simulation, and Blockchain, powered by GenAI and Rust
-								language.
-							</p>
-							<p>
-								Covering key disciplines like mathematics, physics, chemistry,
-								biology, life sciences, material science, and earth sciences, we
-								emphasize mastery of Numerical, Semi-numerical, Non-numerical,
-								and Quantum algorithms. Whether you&apos;re tackling complex
-								technologies or advancing in scientific computation, RantAI
-								Academy provides the precise tools and expertise to excel.
-							</p>
-						</div>
+						</SlideIn>
+						<SlideIn direction="right" delay={0.15}>
+							<div className="text-muted-foreground space-y-4 text-base leading-relaxed">
+								<p>
+									RantAI Academy delivers advanced education in modern Software,
+									AI, Simulation, and Blockchain, powered by GenAI and Rust
+									language.
+								</p>
+								<p>
+									Covering key disciplines like mathematics, physics, chemistry,
+									biology, life sciences, material science, and earth sciences,
+									we emphasize mastery of Numerical, Semi-numerical,
+									Non-numerical, and Quantum algorithms. Whether you&apos;re
+									tackling complex technologies or advancing in scientific
+									computation, RantAI Academy provides the precise tools and
+									expertise to excel.
+								</p>
+							</div>
+						</SlideIn>
 					</div>
 				</section>
 
 				{/* Key Highlights */}
 				<section className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
 					<div className="mx-auto max-w-6xl">
-						<div className="grid gap-6 sm:grid-cols-3">
+						<StaggerContainer
+							className="grid gap-6 sm:grid-cols-3"
+							stagger={0.12}
+						>
 							{highlights.map((item) => (
-								<Card key={item.title}>
-									<CardHeader>
-										<div className="text-primary mb-2">
-											<item.icon className="size-8" />
-										</div>
-										<CardTitle className="text-base">{item.title}</CardTitle>
-										<CardDescription className="leading-relaxed">
-											{item.description}
-										</CardDescription>
-									</CardHeader>
-								</Card>
+								<StaggerItem key={item.title}>
+									<Card>
+										<CardHeader>
+											<div className="text-primary mb-2">
+												<item.icon className="size-8" />
+											</div>
+											<CardTitle className="text-base">{item.title}</CardTitle>
+											<CardDescription className="leading-relaxed">
+												{item.description}
+											</CardDescription>
+										</CardHeader>
+									</Card>
+								</StaggerItem>
 							))}
-						</div>
+						</StaggerContainer>
 					</div>
 				</section>
 
@@ -197,36 +222,47 @@ export default function AcademyPage() {
 					id="publications"
 					className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
 				>
-					<div className="mb-4 text-center">
-						<div className="text-primary mb-4 flex justify-center">
-							<BookMarkedIcon className="size-12" />
+					<FadeUp>
+						<div className="mb-4 text-center">
+							<div className="text-primary mb-4 flex justify-center">
+								<BookMarkedIcon className="size-12" />
+							</div>
+							<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+								RantAI Publishing
+							</h2>
+							<p className="text-muted-foreground mt-4 text-base">Our Books</p>
 						</div>
-						<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-							RantAI Publishing
-						</h2>
-						<p className="text-muted-foreground mt-4 text-base">Our Books</p>
-					</div>
+					</FadeUp>
 
-					<BookCarousel books={books} />
+					<FadeUp delay={0.2}>
+						<BookCarousel books={books} />
+					</FadeUp>
 				</section>
 
 				{/* CTA */}
 				<section className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-					<div className="mx-auto max-w-2xl text-center">
-						<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-              RantAI Academy for Enterprises
-						</h2>
-						<p className="text-muted-foreground mt-4 text-base leading-relaxed">
-              We offer domain-specific, customized books tailored for scientists and engineers in various industries. Our comprehensive resources include a GenAI prompts catalog, specialized use cases, and well-tested sample codes, all designed to meet the unique needs of your industry and empower your teams with practical, cutting-edge knowledge.
-						</p>
-						<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-							<Button size="lg" asChild>
-								<Link href="/#contact">
-									Contact Us <ArrowRightIcon className="ml-2 size-4" />
-								</Link>
-							</Button>
+					<FadeUp>
+						<div className="mx-auto max-w-2xl text-center">
+							<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+								RantAI Academy for Enterprises
+							</h2>
+							<p className="text-muted-foreground mt-4 text-base leading-relaxed">
+								We offer domain-specific, customized books tailored for
+								scientists and engineers in various industries. Our
+								comprehensive resources include a GenAI prompts catalog,
+								specialized use cases, and well-tested sample codes, all
+								designed to meet the unique needs of your industry and empower
+								your teams with practical, cutting-edge knowledge.
+							</p>
+							<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+								<Button size="lg" asChild>
+									<Link href="/#contact">
+										Contact Us <ArrowRightIcon className="ml-2 size-4" />
+									</Link>
+								</Button>
+							</div>
 						</div>
-					</div>
+					</FadeUp>
 				</section>
 			</main>
 
