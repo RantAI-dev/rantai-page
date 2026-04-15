@@ -1,17 +1,8 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { MotionInView } from "@/components/motion-in-view";
-import {
-	Carousel,
-	CarouselContent,
-	CarouselItem,
-	CarouselPrevious,
-	CarouselNext,
-	type CarouselApi,
-} from "@/components/ui/carousel";
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
@@ -21,147 +12,187 @@ const team = [
 	{
 		name: "Raffy Aulia Adnan",
 		role: "Chief Executive Officer (CEO)",
-		image: "/team/Raffy.png",
+		imageBlue: "/team/Raffy - Blue.png",
+		imageBlack: "/team/Raffy - Black.png",
 	},
 	{
 		name: "Evan P. Hardinatha",
 		role: "Chief Software Engineer",
-		image: "/team/Evan.png",
+		imageBlue: "/team/Evan - Blue.png",
+		imageBlack: "/team/Evan - Black.png",
 	},
 	{
 		name: "Razka Athallah Adnan",
 		role: "VP Scientist",
-		image: "/team/Razka.png",
+		imageBlue: "/team/Razka - Blue.png",
+		imageBlack: "/team/Razka - Black.png",
 	},
 	{
 		name: "Mitchell Chandi",
 		role: "VP Engineer",
-		image: "/team/Mitchell.png",
+		imageBlue: "/team/Mitchell - Blue.png",
+		imageBlack: "/team/Mitchell - Black.png",
 	},
 	{
 		name: "Farrel Pujokusumo",
 		role: "VP Data Science",
-		image: "/team/Farrel.png",
+		imageBlue: "/team/Farrel - Blue.png",
+		imageBlack: "/team/Farrel - Black.png",
 	},
 ];
 
-function getAvatarUrl(name: string) {
-	const encoded = encodeURIComponent(name);
-	return `https://ui-avatars.com/api/?name=${encoded}&size=400&background=1a2530&color=5cb6f9&bold=true&format=svg`;
-}
+export function TeamSection() {
+	const [activeIndex, setActiveIndex] = useState(0);
 
-/* ------------------------------------------------------------------ */
-/*  TeamCard                                                           */
-/* ------------------------------------------------------------------ */
+	// Auto-advance every 5 seconds
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setActiveIndex((prev) => (prev + 1) % team.length);
+		}, 5000);
+		return () => clearTimeout(timer);
+	}, [activeIndex]);
 
-function TeamCard({ member }: { member: (typeof team)[number] }) {
 	return (
-		<div className="group relative select-none">
-			<div className="relative overflow-hidden rounded-xl border border-border bg-card transition-all duration-500 ease-out flex flex-col hover:shadow-md">
-				{/* Image area */}
-				<div className="relative aspect-3/4 w-full overflow-hidden">
-					<Image
-						src={member.image || getAvatarUrl(member.name)}
-						alt={member.name}
-						className="object-cover transition-all duration-500 group-hover:scale-105"
-						fill
-						sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-					/>
+		<section className="bg-background border-border border-t border-b relative overflow-hidden px-4 md:px-8 py-24 sm:py-32">
+			<div className="mx-auto max-w-7xl">
+				<div className="flex flex-col lg:flex-row gap-16 lg:gap-8 justify-between">
+					{/* Left side text items */}
+					<div className="lg:w-1/3 flex flex-col justify-between">
+						<div>
+							<h2 className="text-white text-4xl sm:text-5xl font-medium tracking-tight mb-4 leading-tight">
+								Meet the Founding Team
+							</h2>
+							<p className="text-white/60 font-mono text-sm sm:text-base mb-12">
+								The people behind RantAI&apos;s mission
+							</p>
+						</div>
 
-					{/* Gradient overlay */}
-					<div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black via-black/70 to-transparent opacity-100" />
+						<div className="hidden lg:block relative mt-auto">
+							<TeamInfo
+								team={team}
+								activeIndex={activeIndex}
+								setActiveIndex={setActiveIndex}
+							/>
+						</div>
+					</div>
 
-					{/* Content (name + role) */}
-					<div className="absolute inset-0 flex flex-col justify-end p-5">
-						<h3 className="text-lg font-bold text-white">{member.name}</h3>
-						<p className="mt-0.5 text-sm text-white/80">{member.role}</p>
+					{/* Right side Images */}
+					<div className="lg:w-[60%] h-100 lg:h-125 flex gap-1 sm:gap-2">
+						{team.map((member, i) => (
+							<motion.div
+								key={member.name}
+								layout
+								onClick={() => setActiveIndex(i)}
+								className="relative cursor-pointer overflow-hidden rounded-sm"
+								initial={false}
+								animate={{ flex: activeIndex === i ? 5 : 1 }}
+								whileHover={{ flex: activeIndex === i ? 5 : 1.5 }}
+								transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+							>
+								{/* Black & White Image - Default */}
+								<div className="absolute inset-0">
+									<Image
+										src={member.imageBlack}
+										alt={member.name}
+										fill
+										className="object-cover object-center"
+										sizes="(max-width: 768px) 100vw, 50vw"
+									/>
+								</div>
+
+								{/* Blue Image - Active */}
+								<motion.div
+									className="absolute inset-0"
+									initial={false}
+									animate={{ opacity: activeIndex === i ? 1 : 0 }}
+									transition={{ duration: 0.5 }}
+								>
+									<Image
+										src={member.imageBlue}
+										alt={`${member.name} Active`}
+										fill
+										className="object-cover object-center"
+										sizes="(max-width: 768px) 100vw, 50vw"
+									/>
+								</motion.div>
+							</motion.div>
+						))}
+					</div>
+
+					{/* Nav & Info on mobile */}
+					<div className="block lg:hidden mt-2">
+						<TeamInfo
+							team={team}
+							activeIndex={activeIndex}
+							setActiveIndex={setActiveIndex}
+						/>
 					</div>
 				</div>
 			</div>
-		</div>
+		</section>
 	);
 }
 
-/* ------------------------------------------------------------------ */
-/*  TeamSection                                                        */
-/* ------------------------------------------------------------------ */
+interface TeamMember {
+	readonly name: string;
+	readonly role: string;
+	readonly imageBlue: string;
+	readonly imageBlack: string;
+}
 
-export function TeamSection() {
-	const [api, setApi] = React.useState<CarouselApi>();
-	const [current, setCurrent] = React.useState(0);
-	const [count, setCount] = React.useState(0);
-
-	React.useEffect(() => {
-		if (!api) return;
-
-		setCount(api.scrollSnapList().length);
-		setCurrent(api.selectedScrollSnap());
-
-		api.on("select", () => {
-			setCurrent(api.selectedScrollSnap());
-		});
-	}, [api]);
-
+function TeamInfo({
+	team,
+	activeIndex,
+	setActiveIndex,
+}: {
+	readonly team: TeamMember[];
+	readonly activeIndex: number;
+	readonly setActiveIndex: (i: number) => void;
+}) {
 	return (
-		<section className="bg-muted/30 relative overflow-hidden px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-			<div className="mx-auto max-w-6xl">
-				<MotionInView>
-					{/* Heading */}
-					<div className="mb-12 text-center sm:mb-16">
-						<h2 className="text-foreground mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-							Meet the Founding Team
-						</h2>
-						<p className="text-muted-foreground mx-auto mb-12 max-w-2xl text-center text-base">
-							The people behind RantAI&apos;s mission
-						</p>
-					</div>
-
-					{/* Carousel */}
-					<Carousel
-						setApi={setApi}
-						opts={{
-							align: "start",
-							loop: true,
-						}}
-						className="mx-auto w-full max-w-5xl"
+		<div>
+			{/* Indicators */}
+			<div className="flex gap-2 items-center mb-8">
+				{team.map((_, i) => (
+					<div
+						key={i}
+						className={`h-3 border border-white/40 cursor-pointer overflow-hidden relative transition-all duration-500 ease-out ${
+							activeIndex === i ? "w-20" : "w-3 hover:border-white/80"
+						}`}
+						onClick={() => setActiveIndex(i)}
 					>
-						<CarouselContent className="-ml-3 sm:-ml-4">
-							{team.map((member) => (
-								<CarouselItem
-									key={member.name}
-									className="pl-3 sm:pl-4 basis-[70%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
-								>
-									<TeamCard member={member} />
-								</CarouselItem>
-							))}
-						</CarouselContent>
-
-						{/* Navigation arrows */}
-						<CarouselPrevious className="hidden sm:inline-flex -left-10 lg:-left-14 border-border bg-card/80 backdrop-blur-sm text-foreground hover:bg-card hover:text-foreground" />
-						<CarouselNext className="hidden sm:inline-flex -right-10 lg:-right-14 border-border bg-card/80 backdrop-blur-sm text-foreground hover:bg-card hover:text-foreground" />
-					</Carousel>
-
-					{/* Pagination dots */}
-					{count > 0 && (
-						<div className="mt-8 flex items-center justify-center gap-2">
-							{Array.from({ length: count }).map((_, idx) => (
-								<button
-									key={idx}
-									type="button"
-									aria-label={`Go to slide ${idx + 1}`}
-									className={cn(
-										"h-1.5 rounded-full transition-all duration-300",
-										current === idx
-											? "w-6 bg-primary"
-											: "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50",
-									)}
-									onClick={() => api?.scrollTo(idx)}
-								/>
-							))}
-						</div>
-					)}
-				</MotionInView>
+						{activeIndex === i && (
+							<motion.div
+								className="h-full bg-white origin-left"
+								initial={{ scaleX: 0 }}
+								animate={{ scaleX: 1 }}
+								transition={{ duration: 5, ease: "linear" }}
+								key={`progress-${i}`}
+							/>
+						)}
+					</div>
+				))}
 			</div>
-		</section>
+
+			{/* active member details */}
+			<div className="h-24">
+				<AnimatePresence mode="wait">
+					<motion.div
+						key={activeIndex}
+						initial={{ opacity: 0, y: 15 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -15 }}
+						transition={{ duration: 0.4, ease: "backOut" }}
+					>
+						<h3 className="text-white text-2xl sm:text-3xl font-medium tracking-tight">
+							{team[activeIndex].name}
+						</h3>
+						<p className="text-white/60 font-mono text-sm sm:text-base mt-2">
+							{team[activeIndex].role}
+						</p>
+					</motion.div>
+				</AnimatePresence>
+			</div>
+		</div>
 	);
 }

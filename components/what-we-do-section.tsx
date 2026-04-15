@@ -2,16 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "motion/react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { ArrowRightIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { MotionInView } from "./motion-in-view";
 
 const whatWeDo = [
 	{
+		number: "01",
 		title: "AI Products",
 		description:
-			"Three enterprise AI platforms: Agents, Analytics, and ZeroCode.",
+			"Three enterprise AI platforms: Agents, Analytics, and ZeroCode. Purpose-built for government and enterprise use cases, our products are production-grade, deployed, and battle-tested.",
 		href: "/products",
 		image: "/what-we-do/ai-products.png",
 		features: [
@@ -22,9 +23,10 @@ const whatWeDo = [
 		],
 	},
 	{
+		number: "02",
 		title: "Engineering Services",
 		description:
-			"AI Engineering and Software Engineering — from strategy to production deployment.",
+			"AI Engineering and Software Engineering — from strategy to production deployment. We help organizations build, deploy, and scale intelligent systems.",
 		href: "/services",
 		image: "/what-we-do/services.png",
 		features: [
@@ -35,9 +37,10 @@ const whatWeDo = [
 		],
 	},
 	{
+		number: "03",
 		title: "Academy",
 		description:
-			"Practical, project-based education in AI engineering, software engineering, and data science.",
+			"Practical, project-based education in AI engineering, software engineering, and data science. Developing the next generation of AI talent in Indonesia.",
 		href: "/academy",
 		image: "/what-we-do/academy.png",
 		features: [
@@ -50,74 +53,99 @@ const whatWeDo = [
 ];
 
 export function WhatWeDoSection() {
+	const [activeIndex, setActiveIndex] = useState(0);
+	const active = whatWeDo[activeIndex];
+
 	return (
-		<section className="w-full px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+		<section className="px-6 py-24 sm:px-8 lg:px-12 lg:py-32">
 			<div className="mx-auto max-w-6xl">
 				<MotionInView>
-					<h2 className="text-foreground mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
+					<p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#888888]">
 						What We Do
-					</h2>
-					<p className="text-muted-foreground mx-auto mb-12 max-w-2xl text-center text-base leading-relaxed">
+					</p>
+					<h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
 						We build enterprise AI platforms, deliver engineering services, and
 						educate the next generation of AI talent.
-					</p>
+					</h2>
 				</MotionInView>
 
-				<div className="space-y-8">
-					{whatWeDo.map((item, index) => (
-						<motion.div
-							key={item.title}
-							initial={{ opacity: 0, y: 30, scale: 0.95 }}
-							whileInView={{ opacity: 1, y: 0, scale: 1 }}
-							viewport={{ once: true, margin: "0px 0px -60px 0px" }}
-							transition={{ duration: 0.5, delay: index * 0.1 }}
-							className="sticky rounded-3xl border border-border bg-card shadow-xl overflow-hidden transition-shadow duration-300"
-							style={{ top: `calc(10vh + ${index * 40}px)` }}
-						>
-							<div className="grid grid-cols-1 md:grid-cols-2 min-h-90">
-								{/* Text content */}
-								<div className="flex flex-col justify-center p-8 md:p-12 order-2 md:order-1">
-									<h3 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl mb-3">
+				<MotionInView>
+					<div className="mt-16 grid gap-12 lg:grid-cols-[280px_1fr] lg:gap-16">
+						{/* Left: Tab list */}
+						<div className="flex flex-row gap-2 overflow-x-auto lg:flex-col lg:gap-0 lg:overflow-visible">
+							{whatWeDo.map((item, index) => (
+								<button
+									key={item.number}
+									type="button"
+									onClick={() => setActiveIndex(index)}
+									className={`group flex items-center gap-4 whitespace-nowrap rounded-lg px-4 py-4 text-left transition-all duration-200 lg:rounded-none lg:border-l-2 lg:px-6 ${
+										activeIndex === index
+											? "border-white bg-white/5 text-white lg:border-l-white"
+											: "border-transparent text-[#888888] hover:text-white hover:bg-white/[0.02] lg:border-l-white/10"
+									}`}
+								>
+									<span className="text-sm font-light opacity-50">
+										{item.number}
+									</span>
+									<span className="text-sm font-medium">
 										{item.title}
-									</h3>
-									<p className="text-muted-foreground text-base leading-relaxed mb-6">
-										{item.description}
+									</span>
+								</button>
+							))}
+						</div>
+
+						{/* Right: Active content */}
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={activeIndex}
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -10 }}
+								transition={{ duration: 0.3, ease: "easeOut" }}
+								className="flex flex-col gap-8"
+							>
+								<div>
+									<p className="mb-3 text-sm leading-[1.7] text-[#888888]">
+										{active.description}
 									</p>
-									<div className="flex flex-wrap gap-2 mb-6">
-										{item.features.map((feature) => (
+
+									<div className="mb-6 flex flex-wrap gap-2">
+										{active.features.map((feature) => (
 											<span
 												key={feature}
-												className="rounded-full border border-border bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground"
+												className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-[#999999]"
 											>
 												{feature}
 											</span>
 										))}
 									</div>
-									<div>
-										<Button variant="outline" size="sm" asChild>
-											<Link href={item.href}>
-												Learn more
-												<ArrowRightIcon className="ml-1 size-3" />
-											</Link>
-										</Button>
-									</div>
+
+									<Link
+										href={active.href}
+										className="group/link inline-flex items-center text-sm font-medium text-white transition-colors hover:text-[#cccccc]"
+									>
+										Learn more
+										<ArrowRightIcon className="ml-1.5 size-3.5 transition-transform duration-200 group-hover/link:translate-x-0.5" />
+									</Link>
 								</div>
 
 								{/* Image */}
-								<div className="relative min-h-60 md:min-h-full order-1 md:order-2">
-									<Image
-										src={item.image}
-										alt={item.title}
-										fill
-										sizes="(max-width: 768px) 100vw, 50vw"
-										className="object-cover"
-										loading="eager"
-									/>
+								<div className="relative overflow-hidden rounded-xl border border-white/10">
+									<div className="relative aspect-[16/9]">
+										<Image
+											src={active.image}
+											alt={active.title}
+											fill
+											sizes="(max-width: 768px) 100vw, 60vw"
+											className="object-cover"
+											loading="eager"
+										/>
+									</div>
 								</div>
-							</div>
-						</motion.div>
-					))}
-				</div>
+							</motion.div>
+						</AnimatePresence>
+					</div>
+				</MotionInView>
 			</div>
 		</section>
 	);

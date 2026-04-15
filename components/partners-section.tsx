@@ -1,56 +1,61 @@
-"use client";
+"use client"
 
-import TiltedCard from "./TiltedCard";
-import { MotionInView } from "./motion-in-view";
+import Image from "next/image"
+import { LogoLoop, type LogoItem } from "./LogoLoop"
+import { MotionInView } from "./motion-in-view"
 
 const partners = [
-	{
-		name: "NexusQuantum Technologies",
-		logo: "/partners/nqrust.png",
-	},
-	{
-		name: "Quantum Investa Utama (QIU)",
-		logo: "/partners/ventures.png",
-	},
-	{
-		name: "Bohrlabs",
-		logo: "/partners/bohrlabs.png",
-	},
-];
+  {
+    name: "NexusQuantum Technologies",
+    logo: "/partners/nqrust.png",
+  },
+  {
+    name: "Quantum Investa Utama (QIU)",
+    logo: "/partners/ventures.png",
+  },
+  {
+    name: "Bohrlabs",
+    logo: "/partners/bohrlabs.png",
+  },
+]
+
+const logoItems: LogoItem[] = partners.map((partner) => ({
+  node: (
+    <div className="relative h-40 w-40 opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 sm:h-44 sm:w-44">
+      <Image
+        src={partner.logo}
+        alt={partner.name}
+        fill
+        sizes="160px"
+        className="object-contain brightness-0 invert"
+      />
+    </div>
+  ),
+  ariaLabel: partner.name,
+}))
 
 export function PartnersSection() {
-	return (
-		<section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-			<div className="mx-auto max-w-6xl">
-				<MotionInView>
-					<h2 className="text-foreground mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-						Meet Our Partners
-					</h2>
-					<p className="text-muted-foreground mx-auto mb-12 max-w-2xl text-center text-base">
-						We work closely with leading technology companies to deliver
-						impactful solutions.
-					</p>
-					<div className="flex flex-col sm:flex-row justify-center place-items-center gap-4">
-						{partners.map((partner) => (
-							<TiltedCard
-								key={partner.name}
-								imageSrc={partner.logo}
-								altText={partner.name}
-								captionText={partner.name}
-								containerHeight="400px"
-								containerWidth="300px"
-								imageHeight="400px"
-								imageWidth="300px"
-								scaleOnHover={1}
-								rotateAmplitude={12}
-								showMobileWarning={false}
-								showTooltip={false}
-								displayOverlayContent={true}
-							/>
-						))}
-					</div>
-				</MotionInView>
-			</div>
-		</section>
-	);
+  return (
+    <section className="bg-background px-8 py-20 sm:px-2 lg:px-4 lg:py-16">
+      <div className="mx-auto max-w-6xl">
+        <MotionInView>
+          <p className="text-center font-mono text-lg tracking-wider text-muted-foreground uppercase">
+            Trusted Partners
+          </p>
+
+          <LogoLoop
+            logos={logoItems}
+            speed={80}
+            logoHeight={160}
+            gap={56}
+            pauseOnHover
+            fadeOut
+            fadeOutColor="var(--background)"
+            direction="left"
+            scaleOnHover
+          />
+        </MotionInView>
+      </div>
+    </section>
+  )
 }

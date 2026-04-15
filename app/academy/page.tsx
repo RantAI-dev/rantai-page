@@ -1,43 +1,27 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import {
+	ArrowRightIcon,
+	GraduationCapIcon,
+	TargetIcon,
+	BuildingIcon,
+	TrendingUpIcon,
+	BookMarkedIcon,
+} from "lucide-react";
 
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { BookCarousel } from "@/components/book-carousel";
-import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-	FadeUp,
-	ScaleIn,
-	StaggerContainer,
-	StaggerItem,
-	SlideIn,
-} from "@/components/motion";
-import {
-	GraduationCapIcon,
-	ArrowRightIcon,
-	BookMarkedIcon,
-	BuildingIcon,
-	TargetIcon,
-	TrendingUpIcon,
-	RocketIcon,
-} from "lucide-react";
+import { MotionInView } from "@/components/motion-in-view";
 
 export const metadata: Metadata = {
-	title: "Academy",
+	title: "Academy — RantAI",
 	description:
 		"RantAI Academy — Book Publisher and Classes. Academy with GenAI Learning and Tailored Enterprise Solutions.",
 };
 
 /* ------------------------------------------------------------------ */
-/*  Key Highlights                                                     */
+/*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
 const highlights = [
@@ -61,10 +45,6 @@ const highlights = [
 	},
 ];
 
-/* ------------------------------------------------------------------ */
-/*  Books                                                               */
-/* ------------------------------------------------------------------ */
-
 const books = [
 	{
 		name: "TRPL",
@@ -75,8 +55,7 @@ const books = [
 	{
 		name: "DSAR",
 		fullName: "Data Structures and Algorithms in Rust",
-		imageUrl:
-			"https://dsar.rantai.dev/images/cover_hu14882859514097680701.webp",
+		imageUrl: "https://dsar.rantai.dev/images/cover_hu14882859514097680701.webp",
 	},
 	{
 		name: "SDPR",
@@ -97,14 +76,12 @@ const books = [
 	{
 		name: "DLVR",
 		fullName: "Deep Learning via Rust",
-		imageUrl:
-			"https://biz-merger.rantai.dev/images/cover_hu11256834211834767527.webp",
+		imageUrl: "https://biz-merger.rantai.dev/images/cover_hu11256834211834767527.webp",
 	},
 	{
 		name: "Biz-Merger",
 		fullName: "Mastering Mergers and Acquisitions",
-		imageUrl:
-			"https://biz-merger.rantai.dev/images/cover_hu11256834211834767527.webp",
+		imageUrl: "https://biz-merger.rantai.dev/images/cover_hu11256834211834767527.webp",
 	},
 ];
 
@@ -114,155 +91,167 @@ const books = [
 
 export default function AcademyPage() {
 	return (
-		<div className="bg-background text-foreground min-h-screen">
+		<div className="bg-background text-foreground min-h-screen flex flex-col">
 			<Navbar />
 
-			<main>
-				{/* Hero */}
-				<section className="relative overflow-hidden px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
-					<div className="bg-primary/5 absolute inset-0 -z-10 opacity-40" />
-					<div className="mx-auto max-w-3xl text-center">
-						<ScaleIn>
-							<Badge variant="outline" className="mb-4">
-								Book Publisher and Classes
-							</Badge>
-						</ScaleIn>
-						<FadeUp delay={0.1}>
-							<h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
-								RantAI Academy
-							</h1>
-						</FadeUp>
-						<FadeUp delay={0.2}>
-							<p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-								Academy with GenAI Learning and Tailored Enterprise Solutions.
+			<main className="flex-1">
+				{/* ── Page Header ─────────────────────────────────────────── */}
+				<section className="border-b border-border px-6 py-20 sm:px-8 lg:px-12 lg:py-28">
+					<div className="mx-auto max-w-7xl">
+						<MotionInView>
+							<p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+								Book Publisher &amp; Classes
 							</p>
-						</FadeUp>
-						<FadeUp delay={0.3}>
-							<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-								<Button size="lg" asChild>
-									<Link href="/#contact">
-										Enroll Now <ArrowRightIcon className="ml-2 size-4" />
-									</Link>
-								</Button>
-								<Button variant="outline" size="lg" asChild>
-									<Link href="#publications">View Publications</Link>
-								</Button>
+							<div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+								<h1 className="max-w-2xl text-4xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+									RantAI Academy
+								</h1>
+								<p className="max-w-md font-mono text-sm leading-relaxed text-muted-foreground lg:text-right">
+									Advanced education in Software, AI, Simulation, and Blockchain
+									— powered by GenAI and Rust. Tailored for individuals and
+									enterprises alike.
+								</p>
 							</div>
-						</FadeUp>
+						</MotionInView>
 					</div>
 				</section>
 
-				<Separator className="bg-border" />
-
-				{/* Who Are We */}
-				<section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-					<div className="grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16">
-						<SlideIn direction="left">
-							<div>
-								<div className="text-primary mb-4">
-									<GraduationCapIcon className="size-12" />
+				{/* ── Who Are We ───────────────────────────────────────────── */}
+				<section className="border-b border-border px-6 py-16 sm:px-8 lg:px-12 lg:py-20">
+					<div className="mx-auto max-w-7xl">
+						<MotionInView>
+							<div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_2fr] lg:gap-24">
+								<div>
+									<div className="mb-4 flex items-center gap-3">
+										<GraduationCapIcon className="size-6 text-primary" />
+										<span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+											Who Are We
+										</span>
+									</div>
+									<h2 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
+										Leading in Advanced Education
+									</h2>
 								</div>
-								<Badge variant="outline" className="mb-4">
-									Who Are We?
-								</Badge>
-								<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-									Leading in Advanced Education
-								</h2>
+								<div className="space-y-4 font-mono text-sm leading-relaxed text-muted-foreground">
+									<p>
+										RantAI Academy delivers advanced education in modern Software,
+										AI, Simulation, and Blockchain, powered by GenAI and the Rust
+										programming language.
+									</p>
+									<p>
+										Covering key disciplines like mathematics, physics, chemistry,
+										biology, life sciences, material science, and earth sciences,
+										we emphasize mastery of Numerical, Semi-numerical,
+										Non-numerical, and Quantum algorithms. Whether you&apos;re tackling
+										complex technologies or advancing in scientific computation,
+										RantAI Academy provides the precise tools and expertise to
+										excel.
+									</p>
+								</div>
 							</div>
-						</SlideIn>
-						<SlideIn direction="right" delay={0.15}>
-							<div className="text-muted-foreground space-y-4 text-base leading-relaxed">
-								<p>
-									RantAI Academy delivers advanced education in modern Software,
-									AI, Simulation, and Blockchain, powered by GenAI and Rust
-									language.
-								</p>
-								<p>
-									Covering key disciplines like mathematics, physics, chemistry,
-									biology, life sciences, material science, and earth sciences,
-									we emphasize mastery of Numerical, Semi-numerical,
-									Non-numerical, and Quantum algorithms. Whether you&apos;re
-									tackling complex technologies or advancing in scientific
-									computation, RantAI Academy provides the precise tools and
-									expertise to excel.
-								</p>
-							</div>
-						</SlideIn>
+						</MotionInView>
 					</div>
 				</section>
 
-				{/* Key Highlights */}
-				<section className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-					<div className="mx-auto max-w-6xl">
-						<StaggerContainer
-							className="grid gap-6 sm:grid-cols-3"
-							stagger={0.12}
-						>
-							{highlights.map((item) => (
-								<StaggerItem key={item.title}>
-									<Card>
-										<CardHeader>
-											<div className="text-primary mb-2">
-												<item.icon className="size-8" />
-											</div>
-											<CardTitle className="text-base">{item.title}</CardTitle>
-											<CardDescription className="leading-relaxed">
+				{/* ── Key Highlights ───────────────────────────────────────── */}
+				<section className="px-6 py-16 sm:px-8 lg:px-12 lg:py-20">
+					<div className="mx-auto max-w-7xl">
+						<MotionInView>
+							<p className="mb-12 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+								Why RantAI Academy
+							</p>
+						</MotionInView>
+
+						<div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-3">
+							{highlights.map((item, idx) => {
+								const Icon = item.icon;
+								return (
+									<MotionInView
+										key={item.title}
+										transition={{ delay: idx * 0.1, duration: 0.5, ease: "easeOut" }}
+									>
+										<div className="flex flex-col gap-4 bg-background p-8 transition-colors hover:bg-muted/20">
+											<Icon className="size-6 text-primary" />
+											<h3 className="text-base font-medium text-foreground">
+												{item.title}
+											</h3>
+											<p className="font-mono text-xs leading-relaxed text-muted-foreground">
 												{item.description}
-											</CardDescription>
-										</CardHeader>
-									</Card>
-								</StaggerItem>
-							))}
-						</StaggerContainer>
+											</p>
+										</div>
+									</MotionInView>
+								);
+							})}
+						</div>
 					</div>
 				</section>
 
-				{/* RantAI Publishing */}
+				{/* ── Publications ─────────────────────────────────────────── */}
 				<section
 					id="publications"
-					className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
+					className="border-t border-border px-6 py-16 sm:px-8 lg:px-12 lg:py-24"
 				>
-					<FadeUp>
-						<div className="mb-4 text-center">
-							<div className="text-primary mb-4 flex justify-center">
-								<BookMarkedIcon className="size-12" />
+					<div className="mx-auto max-w-7xl">
+						<MotionInView>
+							<div className="mb-12 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+								<div>
+									<p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+										RantAI Publishing
+									</p>
+									<div className="flex items-center gap-3">
+										<BookMarkedIcon className="size-6 text-primary" />
+										<h2 className="text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
+											Our Books
+										</h2>
+									</div>
+								</div>
 							</div>
-							<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-								RantAI Publishing
-							</h2>
-							<p className="text-muted-foreground mt-4 text-base">Our Books</p>
-						</div>
-					</FadeUp>
+						</MotionInView>
 
-					<FadeUp delay={0.2}>
-						<BookCarousel books={books} />
-					</FadeUp>
+						<MotionInView transition={{ delay: 0.1 }}>
+							<BookCarousel books={books} />
+						</MotionInView>
+					</div>
 				</section>
 
-				{/* CTA */}
-				<section className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-					<FadeUp>
-						<div className="mx-auto max-w-2xl text-center">
-							<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-								RantAI Academy for Enterprises
-							</h2>
-							<p className="text-muted-foreground mt-4 text-base leading-relaxed">
-								We offer domain-specific, customized books tailored for
-								scientists and engineers in various industries. Our
-								comprehensive resources include a GenAI prompts catalog,
-								specialized use cases, and well-tested sample codes, all
-								designed to meet the unique needs of your industry and empower
-								your teams with practical, cutting-edge knowledge.
-							</p>
-							<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-								<Button size="lg" asChild>
-									<Link href="/#contact">
-										Contact Us <ArrowRightIcon className="ml-2 size-4" />
+				{/* ── Enterprise CTA ───────────────────────────────────────── */}
+				<section className="border-t border-border px-6 py-16 sm:px-8 lg:px-12 lg:py-24">
+					<div className="mx-auto max-w-7xl">
+						<MotionInView>
+							<div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+								<div className="max-w-xl">
+									<p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+										Enterprise Solutions
+									</p>
+									<h2 className="text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
+										RantAI Academy for Enterprises
+									</h2>
+									<p className="mt-4 font-mono text-sm leading-relaxed text-muted-foreground">
+										We offer domain-specific, customized books tailored for
+										scientists and engineers in various industries — including a
+										GenAI prompts catalog, specialized use cases, and
+										well-tested sample codes designed to meet the unique needs
+										of your industry.
+									</p>
+								</div>
+								<div className="flex flex-col gap-3 sm:flex-row">
+									<Link
+										href="/#contact"
+										className="group inline-flex items-center gap-2 border border-foreground px-6 py-3 font-mono text-xs uppercase tracking-wider text-foreground transition-colors hover:bg-foreground hover:text-background"
+									>
+										Contact Us
+										<ArrowRightIcon className="size-3.5 transition-transform duration-300 group-hover:translate-x-1" />
 									</Link>
-								</Button>
+									<Link
+										href="#publications"
+										className="inline-flex items-center gap-2 border border-border px-6 py-3 font-mono text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+									>
+										View Publications
+									</Link>
+								</div>
 							</div>
-						</div>
-					</FadeUp>
+						</MotionInView>
+					</div>
 				</section>
 			</main>
 

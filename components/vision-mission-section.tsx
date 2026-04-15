@@ -11,83 +11,67 @@ const missions = [
 
 export function VisionMissionSection() {
 	return (
-		<section className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-			<div className="mx-auto max-w-6xl space-y-20 lg:space-y-12">
-				{/* Row 1 — Vision: Image left, Text right */}
+		<section className="px-6 py-24 sm:px-8 lg:px-12 lg:py-32">
+			<div className="mx-auto max-w-6xl">
 				<MotionInView>
-					<div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
-						{/* Image composition */}
-						<div className="zigzag-image-wrapper">
-							<Image
-								src="/vision-and-mission/vision-1.png"
-								alt="Futuristic smart city powered by AI"
-								width={600}
-								height={450}
-								className="zigzag-image-main"
-								loading="eager"
-							/>
-							<Image
-								src="/vision-and-mission/vision-2.png"
-								alt="Professionals reviewing AI analytics"
-								width={330}
-								height={250}
-								className="zigzag-image-overlay zigzag-image-overlay bottom-0 right-0"
-								loading="eager"
-							/>
-						</div>
-
-						{/* Text */}
-						<div>
-							<h2 className="text-foreground mb-3 text-3xl font-bold tracking-tight sm:text-4xl">
+					<div className="grid gap-6 md:grid-cols-2">
+						{/* Vision Card */}
+						<div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 md:p-10">
+							<p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#888888]">
 								Our Vision
+							</p>
+							<h2 className="mb-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+								Leading AI Innovation in Indonesia
 							</h2>
-							<p className="text-muted-foreground text-base leading-relaxed">
+							<p className="mb-8 text-sm leading-[1.7] text-[#888888]">
 								To be Indonesia&apos;s leading AI products company — enabling
 								government and enterprise to operate intelligently through
 								production-grade AI platforms.
 							</p>
+							{/* <div className="relative overflow-hidden rounded-xl border border-white/10">
+								<div className="relative aspect-[4/3]">
+									<Image
+										src="/vision-and-mission/vision-1.png"
+										alt="Futuristic smart city powered by AI"
+										fill
+										sizes="(max-width: 768px) 100vw, 50vw"
+										className="object-cover"
+										loading="eager"
+									/>
+								</div>
+							</div> */}
 						</div>
-					</div>
-				</MotionInView>
 
-				{/* Row 2 — Mission: Text left, Image right */}
-				<MotionInView>
-					<div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
-						{/* Text */}
-						<div className="order-2 lg:order-1">
-							<h2 className="text-foreground mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
+						{/* Mission Card */}
+						<div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 md:p-10">
+							<p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#888888]">
 								Our Mission
+							</p>
+							<h2 className="mb-6 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+								Building the Future of AI
 							</h2>
-							<div className="grid gap-4 sm:grid-cols-2">
+							<div className="space-y-4 mb-8">
 								{missions.map((mission, idx) => (
 									<div key={idx} className="flex gap-3">
-										<CheckCircle2Icon className="text-primary mt-0.5 size-5 shrink-0" />
-										<p className="text-muted-foreground text-sm leading-relaxed">
+										<CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-[#888888]" />
+										<p className="text-sm leading-[1.7] text-[#888888]">
 											{mission}
 										</p>
 									</div>
 								))}
 							</div>
-						</div>
-
-						{/* Image composition */}
-						<div className="zigzag-image-wrapper order-1 lg:order-2">
-							<Image
-								src="/vision-and-mission/mission-1.png"
-								alt="Team collaborating on AI dashboards"
-								width={600}
-								height={450}
-								className="zigzag-image-main ml-auto"
-								loading="eager"
-							/>
-							<Image
-								src="/vision-and-mission/mission-2.png"
-								alt="Engineer developing AI solutions"
-								width={330}
-								height={250}
-								className="zigzag-image-overlay zigzag-image-overlay bottom-0 left-0"
-								loading="eager"
-							/>
+							{/* <div className="relative overflow-hidden rounded-xl border border-white/10">
+								<div className="relative aspect-[4/3]">
+									<Image
+										src="/vision-and-mission/mission-1.png"
+										alt="Team collaborating on AI dashboards"
+										fill
+										sizes="(max-width: 768px) 100vw, 50vw"
+										className="object-cover"
+										loading="eager"
+									/>
+								</div>
+							</div> */}
 						</div>
 					</div>
 				</MotionInView>

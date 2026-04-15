@@ -1,109 +1,80 @@
 import type { Metadata } from "next";
-
-import { META_THEME_COLORS, siteConfig } from "@/lib/config";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
 
 import "./globals.css";
+import { META_THEME_COLORS, siteConfig } from "@/lib/config";
+import { ThemeProvider } from "@/components/theme-provider";
+import { cn } from "@/lib/utils";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+
+const fontMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
 });
 
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
-
-// INCOMPLETE: This is a placeholder for the site metadata.
 export const metadata: Metadata = {
-	title: {
-		default: siteConfig.name,
-		template: `%s - ${siteConfig.name}`,
-	},
-	// metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL!),
-	description: siteConfig.description,
-	keywords: ["Next.js", "React", "Tailwind CSS", "Components", "shadcn"],
-	authors: [
-		{
-			name: "shadcn",
-			url: "https://shadcn.com",
-		},
-	],
-	creator: "shadcn",
-	// openGraph: {
-	// 	type: "website",
-	// 	locale: "en_US",
-	// 	url: process.env.NEXT_PUBLIC_APP_URL!,
-	// 	title: siteConfig.name,
-	// 	description: siteConfig.description,
-	// 	siteName: siteConfig.name,
-	// 	images: [
-	// 		{
-	// 			url: `${process.env.NEXT_PUBLIC_APP_URL}/opengraph-image.png`,
-	// 			width: 1200,
-	// 			height: 630,
-	// 			alt: siteConfig.name,
-	// 		},
-	// 	],
-	// },
-	// twitter: {
-	// 	card: "summary_large_image",
-	// 	title: siteConfig.name,
-	// 	description: siteConfig.description,
-	// 	images: [`${process.env.NEXT_PUBLIC_APP_URL}/opengraph-image.png`],
-	// 	creator: "@shadcn",
-	// },
-	icons: {
-		icon: [
-			{ url: "/favicon.ico" },
-			{ url: "/icon0.svg", type: "image/svg+xml" },
-			{ url: "/icon1.png", type: "image/png" },
-		],
-		apple: "/apple-icon.png",
-	},
-	manifest: "/manifest.json",
-	appleWebApp: {
-		title: "RantAI",
-	},
-	alternates: {
-		types: {
-			"application/rss+xml": `${siteConfig.url}/rss.xml`,
-		},
-	},
+  title: {
+    default: siteConfig.name,
+    template: `%s - ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  keywords: [
+    "RantAI",
+    "AI Products",
+    "Enterprise AI",
+    "AI Engineering",
+    "Indonesia",
+  ],
+  authors: [
+    {
+      name: "RantAI",
+      url: "https://www.rantai.dev",
+    },
+  ],
+  creator: "RantAI",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon0.svg", type: "image/svg+xml" },
+      { url: "/icon1.png", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
+  },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    title: "RantAI",
+  },
+  alternates: {
+    types: {
+      "application/rss+xml": `${siteConfig.url}/rss.xml`,
+    },
+  },
 };
 
 export default function RootLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	return (
-		<html lang="en" suppressHydrationWarning>
-			<head>
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `
-              try {
-                if (localStorage.theme === 'dark' || ((!('theme' in localStorage) || localStorage.theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.querySelector('meta[name="theme-color"]').setAttribute('content', '${META_THEME_COLORS.dark}')
-                }
-                if (localStorage.layout) {
-                  document.documentElement.classList.add('layout-' + localStorage.layout)
-                }
-              } catch (_) {}
-            `,
-					}}
-				/>
-				<meta name="theme-color" content={META_THEME_COLORS.light} />
-				<meta name="apple-mobile-web-app-title" content="RantAI" />
-			</head>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
-				<ThemeProvider>{children}</ThemeProvider>
-			</body>
-		</html>
-	);
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn(
+        "antialiased",
+        fontMono.variable,
+        "font-sans",
+        geist.variable,
+      )}
+    >
+      <head>
+        <meta name="theme-color" content={META_THEME_COLORS.dark} />
+        <meta name="apple-mobile-web-app-title" content="RantAI" />
+      </head>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
+    </html>
+  );
 }

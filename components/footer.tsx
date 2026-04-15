@@ -1,109 +1,66 @@
-import Link from "next/link";
-import { MailIcon, MapPinIcon } from "lucide-react";
+"use client";
 
-import { Badge } from "@/components/ui/badge";
+import { ArrowUp } from "lucide-react";
+
+import { MotionInView } from "./motion-in-view";
+import ColorBends from "@/components/ColorBends";
+import { ContactCard } from "@/components/contact-card";
 
 export function Footer() {
+	const scrollToTop = () => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	};
+
 	return (
-		<footer className="border-border/40 border-t bg-muted/10 px-4 py-16 sm:px-6 lg:px-8">
-			<div className="mx-auto max-w-7xl">
-				<div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-					{/* Brand - Mastra-style: logo + tagline */}
-					<div className="space-y-3">
-						<Link
-							href="/"
-							className="text-foreground flex items-center gap-1.5 font-semibold"
-						>
-							<span>Rant</span>
-							<Badge variant="default" className="text-xs px-1.5 py-0">
-								AI
-							</Badge>
-						</Link>
-						<p className="text-muted-foreground text-sm leading-relaxed">
-							Enterprise AI Products & Engineering. Building production-ready AI
-							platforms for government and enterprise.
-						</p>
-					</div>
+		<footer className="relative overflow-hidden bg-background px-4 py-16 sm:px-8 lg:px-12 lg:py-24">
+			{/* ColorBends Background */}
+			<div className="absolute inset-0 z-0 h-full w-full">
+				<ColorBends
+					colors={["#055794", "#5EB6FA"]}
+					rotation={40}
+					speed={0.4}
+					scale={1}
+					frequency={1}
+					warpStrength={1}
+					noise={1}
+					transparent
+					autoRotate={0}
+				/>
+				{/* Gradient fade at the top for smooth transition from previous section */}
+				<div className="pointer-events-none absolute inset-x-0 top-0 h-[30vh] bg-linear-to-b from-background to-transparent" />
+			</div>
 
-					{/* Products */}
-					<div className="space-y-3">
-						<h4 className="text-foreground text-sm font-semibold">Products</h4>
-						<nav className="flex flex-col gap-2">
-							<Link
-								href="/products#agents"
-								className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-							>
-								RantAI Agents
-							</Link>
-							<Link
-								href="/products#analytics"
-								className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-							>
-								RantAI Analytics
-							</Link>
-							<Link
-								href="/products#zerocode"
-								className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-							>
-								RantAI ZeroCode
-							</Link>
-						</nav>
-					</div>
+			<div className="relative mx-auto max-w-7xl">
+				{/* Contact Us Card */}
+				<MotionInView className="mb-20">
+					<ContactCard />
+				</MotionInView>
 
-					{/* Developers / Company */}
-					<div className="space-y-3">
-						<h4 className="text-foreground text-sm font-semibold">Company</h4>
-						<nav className="flex flex-col gap-2">
-							<Link
-								href="/services"
-								className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+				{/* Footer Logo & Copyright */}
+				<MotionInView>
+					<div className="mt-12 flex flex-col items-end justify-between gap-8 md:flex-row md:gap-0">
+						<div>
+							<h1 className="mb-2 text-6xl leading-none tracking-tighter text-white md:text-8xl lg:text-[140px]">
+								RantAI
+							</h1>
+							<div
+								className="font-mono text-xs text-muted-foreground"
+								suppressHydrationWarning
 							>
-								Services
-							</Link>
-							<Link
-								href="/academy"
-								className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-							>
-								Academy
-							</Link>
-							<Link
-								href="/#contact"
-								className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-							>
-								Contact
-							</Link>
-						</nav>
-					</div>
-
-					{/* Contact */}
-					<div className="space-y-3">
-						<h4 className="text-foreground text-sm font-semibold">
-							Get in Touch
-						</h4>
-						<div className="text-muted-foreground space-y-2 text-sm">
-							<p className="flex items-center gap-2">
-								<MapPinIcon className="size-4 shrink-0" />
-								Depok, West Java, Indonesia
-							</p>
-							<p className="flex items-center gap-2">
-								<MailIcon className="size-4 shrink-0" />
-								<a
-									href="mailto:admin@rantai.dev"
-									className="hover:text-foreground transition-colors"
-								>
-									admin@rantai.dev
-								</a>
-							</p>
+								&copy; {new Date().getFullYear()} RantAI. Enterprise AI Products
+								&amp; Engineering.
+							</div>
 						</div>
-					</div>
-				</div>
 
-				<div className="border-border mt-8 border-t pt-6">
-					<p className="text-muted-foreground text-center text-sm">
-						&copy; {new Date().getFullYear()} RantAI. Enterprise AI Products &
-						Engineering.
-					</p>
-				</div>
+						<button
+							onClick={scrollToTop}
+							aria-label="Scroll to top"
+							className="group flex h-16 w-16 items-center justify-center border border-border transition-all duration-300 hover:border-white hover:bg-white/5 focus:outline-none active:scale-95 md:h-20 md:w-20"
+						>
+							<ArrowUp className="h-6 w-6 text-white/40 transition-colors duration-300 group-hover:text-white" />
+						</button>
+					</div>
+				</MotionInView>
 			</div>
 		</footer>
 	);

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
 	ShieldCheckIcon,
 	FactoryIcon,
@@ -16,42 +15,36 @@ const whyRantai = [
 		description:
 			"We build our own platforms to guarantee long-term roadmap continuity.",
 		icon: FactoryIcon,
-		image: "/why/why-products.png",
 	},
 	{
 		title: "Production-Grade",
 		description:
 			"Deployed in real production environments — built for scale, security, and reliability.",
 		icon: ShieldCheckIcon,
-		image: "/why/why-production.png",
 	},
 	{
 		title: "Local Expertise",
 		description:
 			"Deep understanding of Indonesian government regulations and compliance requirements.",
 		icon: MapPinIcon,
-		image: "/why/why-local.png",
 	},
 	{
 		title: "No Vendor Lock-in",
 		description:
 			"Support for 100+ LLMs, allowing you to switch providers without rebuilding.",
 		icon: UnlockIcon,
-		image: "/why/why-vendor.png",
 	},
 	{
 		title: "End-to-End Capability",
 		description:
 			"One partner for the full lifecycle, from AI strategy to deployment and support.",
 		icon: SettingsIcon,
-		image: "/why/why-e2e.png",
 	},
 	{
 		title: "Open Standards",
 		description:
 			"Built on open-source foundations for full auditability and no black boxes.",
 		icon: BookOpenIcon,
-		image: "/why/why-open.png",
 	},
 ];
 
@@ -59,65 +52,49 @@ function WhyRantaiCard({
 	title,
 	description,
 	icon: Icon,
-	image,
 }: {
 	title: string;
 	description: string;
 	icon: LucideIcon;
-	image: string;
 }) {
 	return (
-		<div className="bg-card ring-foreground/10 group flex flex-col overflow-hidden rounded-xl ring-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-			{/* Image wrapper */}
-			<div className="relative h-48 w-full overflow-hidden">
-				<Image
-					src={image}
-					alt={title}
-					fill
-					sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-					className="object-cover transition-transform duration-500 group-hover:scale-105"
-					loading="eager"
-				/>
-				{/* Gradient fade overlay */}
-				<div className="absolute inset-0 bg-linear-to-t from-card via-card/40 to-transparent" />
-				{/* Icon badge */}
-				<div className="text-primary absolute bottom-3 left-4">
-					<Icon className="size-6 drop-shadow-md" />
-				</div>
+		<div className="group rounded-xl border border-white/10 bg-white/[0.02] p-6 transition-all duration-300 hover:bg-white/[0.04] hover:border-white/15">
+			<div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-white/5">
+				<Icon className="size-5 text-[#999999]" />
 			</div>
-
-			{/* Text area */}
-			<div className="flex flex-1 flex-col p-5">
-				<h3 className="text-foreground mb-1.5 text-lg font-semibold">
-					{title}
-				</h3>
-				<p className="text-muted-foreground text-sm leading-relaxed">
-					{description}
-				</p>
-			</div>
+			<h3 className="mb-2 text-base font-semibold text-white">
+				{title}
+			</h3>
+			<p className="text-sm leading-[1.7] text-[#888888]">
+				{description}
+			</p>
 		</div>
 	);
 }
 
 export function WhyRantaiSection() {
 	return (
-		<section className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+		<section className="px-6 py-24 sm:px-8 lg:px-12 lg:py-32">
 			<div className="mx-auto max-w-6xl">
 				<MotionInView>
-					<h2 className="text-foreground mb-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-						Why RantAI?
-					</h2>
-					<p className="text-muted-foreground mx-auto mb-12 max-w-2xl text-center text-base">
-						What sets us apart as your AI technology partner.
+					<p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#888888]">
+						Why RantAI
 					</p>
-					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+					<h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+						What sets us apart as your AI technology partner.
+					</h2>
+					<p className="mb-12 max-w-2xl text-sm leading-[1.7] text-[#888888]">
+						We combine product-first thinking with deep engineering expertise to deliver AI solutions that actually work in production.
+					</p>
+				</MotionInView>
+				<MotionInView>
+					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 						{whyRantai.map((item) => (
 							<WhyRantaiCard
 								key={item.title}
 								title={item.title}
 								description={item.description}
 								icon={item.icon}
-								image={item.image}
 							/>
 						))}
 					</div>

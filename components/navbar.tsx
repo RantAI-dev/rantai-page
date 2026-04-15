@@ -1,107 +1,119 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { MenuIcon, XIcon } from "lucide-react";
-import { useState } from "react";
+import Image from "next/image"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { MenuIcon, XIcon } from "lucide-react"
+import { useEffect, useState } from "react"
 
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 const navItems = [
-	{ href: "/", label: "Home" },
-	{ href: "/products", label: "Products" },
-	{ href: "/services", label: "Services" },
-	{ href: "/academy", label: "Academy" },
-];
+  { href: "/", label: "Home" },
+  { href: "/products", label: "Products" },
+  { href: "/services", label: "Services" },
+  { href: "/academy", label: "Academy" },
+]
 
 export function Navbar() {
-	const pathname = usePathname();
-	const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname()
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
-	return (
-    <header className="border-border mx-auto max-w-4xl rounded-lg sticky top-4 z-50 border bg-background/90 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <div className="mx-auto flex h-14 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-				<Link
-					href="/"
-					className="text-foreground flex items-center gap-2 font-semibold"
-					aria-label="RantAI Home"
-				>
-					<Image
-						src="/rant-ai.png"
-						alt="RantAI"
-						width={120}
-						height={40}
-						className="h-8 w-auto"
-						priority
-					/>
-					<span className="hidden sm:inline">RantAI</span>
-				</Link>
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10)
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
-				{/* Desktop nav */}
-				<nav className="text-muted-foreground hidden items-center gap-6 md:flex">
-					{navItems.map((item) => (
-						<Link
-							key={item.href}
-							href={item.href}
-							className={cn(
-								"text-sm font-medium transition-colors hover:text-foreground",
-								pathname === item.href && "text-foreground"
-							)}
-						>
-							{item.label}
-						</Link>
-					))}
-				</nav>
+  return (
+    <header
+      className={cn(
+        "fixed top-0 z-50 w-full transition-all duration-300",
+        scrolled ? "border-b border-white/20 backdrop-blur" : "bg-transparent"
+      )}
+    >
+      <div className="mx-auto max-w-7xl">
+        <div className="mx-auto flex h-16 items-center justify-between gap-4 px-4 sm:px-4 lg:px-4">
+          <Link
+            href="/"
+            className="flex items-center gap-2 font-semibold text-foreground"
+            aria-label="RantAI Home"
+          >
+            <Image
+              src="/rant-ai.png"
+              alt="RantAI"
+              width={120}
+              height={40}
+              className="h-8 w-auto"
+              priority
+            />
+            <span className="hidden sm:inline">RantAI</span>
+          </Link>
 
-				<div className="flex items-center gap-2">
-					<ThemeToggle />
-					<Button asChild className="hidden sm:inline-flex">
-						<Link href="/#contact">Contact Us</Link>
-					</Button>
-					<Button
-						variant="ghost"
-						size="icon"
-						className="md:hidden"
-						onClick={() => setMobileOpen(!mobileOpen)}
-						aria-label="Toggle menu"
-					>
-						{mobileOpen ? (
-							<XIcon className="size-5" />
-						) : (
-							<MenuIcon className="size-5" />
-						)}
-					</Button>
-				</div>
-			</div>
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-6 text-muted-foreground md:flex">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "font-mono text-sm uppercase transition-colors hover:text-foreground",
+                  pathname === item.href && "text-foreground"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
-			{/* Mobile nav */}
-			{mobileOpen && (
-				<nav className="border-border border-t px-4 py-3 md:hidden">
-					<div className="flex flex-col gap-2">
-						{navItems.map((item) => (
-							<Link
-								key={item.href}
-								href={item.href}
-								onClick={() => setMobileOpen(false)}
-								className={cn(
-									"rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
-									pathname === item.href
-										? "text-foreground bg-muted"
-										: "text-muted-foreground"
-								)}
-							>
-								{item.label}
-							</Link>
-						))}
-						<Button asChild size="sm" className="mt-2">
-							<Link href="/#contact">Contact Us</Link>
-						</Button>
-					</div>
-				</nav>
-			)}
-		</header>
-	);
+          <div className="flex items-center gap-2">
+            <Button asChild className="hidden sm:inline-flex" size={"lg"}>
+              <Link href="/#contact">Contact Us</Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? (
+                <XIcon className="size-5" />
+              ) : (
+                <MenuIcon className="size-5" />
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile nav */}
+        {mobileOpen && (
+          <nav className="border-t border-border px-4 py-3 md:hidden">
+            <div className="flex flex-col gap-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "px-3 py-2 font-mono text-sm transition-colors hover:bg-muted",
+                    pathname === item.href
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <Button asChild size="sm" className="mt-2">
+                <Link href="/#contact">Contact Us</Link>
+              </Button>
+            </div>
+          </nav>
+        )}
+      </div>
+    </header>
+  )
 }

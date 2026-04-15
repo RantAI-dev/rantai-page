@@ -1,25 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-	FadeUp,
-	ScaleIn,
-	StaggerContainer,
-	StaggerItem,
-	SlideIn,
-} from "@/components/motion";
-import {
+	ArrowRightIcon,
 	BotIcon,
 	BarChart3Icon,
 	CodeIcon,
@@ -32,105 +14,69 @@ import {
 	BrainCircuitIcon,
 	DatabaseIcon,
 	CpuIcon,
-	RocketIcon,
 	FileCodeIcon,
+	RocketIcon,
 	SettingsIcon,
-	ArrowRightIcon,
 } from "lucide-react";
 
+import { getAllPosts } from "@/lib/markdown";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import { MotionInView } from "@/components/motion-in-view";
+import { BlogMain } from "@/components/blog-main";
+
 export const metadata: Metadata = {
-	title: "Products",
+	title: "Products & News — RantAI",
 	description:
-		"RantAI builds and maintains three enterprise AI platforms: Agents, Analytics, and ZeroCode.",
+		"RantAI builds and maintains three enterprise AI platforms: Agents, Analytics, and ZeroCode. Read the latest news and updates.",
 };
 
 /* ------------------------------------------------------------------ */
-/*  RantAI Agents                                                      */
+/*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
-const agentsFeatures = [
+const products = [
 	{
-		title: "Advanced RAG Pipeline",
+		id: "agents",
+		icon: BotIcon,
+		name: "RantAI Agents",
+		tagline: "Enterprise-grade AI agent platform",
 		description:
-			"Hybrid search with LLM reranking for highly accurate retrieval.",
-		icon: SearchIcon,
+			"Build intelligent, knowledge-driven applications with RAG capabilities, multi-channel communication, and human-in-the-loop workflows.",
+		features: [
+			{ title: "Advanced RAG Pipeline", description: "Hybrid search with LLM reranking for highly accurate retrieval.", icon: SearchIcon },
+			{ title: "Multi-Channel Deployment", description: "One agent works on Platform, your Web, and Apps.", icon: MonitorSmartphoneIcon },
+			{ title: "Human-in-the-Loop", description: "Seamlessly hand off complex cases to human operators.", icon: UsersIcon },
+			{ title: "Knowledge Base Management", description: "Auto-ingest documents and turn them into actionable knowledge.", icon: BookOpenIcon },
+		],
 	},
 	{
-		title: "Multi-Channel Deployment",
-		description: "One agent works on Platform, your Web, and Apps.",
-		icon: MonitorSmartphoneIcon,
-	},
-	{
-		title: "Human-in-the-Loop",
-		description: "Seamlessly hand off complex cases to human operators.",
-		icon: UsersIcon,
-	},
-	{
-		title: "Knowledge Base Management",
+		id: "analytics",
+		icon: BarChart3Icon,
+		name: "RantAI Analytics",
+		tagline: "Natural language to data insights",
 		description:
-			"Auto-ingest documents and turn them into actionable knowledge.",
-		icon: BookOpenIcon,
+			"Enterprise-grade analytics platform that enables anyone to query databases using natural language, powered by AI, RAG pipelines, and a semantic layer.",
+		features: [
+			{ title: "Natural Language to SQL", description: "Ask questions in plain English and get accurate SQL instantly.", icon: MessageSquareIcon },
+			{ title: "Semantic Layer (MDL)", description: "A single source of truth for consistent metrics across all teams.", icon: LayersIcon },
+			{ title: "Multi-LLM Support", description: "Switch between 100+ models (OpenAI, Claude, local) effortlessly.", icon: BrainCircuitIcon },
+			{ title: "40+ Data Connectors", description: "Connect instantly to PostgreSQL, Snowflake, BigQuery, and more.", icon: DatabaseIcon },
+		],
 	},
-];
-
-/* ------------------------------------------------------------------ */
-/*  RantAI Analytics                                                   */
-/* ------------------------------------------------------------------ */
-
-const analyticsFeatures = [
 	{
-		title: "Natural Language to SQL",
+		id: "zerocode",
+		icon: CodeIcon,
+		name: "RantAI ZeroCode",
+		tagline: "Autonomous AI development",
 		description:
-			"Ask questions in plain English and get accurate SQL instantly.",
-		icon: MessageSquareIcon,
-	},
-	{
-		title: "Semantic Layer (MDL)",
-		description:
-			"A single source of truth for consistent metrics across all teams.",
-		icon: LayersIcon,
-	},
-	{
-		title: "Multi-LLM Support",
-		description:
-			"Switch between 100+ models (OpenAI, Claude, local) effortlessly.",
-		icon: BrainCircuitIcon,
-	},
-	{
-		title: "40+ Data Connectors",
-		description:
-			"Connect instantly to PostgreSQL, Snowflake, BigQuery, and more.",
-		icon: DatabaseIcon,
-	},
-];
-
-/* ------------------------------------------------------------------ */
-/*  RantAI ZeroCode                                                    */
-/* ------------------------------------------------------------------ */
-
-const zerocodeFeatures = [
-	{
-		title: "Multi-Model Agentic Core",
-		description:
-			"Powered by various Agentic Coding Algorithms, including Claude, OpenCode, and other leading models for robust code generation.",
-		icon: CpuIcon,
-	},
-	{
-		title: "Autonomous Code Writing",
-		description:
-			"Writes code completely with detailed, transparent steps, handling complex logic rather than just simple snippets.",
-		icon: FileCodeIcon,
-	},
-	{
-		title: "AI Project Management",
-		description: "Speed up development with ready-made AI templates.",
-		icon: RocketIcon,
-	},
-	{
-		title: "Full SDLC Automation",
-		description:
-			"Manages the entire Software Development Life Cycle (SDLC), covering stages from requirement analysis and design to testing and deployment.",
-		icon: SettingsIcon,
+			"Let AI write your code completely with detailed steps. A fully autonomous development environment where AI Agents manage projects and write production software.",
+		features: [
+			{ title: "Multi-Model Agentic Core", description: "Powered by Claude, OpenCode, and other leading models for robust code generation.", icon: CpuIcon },
+			{ title: "Autonomous Code Writing", description: "Writes code completely with detailed, transparent steps.", icon: FileCodeIcon },
+			{ title: "AI Project Management", description: "Speed up development with ready-made AI templates.", icon: RocketIcon },
+			{ title: "Full SDLC Automation", description: "Manages the entire Software Development Life Cycle from requirements to deployment.", icon: SettingsIcon },
+		],
 	},
 ];
 
@@ -139,218 +85,118 @@ const zerocodeFeatures = [
 /* ------------------------------------------------------------------ */
 
 export default function ProductsPage() {
+	const posts = getAllPosts();
+
 	return (
-		<div className="bg-background text-foreground min-h-screen">
+		<div className="bg-background text-foreground min-h-screen flex flex-col">
 			<Navbar />
 
-			<main>
-				{/* Hero */}
-				<section className="relative overflow-hidden px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
-					<div className="bg-primary/5 absolute inset-0 -z-10 opacity-40" />
-					<div className="mx-auto max-w-3xl text-center">
-						<ScaleIn>
-							<Badge variant="outline" className="mb-4">
-								Our Products
-							</Badge>
-						</ScaleIn>
-						<FadeUp delay={0.1}>
-							<h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
-								Enterprise AI Platforms
-							</h1>
-						</FadeUp>
-						<FadeUp delay={0.2}>
-							<p className="text-muted-foreground mt-4 text-lg leading-relaxed">
-								We build and maintain three enterprise AI platforms designed for
-								production deployment, scalability, and real-world impact.
+			<main className="flex-1">
+				{/* ── Page Header ─────────────────────────────────────────── */}
+				<section className="border-b border-border px-6 py-16 sm:px-8 lg:px-12">
+					<div className="mx-auto max-w-7xl">
+						<MotionInView>
+							<p className="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+								RantAI Platform
 							</p>
-						</FadeUp>
-					</div>
-				</section>
-
-				<Separator className="bg-border" />
-
-				{/* RantAI Agents */}
-				<section
-					id="agents"
-					className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
-				>
-					<div className="grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16">
-						<SlideIn direction="left">
-							<div>
-								<div className="text-primary mb-4">
-									<BotIcon className="size-12" />
-								</div>
-								<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-									RantAI Agents
-								</h2>
-								<p className="text-muted-foreground mt-3 text-base leading-relaxed">
-									Enterprise-grade AI agent platform for building intelligent,
-									knowledge-driven applications with RAG capabilities,
-									multi-channel communication, and human-in-the-loop workflows.
+							<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+								<h1 className="max-w-xl text-4xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl">
+									Products &amp; News
+								</h1>
+								<p className="max-w-sm font-mono text-sm leading-relaxed text-muted-foreground lg:text-right">
+									Our enterprise AI platforms and the latest updates from the
+									RantAI team — all in one place.
 								</p>
-								<Button className="mt-6" asChild>
-									<Link href="/#contact">
-										Get Started <ArrowRightIcon className="ml-2 size-4" />
-									</Link>
-								</Button>
 							</div>
-						</SlideIn>
-						<StaggerContainer
-							className="grid gap-6 sm:grid-cols-2"
-							stagger={0.1}
-						>
-							{agentsFeatures.map((feature) => (
-								<StaggerItem key={feature.title}>
-									<Card>
-										<CardHeader>
-											<div className="text-primary mb-2">
-												<feature.icon className="size-6" />
-											</div>
-											<CardTitle className="text-base">
-												{feature.title}
-											</CardTitle>
-											<CardDescription className="leading-relaxed">
-												{feature.description}
-											</CardDescription>
-										</CardHeader>
-									</Card>
-								</StaggerItem>
-							))}
-						</StaggerContainer>
+						</MotionInView>
 					</div>
 				</section>
 
-				<Separator className="bg-border mx-auto max-w-6xl" />
+				{/* ── Two-column layout ─────────────────────────────────────── */}
+				<div className="mx-auto max-w-7xl px-6 sm:px-0">
+					<div className="flex flex-col gap-0 lg:flex-row lg:divide-x lg:divide-border">
 
-				{/* RantAI Analytics */}
-				<section
-					id="analytics"
-					className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
-				>
-					<div className="grid gap-12 lg:grid-cols-[2fr_1fr] lg:gap-16">
-						<StaggerContainer
-							className="order-2 lg:order-1 grid gap-6 sm:grid-cols-2"
-							stagger={0.1}
-						>
-							{analyticsFeatures.map((feature) => (
-								<StaggerItem key={feature.title}>
-									<Card>
-										<CardHeader>
-											<div className="text-primary mb-2">
-												<feature.icon className="size-6" />
-											</div>
-											<CardTitle className="text-base">
-												{feature.title}
-											</CardTitle>
-											<CardDescription className="leading-relaxed">
-												{feature.description}
-											</CardDescription>
-										</CardHeader>
-									</Card>
-								</StaggerItem>
-							))}
-						</StaggerContainer>
-						<SlideIn direction="right" className="order-1 lg:order-2">
-							<div>
-								<div className="text-primary mb-4">
-									<BarChart3Icon className="size-12" />
-								</div>
-								<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-									RantAI Analytics
-								</h2>
-								<p className="text-muted-foreground mt-3 text-base leading-relaxed">
-									Enterprise-grade analytics platform that enables anyone to
-									query databases using natural language, powered by AI, RAG
-									pipelines, and a semantic layer.
+						{/* ── LEFT SIDEBAR: Products ────────────────────────────── */}
+						<aside className="lg:w-72 xl:w-80 shrink-0 border-b border-border lg:border-b-0 lg:pr-8 py-12">
+							<MotionInView>
+								<p className="mb-8 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+									Our Platforms
 								</p>
-								<Button className="mt-6" asChild>
-									<Link href="/#contact">
-										Get Started <ArrowRightIcon className="ml-2 size-4" />
-									</Link>
-								</Button>
-							</div>
-						</SlideIn>
-					</div>
-				</section>
+							</MotionInView>
 
-				<Separator className="bg-border mx-auto max-w-6xl" />
+							<div className="flex flex-col gap-0 divide-y divide-border">
+								{products.map((product, idx) => {
+									const Icon = product.icon;
+									return (
+										<MotionInView
+											key={product.id}
+											transition={{ delay: idx * 0.1, duration: 0.5, ease: "easeOut" }}
+										>
+											<div className="group py-6 flex flex-col gap-3">
+												<div className="flex items-center gap-2.5">
+													<Icon className="size-4 text-muted-foreground shrink-0" />
+													<span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+														{product.tagline}
+													</span>
+												</div>
 
-				{/* RantAI ZeroCode */}
-				<section
-					id="zerocode"
-					className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
-				>
-					<div className="grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16">
-						<SlideIn direction="left">
-							<div>
-								<div className="text-primary mb-4">
-									<CodeIcon className="size-12" />
-								</div>
-								<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-									RantAI ZeroCode
-								</h2>
-								<p className="text-muted-foreground mt-3 text-base leading-relaxed">
-									Let AI write your code completely with detailed steps. A fully
-									autonomous development environment where AI Agents manage
-									projects and write production software using advanced agentic
-									algorithms.
-								</p>
-								<Button className="mt-6" asChild>
-									<Link href="/#contact">
-										Get Started <ArrowRightIcon className="ml-2 size-4" />
-									</Link>
-								</Button>
-							</div>
-						</SlideIn>
-						<StaggerContainer
-							className="grid gap-6 sm:grid-cols-2"
-							stagger={0.1}
-						>
-							{zerocodeFeatures.map((feature) => (
-								<StaggerItem key={feature.title}>
-									<Card>
-										<CardHeader>
-											<div className="text-primary mb-2">
-												<feature.icon className="size-6" />
+												<h2 className="text-base font-medium text-foreground">
+													{product.name}
+												</h2>
+
+												<p className="text-xs leading-relaxed text-muted-foreground">
+													{product.description}
+												</p>
+
+												{/* Feature list */}
+												<ul className="mt-1 flex flex-col gap-1.5">
+													{product.features.map((feat) => {
+														const FeatIcon = feat.icon;
+														return (
+															<li key={feat.title} className="flex items-center gap-2 text-xs text-muted-foreground">
+																<FeatIcon className="size-3 shrink-0 text-muted-foreground/60" />
+																{feat.title}
+															</li>
+														);
+													})}
+												</ul>
+
+												<Link
+													href="/#contact"
+													className="mt-1 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground transition-colors hover:text-primary"
+												>
+													Get Started
+													<ArrowRightIcon className="size-3 transition-transform duration-300 group-hover:translate-x-1" />
+												</Link>
 											</div>
-											<CardTitle className="text-base">
-												{feature.title}
-											</CardTitle>
-											<CardDescription className="leading-relaxed">
-												{feature.description}
-											</CardDescription>
-										</CardHeader>
-									</Card>
-								</StaggerItem>
-							))}
-						</StaggerContainer>
-					</div>
-				</section>
-
-				{/* CTA */}
-				<section className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-					<FadeUp>
-						<div className="mx-auto max-w-2xl text-center">
-							<h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-								Ready to Get Started?
-							</h2>
-							<p className="text-muted-foreground mt-4 text-base leading-relaxed">
-								Contact us to learn how our enterprise AI platforms can
-								transform your organization.
-							</p>
-							<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-								<Button size="lg" asChild>
-									<Link href="/#contact">
-										Contact Us <ArrowRightIcon className="ml-2 size-4" />
-									</Link>
-								</Button>
-								<Button variant="outline" size="lg" asChild>
-									<Link href="/services">View Services</Link>
-								</Button>
+										</MotionInView>
+									);
+								})}
 							</div>
+						</aside>
+
+						{/* ── RIGHT MAIN AREA: Blog / News ──────────────────────── */}
+						<div className="flex-1 min-w-0 lg:pl-12 py-12">
+							<MotionInView>
+								<div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+									<div>
+										<p className="mb-2 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+											Latest Updates
+										</p>
+										<h2 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
+											News &amp; Announcements
+										</h2>
+									</div>
+								</div>
+							</MotionInView>
+
+							<MotionInView transition={{ delay: 0.1 }}>
+								<BlogMain posts={posts} />
+							</MotionInView>
 						</div>
-					</FadeUp>
-				</section>
+
+					</div>
+				</div>
 			</main>
 
 			<Footer />
