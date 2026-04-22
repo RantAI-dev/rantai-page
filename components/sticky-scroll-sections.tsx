@@ -1,12 +1,7 @@
 "use client"
 
-import { useRef, useState } from "react"
-import {
-  motion,
-  useScroll,
-  useMotionValueEvent,
-  AnimatePresence,
-} from "motion/react"
+import { useScroll, useTransform, motion } from "framer-motion"
+import { useRef } from "react"
 import {
   ShieldCheckIcon,
   MapPinIcon,
@@ -16,105 +11,112 @@ import {
   LockIcon,
 } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
-import { Badge } from "./ui/badge"
+import { Badge } from "@/components/ui/badge"
 
-export function StickyScrollSections() {
-  const containerRef = useRef<HTMLDivElement>(null)
+// ─── Section label dots ───────────────────────────────────────────────────────
+function SectionHeader({
+  activeIndex,
+  total,
+  label,
+}: {
+  readonly activeIndex: number
+  readonly total: number
+  readonly label: string
+}) {
+  return (
+    <div className="mb-8 flex items-center gap-2">
+      {Array.from({ length: total }).map((_, i) => (
+        <div
+          key={i}
+          className={`size-3.5 shrink-0 rounded-full border border-white ${
+            i <= activeIndex ? "bg-white" : ""
+          }`}
+        />
+      ))}
+      <p className="ml-2 font-mono text-xl font-light tracking-wide text-white">
+        {label}
+      </p>
+    </div>
+  )
+}
+
+function StackCard({
+  children,
+  i,
+}: {
+  readonly children: React.ReactNode
+  readonly i: number
+}) {
+  const ref = useRef(null)
+
   const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
+    target: ref,
+    offset: ["start end", "start start"],
   })
 
-  const [activeSection, setActiveSection] = useState(0)
+  const y = useTransform(scrollYProgress, [0, 1], [i * 1500, 0])
 
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (latest < 0.35) setActiveSection(0)
-    else if (latest < 0.65) setActiveSection(1)
-    else setActiveSection(2)
-  })
-
-  // Morph transition variants for the inner content
-  const variants = {
-    initial: { opacity: 0, filter: "blur(12px)", scale: 0.98, y: 20 },
-    animate: { opacity: 1, filter: "blur(0px)", scale: 1, y: 0 },
-    exit: { opacity: 0, filter: "blur(12px)", scale: 1.02, y: -20 },
-  }
+  const scale = useTransform(scrollYProgress, [0, 1], [1.5, 1])
+  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0, 1, 1])
+  const blur = useTransform(
+    scrollYProgress,
+    [0, 1],
+    ["blur(10px)", "blur(0px)"]
+  )
 
   return (
     <div
-      ref={containerRef}
-      className="relative w-full py-20"
-      style={{ height: "250vh" }}
+      ref={ref}
+      className="sticky top-0"
+      style={{ zIndex: i, paddingTop: `${100 + i * 40}px`, marginBottom: 0 }}
     >
-      <div className="sticky top-[10vh] px-4 md:px-8">
-        {/* SINGLE STICKY CARD WRAPPER WITH LAYOUT MORPH */}
-        <motion.div
-          // layout // Enables height morphing as content swaps
-          initial={{ opacity: 0, scale: 0.6, y: 30, filter: "blur(12px)" }}
-          whileInView={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-          viewport={{ margin: "-100px" }}
-          transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-          // className="relative flex w-full max-w-7xl flex-col overflow-hidden rounded-2xl border border-border bg-card p-4 md:p-6"
-          className="max-w-7xl mx-auto rounded-[16px] border border-border bg-card p-4 shadow-2xl md:p-6"
-        >
-          {/* Animated Header Area */}
-          <motion.div layout className="mb-8 flex items-center gap-2">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="relative size-3.75 shrink-0 overflow-hidden rounded-full border border-white"
-              >
-                <motion.div
-                  initial={false}
-                  animate={{ scale: activeSection >= i ? 1 : 0 }}
-                  transition={{ duration: 0.3, ease: "backOut" }}
-                  className="absolute inset-0 origin-center bg-white"
-                />
-              </div>
-            ))}
-            <div className="relative ml-2 flex h-8 items-center overflow-hidden">
-              <AnimatePresence mode="popLayout">
-                <motion.p
-                  key={activeSection}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.3 }}
-                  className="font-mono text-xl font-light tracking-wide text-white"
-                >
-                  {activeSection === 0 && "VISION & MISSION"}
-                  {activeSection === 1 && "OUR PLATFORMS"}
-                  {activeSection === 2 && "WHY RANTAI"}
-                </motion.p>
-              </AnimatePresence>
-            </div>
-          </motion.div>
+      <motion.div
+        style={{ y, scale, opacity, filter: blur }}
+        className="relative w-full rounded-[16px] border border-border bg-card p-6 shadow-2xl md:p-10"
+      >
+        {children}
+      </motion.div>
+    </div>
+  )
+}
 
-          {/* Shared Content Container with AnimatePresence */}
-          <motion.div layout className="relative w-full">
-            <AnimatePresence mode="popLayout">
-              <motion.div
-                key={activeSection}
-                variants={variants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="w-full"
-              >
-                {activeSection === 0 && <VisionMissionContent />}
-                {activeSection === 1 && <OurPlatformsContent />}
-                {activeSection === 2 && <WhyRantaiContent />}
-              </motion.div>
-            </AnimatePresence>
-          </motion.div>
-        </motion.div>
+// ─── Main Component ───────────────────────────────────────────────────────────
+export function StickyScrollSections() {
+  const cards = [
+    {
+      label: "VISION & MISSION",
+      content: <VisionMissionContent />,
+    },
+    {
+      label: "OUR PLATFORMS",
+      content: <OurPlatformsContent />,
+    },
+    {
+      label: "WHY RANTAI",
+      content: <WhyRantaiContent />,
+    },
+  ]
+
+  return (
+    <div className="mx-auto overflow-x-clip px-4 py-20 md:px-8">
+      {/* Extra bottom spacer so the last card's overlap clears properly */}
+      <div className="relative mx-auto max-w-7xl">
+        {cards.map((card, i) => (
+          <StackCard key={card.label} i={i}>
+            <SectionHeader
+              activeIndex={i}
+              total={cards.length}
+              label={card.label}
+            />
+            {card.content}
+          </StackCard>
+        ))}
       </div>
     </div>
   )
 }
 
-// ------ Inner Components (Figma Designs) ------
+// ─── Content blocks ───────────────────────────────────────────────────────────
 
 function VisionMissionContent() {
   return (
@@ -130,10 +132,7 @@ function VisionMissionContent() {
             production-grade AI platforms.
           </p>
         </div>
-
-        {/* Divider */}
         <Separator />
-
         <div>
           <h2 className="mb-2 text-3xl font-normal text-white md:text-4xl">
             Mission
@@ -158,10 +157,7 @@ function VisionMissionContent() {
           </ul>
         </div>
       </div>
-
-      {/* Divider */}
       <Separator orientation="vertical" />
-
       <div className="relative hidden min-h-100 w-full shrink-0 overflow-hidden rounded-[8px] md:block md:w-100">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-luminosity" />
       </div>
@@ -177,7 +173,6 @@ function OurPlatformsContent() {
         <br />
         One intelligence layer.
       </h2>
-
       <div className="flex flex-col gap-0">
         {/* Agents */}
         <div className="flex flex-col items-stretch gap-8 rounded-xl p-6 transition-colors hover:bg-white/4 md:flex-row">
@@ -206,12 +201,9 @@ function OurPlatformsContent() {
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-luminosity" />
           </div>
         </div>
-
         <Separator />
-
         {/* Analytics and ZeroCode */}
         <div className="flex flex-col items-stretch gap-0 md:flex-row">
-          {/* Analytics */}
           <div className="flex flex-1 flex-col gap-4 rounded-xl p-6 transition-colors hover:bg-white/4">
             <div className="mb-2 flex items-center gap-3">
               <div className="size-3 rounded-full bg-[#0d63d0]" />
@@ -233,10 +225,7 @@ function OurPlatformsContent() {
               explains the data and visualizes it automatically.
             </p>
           </div>
-
           <Separator orientation="vertical" />
-
-          {/* ZeroCode */}
           <div className="flex flex-1 flex-col gap-4 rounded-xl p-6 transition-colors hover:bg-white/4">
             <div className="mb-2 flex items-center gap-3">
               <div className="size-3 rounded-full bg-[#80cb87]" />
@@ -318,7 +307,6 @@ function WhyRantaiContent() {
           have the receipts to prove it.
         </p>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3">
         {items.map((item, i) => (
           <div
