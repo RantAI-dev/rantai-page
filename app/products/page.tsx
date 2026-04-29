@@ -11,6 +11,7 @@ import {
   SlidersHorizontalIcon,
   ServerIcon,
   UsersIcon,
+  PlayIcon,
 } from "lucide-react"
 import { motion } from "motion/react"
 
@@ -18,7 +19,6 @@ import { Navbar } from "@/components/navbar"
 import { MotionInView } from "@/components/motion-in-view"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
 import { Footer } from "@/components/footer"
 import ShinyText from "@/components/ShinyText"
 
@@ -36,25 +36,29 @@ const transition = { duration: 0.6, ease: "easeOut" as const }
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
-const products = [
-  {
-    id: "agents",
-    icon: BotIcon,
-    name: "RantAI Agents",
-    tagline: "AI Agent Platform",
-    value: "Deploy AI agents that handle real work, not just demos.",
-    benefits: [
-      "Cut support ticket volume with autonomous resolution",
-      "Deploy across web, app, and platform from one configuration",
-      "Stay in control with human-in-the-loop escalation",
-    ],
-    tech: ["RAG", "Multi-agent", "Human-in-the-loop"],
-  },
+const agentsProduct = {
+  id: "agents",
+  icon: BotIcon,
+  name: "RantAI Agents",
+  tagline: "AI Agent Platform",
+  status: "live" as const,
+  value: "Deploy AI agents that handle real work, not just demos.",
+  benefits: [
+    "Cut support ticket volume with autonomous resolution",
+    "Deploy across web, app, and platform from one configuration",
+    "Stay in control with human-in-the-loop escalation",
+  ],
+  tech: ["RAG", "Multi-agent", "Human-in-the-loop"],
+}
+
+const comingSoonProducts = [
   {
     id: "analytics",
     icon: BarChart3Icon,
     name: "RantAI Analytics",
     tagline: "Analytics Platform",
+    status: "in-progress" as const,
+    statusLabel: "In Progress",
     value: "Get answers from your data without writing SQL.",
     benefits: [
       "Any team member can query production databases in plain English",
@@ -68,8 +72,9 @@ const products = [
     icon: CodeIcon,
     name: "RantAI ZeroCode",
     tagline: "Autonomous Coding Platform",
-    value:
-      "Ship production software faster with AI that writes and manages code.",
+    status: "coming-soon" as const,
+    statusLabel: "Coming Soon",
+    value: "Ship production software faster with AI that writes and manages code.",
     benefits: [
       "AI handles the full SDLC from requirements to deployment",
       "Transparent step-by-step code generation you can audit",
@@ -111,6 +116,8 @@ const differentiators = [
 /* ------------------------------------------------------------------ */
 
 export default function ProductsPage() {
+  const AgentIcon = agentsProduct.icon
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <Navbar />
@@ -153,8 +160,8 @@ export default function ProductsPage() {
               {...fadeInUp}
               transition={{ ...transition, delay: 0.36 }}
             >
-              Three AI platforms — agents, analytics, and autonomous code —
-              built for engineering teams that ship.
+              RantAI Agents is live and ready to deploy — with Analytics and
+              ZeroCode coming next.
             </motion.p>
             <motion.div
               className="mt-10 flex items-center gap-4"
@@ -172,13 +179,13 @@ export default function ProductsPage() {
                 className="group h-11 px-8 font-mono uppercase"
                 asChild
               >
-                <Link href="/#contact">View Demo</Link>
+                <Link href="/#contact">Request Demo</Link>
               </Button>
             </motion.div>
           </div>
         </section>
 
-        {/* ── Products Grid ─────────────────────────────────────────── */}
+        {/* ── Featured: RantAI Agents ───────────────────────────────── */}
         <section className="border-b border-border px-6 py-16 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-7xl">
             <MotionInView>
@@ -186,12 +193,93 @@ export default function ProductsPage() {
                 Our Platforms
               </p>
               <h2 className="mb-12 text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
-                Three tools, one platform.
+                Start with what&apos;s live.
               </h2>
             </MotionInView>
 
-            <div className="flex flex-col">
-              {products.map((product, idx) => {
+            {/* Agents — featured full-width card */}
+            <MotionInView transition={{ duration: 0.6, ease: "easeOut" }}>
+              <div className="rounded-2xl border border-border bg-muted/10 p-6 lg:p-10">
+                {/* Header row */}
+                <div className="mb-6 flex flex-wrap items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-green-400 uppercase">
+                    <span className="size-1.5 rounded-full bg-green-400" />
+                    Live
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <AgentIcon className="size-4 text-primary" />
+                    <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
+                      {agentsProduct.tagline}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Name + value */}
+                <h3 className="text-2xl font-medium text-foreground sm:text-3xl lg:text-4xl">
+                  {agentsProduct.name}
+                </h3>
+                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  {agentsProduct.value}
+                </p>
+
+                {/* Video placeholder */}
+                <div className="relative mt-8 aspect-video w-full overflow-hidden rounded-xl border border-border bg-muted/20">
+                  <div className="flex h-full flex-col items-center justify-center gap-3 text-muted-foreground">
+                    <div className="flex size-14 items-center justify-center rounded-full border border-border bg-background">
+                      <PlayIcon className="size-6 translate-x-0.5" />
+                    </div>
+                    <p className="font-mono text-xs tracking-wider uppercase">
+                      Demo video coming soon
+                    </p>
+                  </div>
+                </div>
+
+                {/* Benefits grid */}
+                <ul className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  {agentsProduct.benefits.map((benefit) => (
+                    <li
+                      key={benefit}
+                      className="flex items-start gap-2.5 text-sm text-foreground"
+                    >
+                      <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Tech badges */}
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {agentsProduct.tech.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded border border-border bg-muted/40 px-2.5 py-1 font-mono text-[10px] tracking-wider text-muted-foreground uppercase"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* CTAs */}
+                <div className="mt-8 flex items-center gap-4">
+                  <Button className="group h-10 px-6 font-mono uppercase" asChild>
+                    <Link href="/#contact">
+                      Get Started
+                      <ArrowRightIcon className="size-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+                  <Link
+                    href="/#contact"
+                    className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wider text-muted-foreground uppercase transition-colors hover:text-foreground"
+                  >
+                    Request Demo
+                  </Link>
+                </div>
+              </div>
+            </MotionInView>
+
+            {/* Analytics + ZeroCode — dimmed 2-col grid */}
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {comingSoonProducts.map((product, idx) => {
                 const Icon = product.icon
                 return (
                   <MotionInView
@@ -202,69 +290,62 @@ export default function ProductsPage() {
                       ease: "easeOut",
                     }}
                   >
-                    <div className="group cursor-pointer rounded-xl border-b bg-transparent transition-colors hover:border-foreground/20 hover:bg-muted/20">
-                      <div className="grid grid-cols-1 gap-8 p-6 lg:grid-cols-[1fr_auto] lg:p-8">
-                        {/* Left: product info */}
-                        <div className="flex flex-col gap-5">
-                          {/* Icon + tagline */}
-                          <div className="flex items-center gap-2.5">
-                            <Icon className="size-4 shrink-0 text-primary" />
-                            <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
-                              {product.tagline}
+                    <div className="relative overflow-hidden rounded-xl border border-border p-6">
+                      {/* Dimmed overlay */}
+                      <div className="pointer-events-none absolute inset-0 bg-background/60" />
+
+                      <div className="relative opacity-50">
+                        {/* Status badge */}
+                        <div className="mb-4 flex items-center gap-2">
+                          <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
+                            {product.statusLabel}
+                          </span>
+                          <Icon className="size-4 text-muted-foreground" />
+                          <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
+                            {product.tagline}
+                          </span>
+                        </div>
+
+                        <h3 className="text-lg font-medium text-foreground">
+                          {product.name}
+                        </h3>
+                        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                          {product.value}
+                        </p>
+
+                        <ul className="mt-4 flex flex-col gap-2">
+                          {product.benefits.map((benefit) => (
+                            <li
+                              key={benefit}
+                              className="flex items-start gap-2 text-sm text-foreground"
+                            >
+                              <CheckIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                              {benefit}
+                            </li>
+                          ))}
+                        </ul>
+
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {product.tech.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded border border-border bg-muted/40 px-2.5 py-1 font-mono text-[10px] tracking-wider text-muted-foreground uppercase"
+                            >
+                              {tag}
                             </span>
-                          </div>
-
-                          {/* Name + value */}
-                          <div>
-                            <h3 className="text-xl font-medium text-foreground sm:text-2xl">
-                              {product.name}
-                            </h3>
-                            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                              {product.value}
-                            </p>
-                          </div>
-
-                          {/* Benefits */}
-                          <ul className="flex flex-col gap-2.5">
-                            {product.benefits.map((benefit) => (
-                              <li
-                                key={benefit}
-                                className="flex items-start gap-2.5 text-sm text-foreground"
-                              >
-                                <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
-                                {benefit}
-                              </li>
-                            ))}
-                          </ul>
-
-                          {/* Tech badges */}
-                          <div className="flex flex-wrap gap-2">
-                            {product.tech.map((tag) => (
-                              <span
-                                key={tag}
-                                className="rounded border border-border bg-muted/40 px-2.5 py-1 font-mono text-[10px] tracking-wider text-muted-foreground uppercase"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
+                          ))}
                         </div>
+                      </div>
 
-                        {/* Right: CTAs */}
-                        <div className="flex flex-row items-start gap-3 lg:flex-col lg:items-end lg:justify-start lg:pt-1">
-                          <Button size="sm" asChild>
-                            <Link href="/#contact">
-                              Get Started
-                              <ArrowRightIcon className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
-                            </Link>
-                          </Button>
-                          <Link
-                            href="/#contact"
-                            className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wider text-muted-foreground uppercase transition-colors hover:text-foreground"
-                          >
-                            Request Demo
-                          </Link>
-                        </div>
+                      {/* Notify link — outside the dimmed area so it's interactive */}
+                      <div className="relative mt-5">
+                        <Link
+                          href="/#contact"
+                          className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-wider text-muted-foreground uppercase transition-colors hover:text-foreground"
+                        >
+                          Notify me when available
+                          <ArrowRightIcon className="size-3" />
+                        </Link>
                       </div>
                     </div>
                   </MotionInView>
@@ -322,11 +403,10 @@ export default function ProductsPage() {
             <MotionInView>
               <div className="flex flex-col items-center gap-5 text-center">
                 <h2 className="max-w-lg text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
-                  Deploy faster with AI systems that actually work.
+                  Start with RantAI Agents today.
                 </h2>
                 <p className="max-w-md font-mono text-sm leading-relaxed text-muted-foreground">
-                  Talk to the team and get your first product live in under two
-                  weeks.
+                  Deploy your first AI agent in under two weeks.
                 </p>
                 <Button size="lg" asChild>
                   <Link href="/#contact">

@@ -13,6 +13,7 @@ export interface BlogPost {
 	tag: string;
 	excerpt: string;
 	author?: string;
+	thumbnail?: string;
 	contentHtml: string;
 }
 
@@ -49,6 +50,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 			tag: matterResult.data.tag,
 			excerpt: matterResult.data.excerpt,
 			author: matterResult.data.author,
+			thumbnail: matterResult.data.thumbnail,
 			contentHtml,
 		};
 	} catch (error) {
@@ -76,6 +78,7 @@ export function getAllPosts(): Omit<BlogPost, "contentHtml">[] {
 			tag: matterResult.data.tag,
 			excerpt: matterResult.data.excerpt,
 			author: matterResult.data.author,
+			thumbnail: matterResult.data.thumbnail,
 		};
 	});
 
