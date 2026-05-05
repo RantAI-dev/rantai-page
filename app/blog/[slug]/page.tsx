@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 
@@ -77,6 +78,19 @@ export default async function BlogPostPage({
 								<h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl leading-[1.15]">
 									{post.title}
 								</h1>
+
+								{post.thumbnail && (
+									<div className="relative mt-12 aspect-video overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+										<Image
+											src={post.thumbnail}
+											alt={post.title}
+											fill
+											className="object-cover"
+											priority
+										/>
+									</div>
+								)}
+
 								{post.author && (
 									<div className="mt-8 flex items-center gap-3">
 										<div className="flex size-10 items-center justify-center rounded-full bg-white/10 text-sm font-bold text-white">

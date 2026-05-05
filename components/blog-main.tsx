@@ -32,14 +32,20 @@ function Thumbnail({
   if (thumbnail) {
     return (
       <div className={`relative aspect-video overflow-hidden ${className}`}>
-        <Image src={thumbnail} alt="" fill className="object-cover" />
+        <Image
+          src={thumbnail}
+          alt=""
+          fill
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-40" />
       </div>
     )
   }
 
   return (
     <div
-      className={`aspect-video bg-gradient-to-br ${gradient} flex items-center justify-center ${className}`}
+      className={`aspect-video bg-gradient-to-br ${gradient} flex items-center justify-center ${className} transition-transform duration-700 ease-out group-hover:scale-[1.02]`}
     >
       <span className="select-none font-mono text-[10px] uppercase tracking-[0.3em] text-white/20">
         {tag}

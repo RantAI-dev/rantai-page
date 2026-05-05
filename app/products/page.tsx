@@ -74,7 +74,8 @@ const comingSoonProducts = [
     tagline: "Autonomous Coding Platform",
     status: "coming-soon" as const,
     statusLabel: "Coming Soon",
-    value: "Ship production software faster with AI that writes and manages code.",
+    value:
+      "Ship production software faster with AI that writes and manages code.",
     benefits: [
       "AI handles the full SDLC from requirements to deployment",
       "Transparent step-by-step code generation you can audit",
@@ -188,24 +189,11 @@ export default function ProductsPage() {
         {/* ── Featured: RantAI Agents ───────────────────────────────── */}
         <section className="border-b border-border px-6 py-16 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-7xl">
-            <MotionInView>
-              <p className="mb-3 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
-                Our Platforms
-              </p>
-              <h2 className="mb-12 text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
-                Start with what&apos;s live.
-              </h2>
-            </MotionInView>
-
             {/* Agents — featured full-width card */}
             <MotionInView transition={{ duration: 0.6, ease: "easeOut" }}>
               <div className="rounded-2xl border border-border bg-muted/10 p-6 lg:p-10">
                 {/* Header row */}
                 <div className="mb-6 flex flex-wrap items-center gap-3">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-green-400 uppercase">
-                    <span className="size-1.5 rounded-full bg-green-400" />
-                    Live
-                  </span>
                   <div className="flex items-center gap-2">
                     <AgentIcon className="size-4 text-primary" />
                     <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
@@ -261,7 +249,10 @@ export default function ProductsPage() {
 
                 {/* CTAs */}
                 <div className="mt-8 flex items-center gap-4">
-                  <Button className="group h-10 px-6 font-mono uppercase" asChild>
+                  <Button
+                    className="group h-10 px-6 font-mono uppercase"
+                    asChild
+                  >
                     <Link href="/#contact">
                       Get Started
                       <ArrowRightIcon className="size-3.5 transition-transform duration-300 group-hover:translate-x-1" />
