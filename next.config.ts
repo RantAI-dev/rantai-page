@@ -45,6 +45,24 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "mmdr.rantai.dev",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "sscm.rantai.dev",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "rlvr.rantai.dev",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };
