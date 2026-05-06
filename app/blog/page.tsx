@@ -7,16 +7,6 @@ import { MotionInView } from "@/components/motion-in-view"
 import { BlogMain } from "@/components/blog-main"
 import { Badge } from "@/components/ui/badge"
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-}
-const fadeInLeft = {
-  initial: { opacity: 0, x: -20 },
-  animate: { opacity: 1, x: 0 },
-}
-const transition = { duration: 0.6, ease: "easeOut" as const }
-
 export default function BlogPage() {
   const posts = getAllPosts()
 

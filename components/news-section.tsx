@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 import { MotionInView } from "./motion-in-view";
@@ -55,7 +56,7 @@ const itemVariants = {
 	},
 };
 
-export function NewsSection() {
+export const NewsSection = React.memo(function NewsSection() {
 	return (
 		<section className="px-6 py-24 sm:px-8 lg:px-12 lg:py-32">
 			<div className="mx-auto max-w-7xl">
@@ -140,4 +141,4 @@ export function NewsSection() {
 			</div>
 		</section>
 	);
-}
+})

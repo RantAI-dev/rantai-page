@@ -1,6 +1,6 @@
 "use client"
 
-import { useScroll, useTransform, motion } from "framer-motion"
+import { useScroll, useTransform, motion } from "motion/react"
 import { useRef } from "react"
 import {
   ShieldCheckIcon,
@@ -80,32 +80,24 @@ function StackCard({
   )
 }
 
+// ─── Static card config ───────────────────────────────────────────────────────
+const STICKY_CARDS = [
+  { label: "VISION & MISSION", content: <VisionMissionContent /> },
+  { label: "OUR PLATFORMS", content: <OurPlatformsContent /> },
+  { label: "WHY RANTAI", content: <WhyRantaiContent /> },
+]
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export function StickyScrollSections() {
-  const cards = [
-    {
-      label: "VISION & MISSION",
-      content: <VisionMissionContent />,
-    },
-    {
-      label: "OUR PLATFORMS",
-      content: <OurPlatformsContent />,
-    },
-    {
-      label: "WHY RANTAI",
-      content: <WhyRantaiContent />,
-    },
-  ]
-
   return (
     <div className="mx-auto overflow-x-clip px-4 py-20 md:px-8">
       {/* Extra bottom spacer so the last card's overlap clears properly */}
       <div className="relative mx-auto max-w-7xl">
-        {cards.map((card, i) => (
+        {STICKY_CARDS.map((card, i) => (
           <StackCard key={card.label} i={i}>
             <SectionHeader
               activeIndex={i}
-              total={cards.length}
+              total={STICKY_CARDS.length}
               label={card.label}
             />
             {card.content}

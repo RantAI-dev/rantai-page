@@ -11,16 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import ShinyText from "@/components/ShinyText"
 import { Button } from "@/components/ui/button"
 import { MotionInView } from "@/components/motion-in-view"
-
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-}
-const fadeInLeft = {
-  initial: { opacity: 0, x: -20 },
-  animate: { opacity: 1, x: 0 },
-}
-const transition = { duration: 0.6, ease: "easeOut" as const }
+import { fadeInUp, fadeInLeft, defaultTransition as transition } from "@/lib/motion-variants"
 
 export default function AcademyPage() {
   return (

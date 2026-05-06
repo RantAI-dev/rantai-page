@@ -1,10 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { ArrowUp } from "lucide-react";
 
 import { MotionInView } from "./motion-in-view";
-import ColorBends from "@/components/ColorBends";
 import { ContactCard } from "@/components/contact-card";
+
+const ColorBends = dynamic(() => import("@/components/ColorBends"), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-background" />,
+});
 
 export function Footer() {
 	const scrollToTop = () => {

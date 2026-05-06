@@ -111,7 +111,7 @@ void main() {
 }
 `;
 
-export default function ColorBends({
+const ColorBends = React.memo(function ColorBends({
 	className,
 	style,
 	rotation = 45,
@@ -326,4 +326,6 @@ export default function ColorBends({
 			style={style}
 		/>
 	);
-}
+})
+
+export default ColorBends

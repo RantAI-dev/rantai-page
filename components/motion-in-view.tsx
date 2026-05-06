@@ -3,9 +3,7 @@
 import { motion } from "motion/react";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
-
-const defaultViewport = { once: true, margin: "0px 0px -60px 0px" as const };
-const defaultTransition = { duration: 0.6, ease: "easeOut" as const };
+import { defaultViewport, defaultTransition } from "@/lib/motion-variants";
 
 type MotionInViewProps = {
 	children: React.ReactNode;

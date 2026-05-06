@@ -1,22 +1,18 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import { motion } from "motion/react"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import ColorBends from "@/components/ColorBends"
 import ShinyText from "@/components/ShinyText"
+import { fadeInUp, fadeInLeft, defaultTransition as transition } from "@/lib/motion-variants"
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-}
-const fadeInLeft = {
-  initial: { opacity: 0, x: -20 },
-  animate: { opacity: 1, x: 0 },
-}
-const transition = { duration: 0.6, ease: "easeOut" as const }
+const ColorBends = dynamic(() => import("@/components/ColorBends"), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-background" />,
+})
 
 export function HeroSection() {
   return (

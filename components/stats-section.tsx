@@ -1,11 +1,11 @@
 "use client"
 
-import { useRef } from "react"
+import { memo, useRef } from "react"
 import { useInView } from "motion/react"
 import CountUp from "@/components/CountUp"
 import { Separator } from "@/components/ui/separator"
 
-export function StatsSection() {
+export const StatsSection = memo(function StatsSection() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
 
@@ -55,4 +55,4 @@ export function StatsSection() {
       </div>
     </section>
   )
-}
+})
