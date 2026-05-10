@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RantAI Landing Page
+
+Landing page dan CMS untuk [RantAI](https://rantai.dev) — dibangun dengan Next.js 16, Neon PostgreSQL, dan shadcn/ui.
+
+## Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Database**: Neon PostgreSQL + Drizzle ORM
+- **Auth**: Custom JWT (jose) + bcrypt
+- **UI**: shadcn/ui + Tailwind CSS v4
+- **Editor**: Tiptap WYSIWYG
+- **Storage**: Vercel Blob (thumbnail upload)
+- **Testing**: Vitest
+
+## Struktur Halaman
+
+| Route | Keterangan |
+|---|---|
+| `/` | Landing page |
+| `/blog` | Daftar artikel |
+| `/blog/[slug]` | Detail artikel |
+| `/academy` | Library buku |
+| `/team` | Halaman tim |
+| `/admin` | CMS dashboard (protected) |
+| `/admin/blog` | Kelola artikel |
+| `/admin/books` | Kelola buku |
+| `/admin/team` | Kelola anggota tim |
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Environment variables
+
+Buat file `.env.local`:
+
+```env
+DATABASE_URL=          # Neon connection string
+ADMIN_EMAIL=           # Email login CMS
+ADMIN_PASSWORD_HASH=   # bcrypt hash dari password (lihat db:generate-hash)
+JWT_SECRET=            # Random string panjang untuk sign JWT
+BLOB_READ_WRITE_TOKEN= # Vercel Blob token
+```
+
+> **Penting:** Escape semua `$` dalam `ADMIN_PASSWORD_HASH` dengan `\$` agar tidak di-expand oleh shell.
+> Contoh: `ADMIN_PASSWORD_HASH=\$2b\$12\$...`
+
+Generate password hash:
+
+```bash
+npm run db:generate-hash <password>
+```
+
+### 3. Setup database
+
+```bash
+npm run db:push   # Push schema ke Neon
+```
+
+### 4. Jalankan dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Script | Keterangan |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint |
+| `npm test` | Run unit tests (vitest) |
+| `npm run test:watch` | Watch mode |
+| `npm run test:coverage` | Coverage report |
+| `npm run db:push` | Sinkronisasi schema ke database |
+| `npm run db:studio` | Drizzle Studio (GUI database) |
+| `npm run db:generate-hash` | Generate bcrypt hash untuk password |
 
-## Learn More
+## Testing
 
-To learn more about Next.js, take a look at the following resources:
+Unit test ada di `__tests__/`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+__tests__/
+  lib/
+    auth.test.ts    # hashPassword, verifyPassword, createToken, verifyToken
+    utils.test.ts   # cn() class merger
+    slug.test.ts    # generateSlug()
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm test
+```
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy ke [Vercel](https://vercel.com). Pastikan environment variables sudah di-set di Vercel project settings, termasuk `DATABASE_URL` dari Neon dan `BLOB_READ_WRITE_TOKEN` dari Vercel Blob.

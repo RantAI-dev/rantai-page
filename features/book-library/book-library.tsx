@@ -150,7 +150,7 @@ export function BookLibrary({ books }: BookLibraryProps) {
                         alt={book.code}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-contain transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
 
@@ -201,7 +201,7 @@ export function BookLibrary({ books }: BookLibraryProps) {
                         alt={book.code}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-contain transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
 

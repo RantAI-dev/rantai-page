@@ -3,15 +3,15 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 
-import { getAllPostSlugs, getPostBySlug } from "@/lib/markdown";
+import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
 import { MotionInView } from "@/components/motion-in-view";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export async function generateStaticParams() {
-	const paths = getAllPostSlugs();
-	return paths.map((path) => ({
-		slug: path.params.slug,
+	const paths = await getAllPostSlugs();
+	return paths.map((p) => ({
+		slug: p.params.slug,
 	}));
 }
 
@@ -85,7 +85,9 @@ export default async function BlogPostPage({
 											src={post.thumbnail}
 											alt={post.title}
 											fill
+											sizes="(max-width: 768px) 100vw, 768px"
 											className="object-cover"
+											loading="eager"
 											priority
 										/>
 									</div>
@@ -107,7 +109,7 @@ export default async function BlogPostPage({
 						<MotionInView transition={{ delay: 0.1, duration: 0.6, ease: "easeOut" }}>
 							<div
 								className="prose prose-invert prose-dark max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-[#5cb6f9] hover:prose-a:text-[#7cc8ff] prose-img:rounded-xl prose-img:border prose-img:border-white/10 prose-hr:border-white/10 prose-blockquote:border-l-4 prose-blockquote:border-white/20 prose-blockquote:bg-white/[0.02] prose-blockquote:px-6 prose-blockquote:py-2 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:text-[#cccccc]"
-								dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+								dangerouslySetInnerHTML={{ __html: post.contentHtml ?? "" }}
 							/>
 						</MotionInView>
 					</div>

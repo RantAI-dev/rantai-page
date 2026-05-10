@@ -1,14 +1,12 @@
-import { motion } from "motion/react"
-
-import { getAllPosts } from "@/lib/markdown"
+import { getAllPosts } from "@/lib/blog"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { MotionInView } from "@/components/motion-in-view"
 import { BlogMain } from "@/components/blog-main"
 import { Badge } from "@/components/ui/badge"
 
-export default function BlogPage() {
-  const posts = getAllPosts()
+export default async function BlogPage() {
+  const posts = await getAllPosts()
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">

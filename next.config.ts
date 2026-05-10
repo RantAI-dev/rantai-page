@@ -53,6 +53,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "smart-scm.rantai.dev",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "sscm.rantai.dev",
         port: "",
         pathname: "/**",
@@ -60,6 +66,12 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "rlvr.rantai.dev",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
         port: "",
         pathname: "/**",
       },
