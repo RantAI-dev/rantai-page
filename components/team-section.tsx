@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
+import Link from "next/link";
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
@@ -62,9 +63,15 @@ export function TeamSection() {
 							<h2 className="text-white text-4xl sm:text-5xl font-medium tracking-tight mb-4 leading-tight">
 								Meet the Founding Team
 							</h2>
-							<p className="text-white/60 font-mono text-sm sm:text-base mb-12">
+							<p className="text-white/60 font-mono text-sm sm:text-base mb-6">
 								The people behind RantAI&apos;s mission
 							</p>
+							<Link
+								href="/our-team"
+								className="inline-flex items-center gap-2 font-mono text-sm text-white/60 border border-white/20 px-4 py-2 hover:text-white hover:border-white/50 transition-colors duration-200 mb-12"
+							>
+								Meet the full team →
+							</Link>
 						</div>
 
 						<div className="hidden lg:block relative mt-auto">

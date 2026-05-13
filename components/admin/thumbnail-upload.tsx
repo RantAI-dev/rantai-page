@@ -11,9 +11,10 @@ import { UploadIcon, XIcon } from "lucide-react";
 interface Props {
   value: string;
   onChange: (url: string) => void;
+  label?: string;
 }
 
-export function ThumbnailUpload({ value, onChange }: Props) {
+export function ThumbnailUpload({ value, onChange, label = "Thumbnail" }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -46,7 +47,7 @@ export function ThumbnailUpload({ value, onChange }: Props) {
 
   return (
     <div className="space-y-3">
-      <Label>Thumbnail</Label>
+      <Label>{label}</Label>
 
       {/* Preview */}
       {value && (
