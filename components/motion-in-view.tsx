@@ -28,7 +28,7 @@ export function MotionInView({
 			whileInView={{ opacity: 1, y: 0 }}
 			viewport={viewport}
 			transition={transition}
-			className={cn(className)}
+			className={cn("relative", className)}
 			{...rest}
 		>
 			{children}

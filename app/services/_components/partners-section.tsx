@@ -44,6 +44,7 @@ export function PartnersSection({ partners }: { partners: PartnerItem[] }) {
                   src={partner.logo}
                   alt={partner.name}
                   fill
+                  sizes="(min-width: 1024px) 25vw, 50vw"
                   className="object-contain brightness-0 invert"
                 />
               </div>

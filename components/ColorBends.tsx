@@ -181,7 +181,7 @@ const ColorBends = React.memo(function ColorBends({
 		});
 		rendererRef.current = renderer;
 		(renderer as any).outputColorSpace = (THREE as any).SRGBColorSpace;
-		renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
 		renderer.setClearColor(0x000000, transparent ? 0 : 1);
 		renderer.domElement.style.width = "100%";
 		renderer.domElement.style.height = "100%";
@@ -207,12 +207,19 @@ const ColorBends = React.memo(function ColorBends({
 			(window as Window).addEventListener("resize", handleResize);
 		}
 
-		const loop = () => {
-			const dt = clock.getDelta();
-			const elapsed = clock.elapsedTime;
-			material.uniforms.uTime.value = elapsed;
+		let simTime = 0;
+		let isInView = true;
+		let isPageVisible =
+			typeof document !== "undefined" ? !document.hidden : true;
+		let running = false;
 
-			const deg = (rotationRef.current % 360) + autoRotateRef.current * elapsed;
+		const loop = () => {
+			const dt = Math.min(clock.getDelta(), 0.05);
+			simTime += dt;
+			material.uniforms.uTime.value = simTime;
+
+			const deg =
+				(rotationRef.current % 360) + autoRotateRef.current * simTime;
 			const rad = (deg * Math.PI) / 180;
 			const c = Math.cos(rad);
 			const s = Math.sin(rad);
@@ -226,10 +233,48 @@ const ColorBends = React.memo(function ColorBends({
 			renderer.render(scene, camera);
 			rafRef.current = requestAnimationFrame(loop);
 		};
-		rafRef.current = requestAnimationFrame(loop);
+
+		const start = () => {
+			if (running) return;
+			running = true;
+			clock.getDelta(); // buang jeda saat pause supaya animasi tidak melompat
+			rafRef.current = requestAnimationFrame(loop);
+		};
+
+		const stop = () => {
+			running = false;
+			if (rafRef.current !== null) {
+				cancelAnimationFrame(rafRef.current);
+				rafRef.current = null;
+			}
+		};
+
+		const syncRunState = () => {
+			if (isInView && isPageVisible) start();
+			else stop();
+		};
+
+		const handleVisibility = () => {
+			isPageVisible = !document.hidden;
+			syncRunState();
+		};
+		document.addEventListener("visibilitychange", handleVisibility);
+
+		const intersectionObserver = new IntersectionObserver(
+			(entries) => {
+				isInView = entries[0]?.isIntersecting ?? true;
+				syncRunState();
+			},
+			{ threshold: 0 },
+		);
+		intersectionObserver.observe(container);
+
+		syncRunState();
 
 		return () => {
 			if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+			document.removeEventListener("visibilitychange", handleVisibility);
+			intersectionObserver.disconnect();
 			if (resizeObserverRef.current) resizeObserverRef.current.disconnect();
 			else (window as Window).removeEventListener("resize", handleResize);
 			geometry.dispose();
