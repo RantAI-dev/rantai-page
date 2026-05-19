@@ -146,18 +146,18 @@ export function LocalExpertiseIllustration() {
       <path d="M290,85 Q310,75 320,90 Q325,110 310,118 Q298,108 295,98 Z" fill="rgba(239,159,39,0.13)" stroke="#EF9F27" strokeWidth="1.1" strokeLinejoin="round" />
       <path d="M340,120 Q360,115 370,130 Q372,150 358,155 Q345,148 340,135 Z" fill="rgba(239,159,39,0.13)" stroke="#EF9F27" strokeWidth="1.1" strokeLinejoin="round" />
 
-      {/* Pulse rings around pin */}
-      <circle cx="178" cy="152" r="8" fill="none" stroke="#EF9F27" strokeWidth="1.2" className="pulse-1" />
-      <circle cx="178" cy="152" r="8" fill="none" stroke="#EF9F27" strokeWidth="1" className="pulse-2" />
+      {/* Pulse rings around pin — Depok, West Java */}
+      <circle cx="148" cy="154" r="8" fill="none" stroke="#EF9F27" strokeWidth="1.2" className="pulse-1" />
+      <circle cx="148" cy="154" r="8" fill="none" stroke="#EF9F27" strokeWidth="1" className="pulse-2" />
 
       {/* Pin */}
-      <circle cx="178" cy="152" r="8" fill="rgba(239,159,39,0.35)" stroke="#EF9F27" strokeWidth="1.5" />
-      <circle cx="178" cy="152" r="3.5" fill="#EF9F27" />
+      <circle cx="148" cy="154" r="8" fill="rgba(239,159,39,0.35)" stroke="#EF9F27" strokeWidth="1.5" />
+      <circle cx="148" cy="154" r="3.5" fill="#EF9F27" />
 
       {/* Pin stem to flag */}
-      <line x1="178" y1="144" x2="178" y2="112" stroke="#EF9F27" strokeWidth="1.5" strokeLinecap="round" />
-      <rect x="180" y="98" width="46" height="22" rx="3" fill="rgba(239,159,39,0.15)" stroke="#EF9F27" strokeWidth="1.2" />
-      <text x="203" y="113" textAnchor="middle" fontSize="11" fill="#FAC775" fontWeight="600">DEPOK, ID</text>
+      <line x1="148" y1="146" x2="148" y2="70" stroke="#EF9F27" strokeWidth="1.5" strokeLinecap="round" />
+      <rect x="108" y="48" width="80" height="22" rx="3" fill="rgba(239,159,39,0.15)" stroke="#EF9F27" strokeWidth="1.2" />
+      <text x="148" y="63" textAnchor="middle" fontSize="11" fill="#FAC775" fontWeight="600">DEPOK, ID</text>
 
       {/* Bottom badges */}
       <g className="badge-1">

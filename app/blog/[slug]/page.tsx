@@ -1,139 +1,173 @@
-import Link from "next/link";
-import Image from "next/image";
-import { notFound } from "next/navigation";
-import { ArrowLeftIcon } from "lucide-react";
+import Link from "next/link"
+import Image from "next/image"
+import { notFound } from "next/navigation"
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
 
-import { getAllPostSlugs, getPostBySlug } from "@/lib/blog";
-import { MotionInView } from "@/components/motion-in-view";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
+import { getAllPostSlugs, getPostBySlug } from "@/lib/blog"
+import { MotionInView } from "@/components/motion-in-view"
+import { OutlineSection } from "@/components/outline-section"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 
 export async function generateStaticParams() {
-	const paths = await getAllPostSlugs();
-	return paths.map((p) => ({
-		slug: p.params.slug,
-	}));
+  const paths = await getAllPostSlugs()
+  return paths.map((p) => ({ slug: p.params.slug }))
 }
 
 export async function generateMetadata({
-	params,
+  params,
 }: {
-	params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }) {
-	const { slug } = await params;
-	const post = await getPostBySlug(slug);
+  const { slug } = await params
+  const post = await getPostBySlug(slug)
+  if (!post) return { title: "Post Not Found" }
+  return { title: post.title, description: post.excerpt }
+}
 
-	if (!post) {
-		return {
-			title: "Post Not Found",
-		};
-	}
-
-	return {
-		title: post.title,
-		description: post.excerpt,
-	};
+function GridPattern() {
+  const size = 32
+  return (
+    <svg
+      className="pointer-events-none absolute inset-0 h-full w-full opacity-10"
+      width="100%"
+      height="100%"
+    >
+      <defs>
+        <pattern
+          id="grid-blog-post"
+          width={size}
+          height={size}
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d={`M ${size} 0 L 0 0 0 ${size}`}
+            fill="none"
+            stroke="white"
+            strokeWidth="0.5"
+          />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid-blog-post)" />
+    </svg>
+  )
 }
 
 export default async function BlogPostPage({
-	params,
+  params,
 }: {
-	params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }) {
-	const { slug } = await params;
-	const post = await getPostBySlug(slug);
+  const { slug } = await params
+  const post = await getPostBySlug(slug)
 
-	if (!post) {
-		notFound();
-	}
+  if (!post) notFound()
 
-	return (
-		<div className="bg-[#0a0a0a] text-[#f0f0f0] min-h-screen flex flex-col">
-			<Navbar />
+  return (
+    <div>
+      <Navbar />
 
-			<main className="flex-1">
-				<article className="px-6 py-24 sm:px-8 lg:px-12 lg:py-32">
-					<div className="mx-auto max-w-3xl">
-						<MotionInView>
-							<div className="mb-12">
-								<Link
-									href="/blog"
-									className="group inline-flex items-center text-sm font-medium text-[#888888] transition-colors hover:text-white mb-8"
-								>
-									<ArrowLeftIcon className="mr-2 size-4 transition-transform duration-300 group-hover:-translate-x-1" />
-									Back to Blog
-								</Link>
-								<div className="flex items-center gap-4 mb-6">
-									<span className="inline-block rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-[#999999]">
-										{post.tag}
-									</span>
-									<span className="text-sm font-medium text-[#666666]">
-										{new Date(post.date).toLocaleDateString("en-US", {
-											month: "long",
-											day: "numeric",
-											year: "numeric",
-										})}
-									</span>
-								</div>
-								<h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl leading-[1.15]">
-									{post.title}
-								</h1>
+      <main className="pt-16">
+        {/* Article header */}
+        <MotionInView>
+          <div className="mx-auto max-w-3xl">
+            <Link
+              href="/blog"
+              className="group mb-10 inline-flex items-center font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeftIcon className="mr-2 size-4 transition-transform duration-300 group-hover:-translate-x-1" />
+              Back to Blog
+            </Link>
 
-								{post.thumbnail && (
-									<div className="relative mt-12 aspect-video overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-										<Image
-											src={post.thumbnail}
-											alt={post.title}
-											fill
-											sizes="(max-width: 768px) 100vw, 768px"
-											className="object-cover"
-											loading="eager"
-											priority
-										/>
-									</div>
-								)}
+            <div className="mb-6 flex items-center gap-4">
+              <span className="border border-border px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
+                {post.tag}
+              </span>
+              <span className="font-mono text-sm text-muted-foreground">
+                {new Date(post.date).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
 
-								{post.author && (
-									<div className="mt-8 flex items-center gap-3">
-										<div className="flex size-10 items-center justify-center rounded-full bg-white/10 text-sm font-bold text-white">
-											{post.author.charAt(0)}
-										</div>
-										<span className="text-sm font-medium text-[#cccccc]">
-											{post.author}
-										</span>
-									</div>
-								)}
-							</div>
-						</MotionInView>
+            <h1 className="text-3xl leading-[1.15] font-medium tracking-tight sm:text-4xl lg:text-5xl">
+              {post.title}
+            </h1>
 
-						<MotionInView transition={{ delay: 0.1, duration: 0.6, ease: "easeOut" }}>
-							<div
-								className="prose prose-invert prose-dark max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-[#5cb6f9] hover:prose-a:text-[#7cc8ff] prose-img:rounded-xl prose-img:border prose-img:border-white/10 prose-hr:border-white/10 prose-blockquote:border-l-4 prose-blockquote:border-white/20 prose-blockquote:bg-white/[0.02] prose-blockquote:px-6 prose-blockquote:py-2 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:text-[#cccccc]"
-								dangerouslySetInnerHTML={{ __html: post.contentHtml ?? "" }}
-							/>
-						</MotionInView>
-					</div>
-				</article>
+            {post.thumbnail && (
+              <div className="relative mt-12 aspect-video w-full overflow-hidden border border-border">
+                <Image
+                  src={post.thumbnail}
+                  alt={post.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 768px"
+                  className="object-cover"
+                  loading="eager"
+                  priority
+                />
+              </div>
+            )}
 
-				<section className="border-t border-white/5 px-6 py-24 sm:px-8 lg:px-12">
-					<div className="mx-auto max-w-3xl text-center">
-						<h2 className="mb-6 text-2xl font-bold text-white sm:text-3xl">
-							Want to learn more?
-						</h2>
-						<p className="mb-8 text-sm leading-relaxed text-[#888888]">
-							Subscribe to our newsletter or connect with our team to discuss how AI can transform your enterprise.
-						</p>
-						<Link
-							href="/#contact"
-							className="inline-flex items-center rounded-full bg-white px-7 py-3 text-sm font-medium text-black transition-all duration-200 hover:bg-white/90"
-						>
-							Contact Us
-						</Link>
-					</div>
-				</section>
-			</main>
+            {post.author && (
+              <div className="mt-8 flex items-center gap-3">
+                <div className="flex size-9 items-center justify-center border border-border bg-muted text-sm font-bold">
+                  {post.author.charAt(0)}
+                </div>
+                <span className="font-mono text-sm text-muted-foreground">
+                  {post.author}
+                </span>
+              </div>
+            )}
+          </div>
+        </MotionInView>
 
-			<Footer />
-		</div>
-	);
+        {/* Article body */}
+        <MotionInView
+          transition={{ delay: 0.1, duration: 0.6, ease: "easeOut" }}
+        >
+          <OutlineSection className="px-8 py-16">
+            <div className="mx-auto max-w-3xl">
+              <div
+                className="prose max-w-none prose-invert prose-headings:font-medium prose-headings:tracking-tight prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 hover:prose-a:opacity-70 prose-blockquote:border-l-4 prose-blockquote:border-border prose-blockquote:text-muted-foreground prose-blockquote:not-italic prose-img:border prose-img:border-border prose-hr:border-border"
+                dangerouslySetInnerHTML={{ __html: post.contentHtml ?? "" }}
+              />
+            </div>
+          </OutlineSection>
+        </MotionInView>
+
+        {/* CTA */}
+        <MotionInView>
+          <OutlineSection>
+            <div className="relative flex items-center justify-center overflow-hidden px-6 py-24 lg:min-h-[400px] lg:py-0">
+              <GridPattern />
+              <div className="relative z-10 flex max-w-[640px] flex-col items-center gap-6 text-center">
+                <div className="flex flex-col gap-1">
+                  <h2 className="text-2xl font-medium tracking-tight text-white sm:text-3xl">
+                    Want to learn more?
+                  </h2>
+                  <p className="text-sm text-white/60">
+                    Connect with our team to discuss how AI can transform your
+                    enterprise.
+                  </p>
+                </div>
+                <Link
+                  href="/#contact"
+                  className="group flex items-center justify-between border bg-foreground px-4 py-4 text-background transition-colors duration-300"
+                >
+                  <span className="font-mono font-medium tracking-wider uppercase">
+                    Contact Us
+                  </span>
+                  <ArrowRightIcon className="ml-3 size-5 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+              </div>
+            </div>
+          </OutlineSection>
+        </MotionInView>
+      </main>
+
+      <Footer />
+    </div>
+  )
 }

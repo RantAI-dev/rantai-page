@@ -28,18 +28,9 @@ export default async function OurTeamPage() {
         {/* Hero */}
         <OurTeamHero />
 
-        {/* Italic subtitle */}
-        <MotionInView>
-          <OutlineSection className="flex items-center justify-center px-6 py-24">
-            <h2 className="text-2xl tracking-tight italic sm:text-3xl lg:text-4xl">
-              The people building the future of enterprise AI.
-            </h2>
-          </OutlineSection>
-        </MotionInView>
-
         {/* Members grid */}
         <MotionInView>
-          <OutlineSection className="px-8 py-8">
+          <OutlineSection className="p-8">
             <OurTeamGrid members={members} />
           </OutlineSection>
         </MotionInView>

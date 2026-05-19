@@ -48,7 +48,7 @@ function Thumbnail({
     <div
       className={`aspect-video bg-gradient-to-br ${gradient} flex items-center justify-center ${className} transition-transform duration-700 ease-out group-hover:scale-[1.02]`}
     >
-      <span className="select-none font-mono text-[10px] uppercase tracking-[0.3em] text-white/20">
+      <span className="font-mono text-[10px] tracking-[0.3em] text-white/20 uppercase select-none">
         {tag}
       </span>
     </div>

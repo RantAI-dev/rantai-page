@@ -15,6 +15,7 @@ const navItems = [
   { href: "/blog", label: "Blog" },
   { href: "/services", label: "Services" },
   { href: "/academy", label: "Academy" },
+  { href: "/our-team", label: "Our Team" },
 ]
 
 export function Navbar() {
