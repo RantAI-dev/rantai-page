@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ThumbnailUpload } from "@/components/admin/thumbnail-upload";
 import type { Book } from "@/lib/db/schema";
 
 const CATEGORIES = ["Foundation", "Architecture", "Algorithms", "AI/ML", "Data", "Business"];
@@ -31,6 +32,12 @@ export function BookForm({ book }: { book?: Book }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!imageUrl) {
+      toast.error("Cover image is required");
+      return;
+    }
+
     setLoading(true);
 
     const apiUrl = isEdit ? `/api/admin/books/${book.id}` : "/api/admin/books";
@@ -77,10 +84,7 @@ export function BookForm({ book }: { book?: Book }) {
         <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="imageUrl">Cover Image URL *</Label>
-        <Input id="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} required />
-      </div>
+      <ThumbnailUpload value={imageUrl} onChange={setImageUrl} label="Cover Image *" />
 
       <div className="space-y-2">
         <Label htmlFor="url">Book URL</Label>
