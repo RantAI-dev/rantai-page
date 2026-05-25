@@ -2,6 +2,9 @@ import Link from "next/link";
 import { Toaster } from "@/components/ui/sonner";
 import { LogoutButton } from "@/components/admin/logout-button";
 
+// Admin pages must always reflect the current DB state — never serve cached HTML.
+export const dynamic = "force-dynamic";
+
 const navLinks = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/blog", label: "Blog" },
