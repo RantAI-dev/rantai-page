@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
@@ -28,5 +29,7 @@ export async function POST(req: NextRequest) {
     .values({ title, slug, content, excerpt, tag, author, thumbnail, published: published ?? true })
     .returning();
 
+  revalidatePath("/blog");
+  revalidatePath("/blog/[slug]", "page");
   return NextResponse.json(post, { status: 201 });
 }

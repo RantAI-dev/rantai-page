@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { books } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
@@ -28,5 +29,6 @@ export async function POST(req: NextRequest) {
     .values({ code, name, category, imageUrl, url, orderIndex: orderIndex ?? 0 })
     .returning();
 
+  revalidatePath("/academy");
   return NextResponse.json(book, { status: 201 });
 }

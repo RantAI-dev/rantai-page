@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { books } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
@@ -19,6 +20,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     .returning();
 
   if (!book) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  revalidatePath("/academy");
   return NextResponse.json(book);
 }
 
@@ -28,5 +30,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
   const { id } = await params;
   await db.delete(books).where(eq(books.id, id));
+  revalidatePath("/academy");
   return NextResponse.json({ ok: true });
 }
