@@ -3,10 +3,10 @@
 import { useState } from "react"
 import Image from "next/image"
 import {
-  PenToolIcon,
-  RefreshCwIcon,
-  ShieldCheckIcon,
-  SparklesIcon,
+  BotIcon,
+  DatabaseZapIcon,
+  ScrollIcon,
+  ZapIcon,
   type LucideIcon,
 } from "lucide-react"
 
@@ -17,10 +17,10 @@ import { OutlineSection } from "@/components/outline-section"
 import type { Product, ProductFeatureIcon } from "../types"
 
 const featureIcons: Record<ProductFeatureIcon, LucideIcon> = {
-  prompting: SparklesIcon,
-  design: PenToolIcon,
-  rewrite: RefreshCwIcon,
-  audit: ShieldCheckIcon,
+  rag: DatabaseZapIcon,
+  "agent-builder": BotIcon,
+  artifacts: ScrollIcon,
+  skills: ZapIcon,
 }
 
 export function AgentsSection({ product }: { product: Product }) {
@@ -55,7 +55,17 @@ export function AgentsSection({ product }: { product: Product }) {
                     ratio={16 / 9}
                     className="overflow-hidden rounded-[8px] border-8 border-foreground shadow-sm shadow-foreground"
                   >
-                    {feature.image ? (
+                    {feature.video ? (
+                      <video
+                        key={feature.video}
+                        src={feature.video}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="h-full w-full object-cover"
+                      />
+                    ) : feature.image ? (
                       <Image
                         src={feature.image}
                         alt={`${product.name} — ${feature.label}`}

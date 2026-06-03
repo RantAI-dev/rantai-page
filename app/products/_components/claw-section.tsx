@@ -37,13 +37,24 @@ export function ClawSection({ product }: { product: Product }) {
         {/* Visual panel */}
         <div className="flex w-1/2 items-center justify-center">
           <div className="relative h-full w-full overflow-hidden bg-[#A83838]">
-            <Image
-              src="/products/claw-screenshot.png"
-              alt="RantAI Claw interface"
-              width={1364}
-              height={1106}
-              className="absolute h-auto w-[150%]"
-            />
+            {product.video ? (
+              <video
+                src={product.video}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <Image
+                src="/products/claw-screenshot.png"
+                alt="RantAI Claw interface"
+                width={1364}
+                height={1106}
+                className="absolute h-auto w-[150%]"
+              />
+            )}
           </div>
         </div>
       </OutlineSection>

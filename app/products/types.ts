@@ -2,10 +2,10 @@ export type ProductStatus = "live" | "in-progress" | "coming-soon"
 
 /** Icon keys resolved to lucide components on the client. */
 export type ProductFeatureIcon =
-  | "prompting"
-  | "design"
-  | "rewrite"
-  | "audit"
+  | "rag"
+  | "agent-builder"
+  | "artifacts"
+  | "skills"
 
 /** A switchable feature/capability of a product, rendered as a tab. */
 export interface ProductFeature {
@@ -18,6 +18,8 @@ export interface ProductFeature {
   caption: string
   /** Screenshot for this feature. `null` renders a placeholder until the asset exists. */
   image: string | null
+  /** Demo video for this feature. Takes precedence over image when set. */
+  video?: string | null
 }
 
 export interface Product {
@@ -31,6 +33,8 @@ export interface Product {
   benefits: string[]
   tech: string[]
   link?: string
+  /** Demo video shown in the product visual panel. */
+  video?: string | null
   /** Capabilities shown in a tabbed switcher on the products page. */
   features?: ProductFeature[]
 }
