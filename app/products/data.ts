@@ -16,8 +16,7 @@ export const products: Product[] = [
       "Stay in control with human-in-the-loop escalation",
       "Full audit trail for every decision the agent makes",
     ],
-    tech: ["RAG", "Multi-agent", "Human-in-the-loop", "LLM-agnostic"],
-    link: "/#contact",
+    link: "https://agents.rantai.dev/",
     features: [
       {
         value: "rag",
@@ -72,8 +71,7 @@ export const products: Product[] = [
       "Output structured JSON, CSV, or pipe directly into your data stack",
       "Built-in scheduling, monitoring, and alerting for every pipeline",
     ],
-    tech: ["Browser automation", "AI extraction", "Structured output", "Real-time"],
-    link: "/#contact",
+    link: "https://claw.rantai.dev/",
     video: "https://r3djfhutjr8af8rp.public.blob.vercel-storage.com/videos/rantai-claw/claw-demo.mp4",
   },
   {
@@ -90,7 +88,6 @@ export const products: Product[] = [
       "Consistent metrics across teams via a shared semantic layer",
       "Connect to 40+ data sources in minutes",
     ],
-    tech: ["NL→SQL", "Semantic layer", "100+ LLMs"],
   },
   {
     id: "zerocode",
@@ -106,7 +103,6 @@ export const products: Product[] = [
       "Transparent step-by-step code generation you can audit",
       "Powered by Claude, OpenCode, and leading models",
     ],
-    tech: ["Autonomous agents", "Multi-model", "Full SDLC"],
   },
 ]
 

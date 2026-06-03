@@ -53,6 +53,12 @@ function GridPattern() {
   )
 }
 
+function readingTime(html: string): number {
+  const text = html.replace(/<[^>]+>/g, "")
+  const words = text.trim().split(/\s+/).length
+  return Math.max(1, Math.ceil(words / 200))
+}
+
 export default async function BlogPostPage({
   params,
 }: {
@@ -62,6 +68,8 @@ export default async function BlogPostPage({
   const post = await getPostBySlug(slug)
 
   if (!post) notFound()
+
+  const mins = readingTime(post.contentHtml ?? "")
 
   return (
     <div>
@@ -79,6 +87,7 @@ export default async function BlogPostPage({
               Back to Blog
             </Link>
 
+            {/* Meta row */}
             <div className="mb-6 flex items-center gap-4">
               <span className="border border-border px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
                 {post.tag}
@@ -90,34 +99,50 @@ export default async function BlogPostPage({
                   year: "numeric",
                 })}
               </span>
+              <span className="font-mono text-sm text-muted-foreground">
+                {mins} min read
+              </span>
             </div>
 
-            <h1 className="text-3xl leading-[1.15] font-medium tracking-tight sm:text-4xl lg:text-5xl">
+            {/* Title */}
+            <h1 className="text-4xl leading-[1.1] font-medium tracking-tight sm:text-5xl lg:text-6xl">
               {post.title}
             </h1>
 
-            {post.thumbnail && (
-              <div className="relative mt-12 aspect-video w-full overflow-hidden border border-border">
-                <Image
-                  src={post.thumbnail}
-                  alt={post.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 768px"
-                  className="object-cover"
-                  loading="eager"
-                  priority
-                />
-              </div>
+            {/* Excerpt */}
+            {post.excerpt && (
+              <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
+                {post.excerpt}
+              </p>
             )}
 
+            {/* Author — above the image */}
             {post.author && (
               <div className="mt-8 flex items-center gap-3">
                 <div className="flex size-9 items-center justify-center border border-border bg-muted text-sm font-bold">
                   {post.author.charAt(0)}
                 </div>
-                <span className="font-mono text-sm text-muted-foreground">
-                  {post.author}
-                </span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">{post.author}</span>
+                  <span className="font-mono text-xs text-muted-foreground">
+                    Author
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Cover image */}
+            {post.thumbnail && (
+              <div className="relative my-10 aspect-video w-full overflow-hidden border border-border">
+                <Image
+                  src={post.thumbnail}
+                  alt={post.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 768px"
+                  className="object-cover transition-transform duration-700 hover:scale-[1.02]"
+                  loading="eager"
+                  priority
+                />
               </div>
             )}
           </div>

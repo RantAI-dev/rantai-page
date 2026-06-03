@@ -2,11 +2,13 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import {
   BotIcon,
   DatabaseZapIcon,
   ScrollIcon,
   ZapIcon,
+  ArrowRightIcon,
   type LucideIcon,
 } from "lucide-react"
 
@@ -32,12 +34,21 @@ export function AgentsSection({ product }: { product: Product }) {
     <MotionInView>
       <OutlineSection className="flex flex-col">
         {/* Header */}
-        <div className="flex flex-col gap-2 p-8 pb-0 lg:p-12 lg:pb-0">
-          <h3 className="text-2xl font-medium tracking-tight lg:text-[32px]">
-            {product.name}
-          </h3>
+        <div className="flex flex-col gap-3 p-8 pb-0 lg:p-12 lg:pb-0">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo/RantAI Agents Dark.svg"
+              alt="RantAI Agents logo"
+              width={28}
+              height={28}
+              className="size-7 shrink-0 object-contain"
+            />
+            <h3 className="text-2xl font-medium tracking-tight lg:text-[32px]">
+              {product.name}
+            </h3>
+          </div>
           <p className="max-w-2xl text-base leading-relaxed font-light text-muted-foreground">
-            {product.value}
+            {product.description}
           </p>
         </div>
 
@@ -53,7 +64,7 @@ export function AgentsSection({ product }: { product: Product }) {
                 <TabsContent key={feature.value} value={feature.value}>
                   <AspectRatio
                     ratio={16 / 9}
-                    className="overflow-hidden rounded-[8px] border-8 border-foreground shadow-sm shadow-foreground"
+                    className="overflow-hidden rounded-[8px] border-4 border-foreground bg-muted"
                   >
                     {feature.video ? (
                       <video
@@ -101,6 +112,21 @@ export function AgentsSection({ product }: { product: Product }) {
                 {activeCaption}
               </p>
             )}
+          </div>
+        )}
+
+        {/* Bottom CTA */}
+        {product.link && (
+          <div className="mb-8 flex items-center justify-center p-8 lg:p-10">
+            <Link
+              href={product.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 font-mono text-sm tracking-wider text-muted-foreground uppercase underline underline-offset-4 transition-colors hover:text-foreground"
+            >
+              Explore RantAI Agents
+              <ArrowRightIcon className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
           </div>
         )}
       </OutlineSection>

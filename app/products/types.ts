@@ -31,7 +31,6 @@ export interface Product {
   value: string
   description: string
   benefits: string[]
-  tech: string[]
   link?: string
   /** Demo video shown in the product visual panel. */
   video?: string | null
