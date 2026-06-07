@@ -82,11 +82,11 @@ export function ContactCard() {
     // >
     <div className="w-full flex-col border p-4 backdrop-blur-2xl sm:p-8">
       {/* Mac App Top Bar */}
-      <div className="mb-10 flex flex-col justify-between gap-6 pb-6 lg:flex-row lg:items-center">
+      <div className="mb-6 flex flex-col justify-between gap-6 pb-6 lg:mb-10 lg:flex-row lg:items-center">
         {/* Left side */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
           <div className="flex items-center gap-6">
-            <span className="hidden text-sm font-bold tracking-widest text-foreground sm:block">
+            <span className="text-sm font-bold tracking-widest text-foreground">
               CONTACT US
             </span>
 
@@ -148,7 +148,7 @@ export function ContactCard() {
           <h2 className="mb-6 text-4xl leading-tight font-medium text-foreground md:text-5xl lg:text-6xl">
             Let&apos;s Build AI That Actually Works
           </h2>
-          <p className="max-w-md font-mono text-sm leading-relaxed text-muted-foreground">
+          <p className="font-mono text-sm leading-relaxed text-muted-foreground lg:max-w-md">
             We&apos;d love to hear from you — send us a message and we&apos;ll
             be in touch soon.
           </p>
@@ -211,7 +211,7 @@ export function ContactCard() {
           </Field>
 
           <div className="mt-2 flex justify-end">
-            <Button type="submit" size="lg" disabled={isSubmitting}>
+            <Button type="submit" size="lg" disabled={isSubmitting} className="w-full sm:w-auto">
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}

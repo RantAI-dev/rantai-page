@@ -92,7 +92,7 @@ export function Navbar() {
 
         {/* Mobile nav */}
         {mobileOpen && (
-          <nav className="border-t border-border px-4 py-3 md:hidden">
+          <nav className="border-t border-border bg-background px-4 py-3 md:hidden">
             <div className="flex flex-col gap-2">
               {navItems.map((item) => (
                 <Link

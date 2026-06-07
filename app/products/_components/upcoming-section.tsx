@@ -33,7 +33,7 @@ function UpcomingCard({
   const accent = accents[product.id]
 
   return (
-    <div className={cn("flex w-1/2 flex-col gap-4", className)}>
+    <div className={cn("flex w-full flex-col gap-4 sm:w-1/2", className)}>
       {/* Mockup — locked to 16/9 so both cards share the same height */}
       <div
         className="overflow-hidden p-6"
@@ -95,7 +95,7 @@ export function UpcomingSection({
 }) {
   return (
     <MotionInView>
-      <OutlineSection className="flex flex-row">
+      <OutlineSection className="flex flex-col sm:flex-row">
         <UpcomingCard
           product={analytics}
           image={{
@@ -111,7 +111,7 @@ export function UpcomingSection({
             width: 954,
             height: 688,
           }}
-          className="border-l border-border"
+          className="border-t border-border sm:border-t-0 sm:border-l"
         />
       </OutlineSection>
     </MotionInView>

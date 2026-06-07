@@ -28,17 +28,17 @@ const team = [
 		imageBlue: "/team/Razka - Blue.png",
 		imageBlack: "/team/Razka - Black.png",
 	},
+  {
+    name: "Farrel Pujokusumo",
+    role: "VP Data Science",
+    imageBlue: "/team/Farrel - Blue.png",
+    imageBlack: "/team/Farrel - Black.png",
+  },
 	{
 		name: "Mitchell Chandi",
 		role: "VP Engineer",
 		imageBlue: "/team/Mitchell - Blue.png",
 		imageBlack: "/team/Mitchell - Black.png",
-	},
-	{
-		name: "Farrel Pujokusumo",
-		role: "VP Data Science",
-		imageBlue: "/team/Farrel - Blue.png",
-		imageBlack: "/team/Farrel - Black.png",
 	},
 ];
 
