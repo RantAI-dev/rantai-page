@@ -1,9 +1,12 @@
 import Link from "next/link"
 import Image from "next/image"
 import { notFound } from "next/navigation"
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
+import { ArrowLeftIcon, ArrowRightIcon, CalendarIcon, ClockIcon } from "lucide-react"
 
 import { getAllPostSlugs, getPostBySlug } from "@/lib/blog"
+import { ShareButtons } from "@/components/share-buttons"
+import { Badge } from "@/components/ui/badge"
+import { siteConfig } from "@/lib/config"
 import { MotionInView } from "@/components/motion-in-view"
 import { OutlineSection } from "@/components/outline-section"
 import { Navbar } from "@/components/navbar"
@@ -22,7 +25,28 @@ export async function generateMetadata({
   const { slug } = await params
   const post = await getPostBySlug(slug)
   if (!post) return { title: "Post Not Found" }
-  return { title: post.title, description: post.excerpt }
+
+  const postUrl = `${siteConfig.url}/blog/${post.slug}`
+  const ogImage = post.thumbnail ?? siteConfig.ogImage
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      type: "article",
+      url: postUrl,
+      title: post.title,
+      description: post.excerpt ?? "",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
+      siteName: siteConfig.name,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt ?? "",
+      images: [ogImage],
+    },
+  }
 }
 
 function GridPattern() {
@@ -87,23 +111,6 @@ export default async function BlogPostPage({
               Back to Blog
             </Link>
 
-            {/* Meta row */}
-            <div className="mb-6 flex items-center gap-4">
-              <span className="border border-border px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
-                {post.tag}
-              </span>
-              <span className="font-mono text-sm text-muted-foreground">
-                {new Date(post.date).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </span>
-              <span className="font-mono text-sm text-muted-foreground">
-                {mins} min read
-              </span>
-            </div>
-
             {/* Title */}
             <h1 className="text-4xl leading-[1.1] font-medium tracking-tight sm:text-5xl lg:text-6xl">
               {post.title}
@@ -117,7 +124,7 @@ export default async function BlogPostPage({
             )}
 
             {/* Author — above the image */}
-            {post.author && (
+            {/* {post.author && (
               <div className="mt-8 flex items-center gap-3">
                 <div className="flex size-9 items-center justify-center border border-border bg-muted text-sm font-bold">
                   {post.author.charAt(0)}
@@ -129,7 +136,30 @@ export default async function BlogPostPage({
                   </span>
                 </div>
               </div>
-            )}
+            )} */}
+
+            {/* Meta row */}
+            <div className="my-6 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">
+                  {post.tag}
+                </Badge>
+                <Badge variant="outline">
+                  <CalendarIcon />
+                  {new Date(post.date).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </Badge>
+                <Badge variant="outline">
+                  <ClockIcon />
+                  {mins} min read
+                </Badge>
+              </div>
+              <ShareButtons title={post.title} />
+            </div>
+
 
             {/* Cover image */}
             {post.thumbnail && (
