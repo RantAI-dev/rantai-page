@@ -2,14 +2,17 @@
 
 import { Upload, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Slider } from "@/components/ui/slider"
 import { DECO_OPTIONS, type DecoKey } from "./decorations"
 
 interface DecorationPickerProps {
   deco: DecoKey
   decorationType: "builtin" | "custom"
   customDecoUrl: string | null
+  customDecoSize: number
   inputRef: React.RefObject<HTMLInputElement | null>
   onSelect: (key: DecoKey) => void
+  onCustomDecoSizeChange: (size: number) => void
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
   onClear: () => void
 }
@@ -18,8 +21,10 @@ export function DecorationPicker({
   deco,
   decorationType,
   customDecoUrl,
+  customDecoSize,
   inputRef,
   onSelect,
+  onCustomDecoSizeChange,
   onUpload,
   onClear,
 }: DecorationPickerProps) {
@@ -63,16 +68,31 @@ export function DecorationPicker({
           onChange={onUpload}
         />
         {customDecoUrl && decorationType === "custom" ? (
-          <div className="flex items-center gap-2 rounded-md border border-foreground bg-accent px-3 py-2">
-            <img
-              src={customDecoUrl}
-              alt="Custom decoration"
-              className="h-6 w-10 rounded object-cover opacity-80"
-            />
-            <span className="flex-1 truncate text-[10px] text-foreground">Custom</span>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onClear}>
-              <X />
-            </Button>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2 rounded-md border border-foreground bg-accent px-3 py-2">
+              <img
+                src={customDecoUrl}
+                alt="Custom decoration"
+                className="h-6 w-10 rounded object-cover opacity-80"
+              />
+              <span className="flex-1 truncate text-[10px] text-foreground">Custom</span>
+              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onClear}>
+                <X />
+              </Button>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <span className="text-xs font-medium">Decoration size</span>
+                <span className="font-mono text-xs text-muted-foreground">{customDecoSize}%</span>
+              </div>
+              <Slider
+                min={40}
+                max={220}
+                step={1}
+                value={[customDecoSize]}
+                onValueChange={([value]) => onCustomDecoSizeChange(value)}
+              />
+            </div>
           </div>
         ) : (
           <Button variant="outline" className="w-full" onClick={() => inputRef.current?.click()}>

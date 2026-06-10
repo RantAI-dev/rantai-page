@@ -22,6 +22,7 @@ export function useThumbnail() {
   const [deco, setDeco] = useState<DecoKey>("circles")
   const [decorationType, setDecorationType] = useState<"builtin" | "custom">("builtin")
   const [customDecoUrl, setCustomDecoUrl] = useState<string | null>(null)
+  const [customDecoSize, setCustomDecoSize] = useState(100)
   const prevCustomDecoUrl = useRef<string | null>(null)
   const customDecoInputRef = useRef<HTMLInputElement>(null)
 
@@ -33,6 +34,7 @@ export function useThumbnail() {
   const [iconName, setIconName] = useState("brain")
   const [iconType, setIconType] = useState<"lucide" | "custom">("lucide")
   const [customIconUrl, setCustomIconUrl] = useState<string | null>(null)
+  const [customIconSize, setCustomIconSize] = useState(100)
   const prevCustomIconUrl = useRef<string | null>(null)
   const customIconInputRef = useRef<HTMLInputElement>(null)
 
@@ -72,10 +74,12 @@ export function useThumbnail() {
       color,
       deco: decorationType === "builtin" ? selectedDeco : null,
       customDecorationUrl: decorationType === "custom" ? customDecoUrl : null,
+      customDecorationScale: customDecoSize,
       iconSource:
         iconType === "custom" && customIconUrl
           ? { type: "url" as const, url: customIconUrl }
           : { type: "svg" as const, el: svgEl! },
+      iconScale: iconType === "custom" ? customIconSize : 100,
       noiseEnabled,
       noiseIntensity,
     })
@@ -108,11 +112,14 @@ export function useThumbnail() {
     customIconUrl,
     color,
     deco,
+    selectedDeco,
     decorationType,
     customDecoUrl,
+    customDecoSize,
+    customIconSize,
     noiseEnabled,
     noiseIntensity,
-  ]) // eslint-disable-line react-hooks/exhaustive-deps
+  ])
 
   // Upload handlers
   function handleCustomIconUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -177,6 +184,8 @@ export function useThumbnail() {
     decorationType,
     setDecorationType,
     customDecoUrl,
+    customDecoSize,
+    setCustomDecoSize,
     noiseEnabled,
     setNoiseEnabled,
     noiseIntensity,
@@ -186,6 +195,8 @@ export function useThumbnail() {
     iconType,
     setIconType,
     customIconUrl,
+    customIconSize,
+    setCustomIconSize,
     search,
     setSearch,
     // Derived

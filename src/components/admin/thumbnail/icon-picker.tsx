@@ -5,15 +5,18 @@ import { Search, Upload, X } from "lucide-react"
 import { DynamicIcon } from "lucide-react/dynamic"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Slider } from "@/components/ui/slider"
 
 interface IconPickerProps {
   iconName: string
   iconType: "lucide" | "custom"
   customIconUrl: string | null
+  customIconSize: number
   inputRef: React.RefObject<HTMLInputElement | null>
   search: string
   filteredIcons: string[]
   onIconSelect: (name: string) => void
+  onCustomIconSizeChange: (size: number) => void
   onSearchChange: (s: string) => void
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
   onClear: () => void
@@ -23,10 +26,12 @@ export function IconPicker({
   iconName,
   iconType,
   customIconUrl,
+  customIconSize,
   inputRef,
   search,
   filteredIcons,
   onIconSelect,
+  onCustomIconSizeChange,
   onSearchChange,
   onUpload,
   onClear,
@@ -78,12 +83,27 @@ export function IconPicker({
         onChange={onUpload}
       />
       {iconType === "custom" && customIconUrl ? (
-        <div className="flex items-center gap-2 rounded-md border border-foreground bg-accent px-3 py-2">
-          <img src={customIconUrl} alt="Custom icon" className="h-4 w-4 shrink-0 object-contain" />
-          <span className="flex-1 truncate font-mono text-[10px] text-foreground">custom</span>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onClear}>
-            <X />
-          </Button>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 rounded-md border border-foreground bg-accent px-3 py-2">
+            <img src={customIconUrl} alt="Custom icon" className="h-4 w-4 shrink-0 object-contain" />
+            <span className="flex-1 truncate font-mono text-[10px] text-foreground">custom</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onClear}>
+              <X />
+            </Button>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <span className="text-xs font-medium">Asset size</span>
+              <span className="font-mono text-xs text-muted-foreground">{customIconSize}%</span>
+            </div>
+            <Slider
+              min={40}
+              max={220}
+              step={1}
+              value={[customIconSize]}
+              onValueChange={([value]) => onCustomIconSizeChange(value)}
+            />
+          </div>
         </div>
       ) : (
         <Button variant="outline" className="w-full" onClick={() => inputRef.current?.click()}>

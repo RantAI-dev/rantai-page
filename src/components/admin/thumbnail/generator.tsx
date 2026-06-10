@@ -26,11 +26,13 @@ export function ThumbnailGenerator() {
     deco, setDeco,
     decorationType, setDecorationType,
     customDecoUrl,
+    customDecoSize, setCustomDecoSize,
     noiseEnabled, setNoiseEnabled,
     noiseIntensity, setNoiseIntensity,
     iconName, setIconName,
     iconType, setIconType,
     customIconUrl,
+    customIconSize, setCustomIconSize,
     search, setSearch,
     filteredIcons,
     handleCustomIconUpload, clearCustomIcon,
@@ -69,8 +71,10 @@ export function ThumbnailGenerator() {
             deco={deco}
             decorationType={decorationType}
             customDecoUrl={customDecoUrl}
+            customDecoSize={customDecoSize}
             inputRef={customDecoInputRef}
             onSelect={(key) => { setDeco(key); setDecorationType("builtin") }}
+            onCustomDecoSizeChange={setCustomDecoSize}
             onUpload={handleCustomDecoUpload}
             onClear={clearCustomDeco}
           />
@@ -90,10 +94,12 @@ export function ThumbnailGenerator() {
             iconName={iconName}
             iconType={iconType}
             customIconUrl={customIconUrl}
+            customIconSize={customIconSize}
             inputRef={customIconInputRef}
             search={search}
             filteredIcons={filteredIcons}
             onIconSelect={(name) => { setIconName(name); setIconType("lucide") }}
+            onCustomIconSizeChange={setCustomIconSize}
             onSearchChange={setSearch}
             onUpload={handleCustomIconUpload}
             onClear={clearCustomIcon}

@@ -40,9 +40,10 @@ export async function drawIconFromSvgEl(
   ctx: CanvasRenderingContext2D,
   svgEl: SVGSVGElement,
   w: number,
-  h: number
+  h: number,
+  scale: number
 ) {
-  const size = Math.min(w, h) * 0.32;
+  const size = Math.min(w, h) * 0.32 * (scale / 100);
   const svgString = new XMLSerializer().serializeToString(svgEl);
   const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
   const url  = URL.createObjectURL(blob);
@@ -62,9 +63,10 @@ async function drawIconFromUrl(
   ctx: CanvasRenderingContext2D,
   url: string,
   w: number,
-  h: number
+  h: number,
+  scale: number
 ) {
-  const size = Math.min(w, h) * 0.32;
+  const size = Math.min(w, h) * 0.32 * (scale / 100);
   const img = await loadImageFromUrl(url);
   ctx.drawImage(img, w / 2 - size / 2, h / 2 - size / 2, size, size);
 }
@@ -73,12 +75,15 @@ async function drawImageAsDecoration(
   ctx: CanvasRenderingContext2D,
   url: string,
   w: number,
-  h: number
+  h: number,
+  scale: number
 ) {
   const img = await loadImageFromUrl(url);
+  const drawW = w * (scale / 100);
+  const drawH = h * (scale / 100);
   ctx.save();
   ctx.globalAlpha = 0.13;
-  ctx.drawImage(img, 0, 0, w, h);
+  ctx.drawImage(img, w / 2 - drawW / 2, h / 2 - drawH / 2, drawW, drawH);
   ctx.restore();
 }
 
@@ -100,14 +105,14 @@ export async function drawThumbnail(
     opts.deco.draw(ctx, w, h);
   }
   if (opts.customDecorationUrl !== null) {
-    await drawImageAsDecoration(ctx, opts.customDecorationUrl, w, h);
+    await drawImageAsDecoration(ctx, opts.customDecorationUrl, w, h, opts.customDecorationScale);
   }
 
   // 3. Icon
   if (opts.iconSource.type === "svg") {
-    await drawIconFromSvgEl(ctx, opts.iconSource.el, w, h);
+    await drawIconFromSvgEl(ctx, opts.iconSource.el, w, h, opts.iconScale);
   } else {
-    await drawIconFromUrl(ctx, opts.iconSource.url, w, h);
+    await drawIconFromUrl(ctx, opts.iconSource.url, w, h, opts.iconScale);
   }
 
   // 4. Noise (always on top)
