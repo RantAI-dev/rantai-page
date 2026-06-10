@@ -1,10 +1,16 @@
+import Link from "next/link";
+import { Pencil, Share2 } from "lucide-react";
+
 import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
-import Link from "next/link";
+import { siteConfig } from "@/lib/config";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { BlogPublishedToggle } from "@/components/admin/blog-published-toggle";
+import { ShareDropdown } from "@/components/share-dropdown";
 import { DeleteButton } from "@/components/admin/delete-button";
 
 export default async function AdminBlogPage() {
@@ -27,7 +33,7 @@ export default async function AdminBlogPage() {
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">Tag</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">Date</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
-              <th className="px-4 py-3" />
+              <th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -51,10 +57,27 @@ export default async function AdminBlogPage() {
                   <BlogPublishedToggle id={post.id} published={post.published} />
                 </td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-2 justify-end">
-                    <Link href={`/admin/blog/${post.id}/edit`}>
-                      <Button variant="ghost" size="sm">Edit</Button>
-                    </Link>
+                  <div className="flex items-center gap-1 justify-end">
+                    <Tooltip>
+                      <ShareDropdown url={`${siteConfig.url}/blog/${post.slug}`} title={post.title}>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost">
+                            <Share2 />
+                          </Button>
+                        </TooltipTrigger>
+                      </ShareDropdown>
+                      <TooltipContent>Share</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" asChild>
+                          <Link href={`/admin/blog/${post.id}/edit`} >
+                            <Pencil />
+                          </Link>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Edit</TooltipContent>
+                    </Tooltip>
                     <DeleteButton id={post.id} endpoint="/api/admin/blog" redirectTo="/admin/blog" />
                   </div>
                 </td>

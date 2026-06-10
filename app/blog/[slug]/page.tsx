@@ -4,7 +4,9 @@ import { notFound } from "next/navigation"
 import { ArrowLeftIcon, ArrowRightIcon, CalendarIcon, ClockIcon } from "lucide-react"
 
 import { getAllPostSlugs, getPostBySlug } from "@/lib/blog"
-import { ShareButtons } from "@/components/share-buttons"
+import { Share2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { ShareDropdown } from "@/components/share-dropdown"
 import { Badge } from "@/components/ui/badge"
 import { siteConfig } from "@/lib/config"
 import { MotionInView } from "@/components/motion-in-view"
@@ -157,7 +159,12 @@ export default async function BlogPostPage({
                   {mins} min read
                 </Badge>
               </div>
-              <ShareButtons title={post.title} />
+              <ShareDropdown url={`${siteConfig.url}/blog/${slug}`} title={post.title}>
+                <Button variant="outline" size="xs" className="text-muted-foreground">
+                  <Share2 />
+                  Share
+                </Button>
+              </ShareDropdown>
             </div>
 
 
