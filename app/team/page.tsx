@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { GithubIcon, LinkedinIcon } from "lucide-react";
 import { db } from "@/lib/db";
 import { teamMembers } from "@/lib/db/schema";
 import { asc } from "drizzle-orm";
@@ -8,6 +7,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Badge } from "@/components/ui/badge";
 import { MotionInView } from "@/components/motion-in-view";
+import { GithubIcon, LinkedInIcon } from "@/components/icons";
 
 export const metadata = {
   title: "Our Team",
@@ -69,12 +69,12 @@ export default async function TeamPage() {
                         <div className="mt-3 flex gap-3">
                           {member.linkedin && (
                             <Link href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                              <LinkedinIcon className="size-4" />
+                              <LinkedInIcon size={16} />
                             </Link>
                           )}
                           {member.github && (
                             <Link href={member.github} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                              <GithubIcon className="size-4" />
+                              <GithubIcon size={16} />
                             </Link>
                           )}
                         </div>

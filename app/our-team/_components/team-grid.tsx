@@ -3,8 +3,8 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { GithubIcon, LinkedInIcon } from "@/components/icons"
 import type { TeamMember } from "@/lib/db/schema"
-import { GithubIcon, LinkedinIcon } from "./social-icons"
 
 export function OurTeamGrid({ members }: { readonly members: TeamMember[] }) {
   const categories = [
@@ -85,7 +85,7 @@ export function OurTeamGrid({ members }: { readonly members: TeamMember[] }) {
                         rel="noopener noreferrer"
                         className="text-muted-foreground transition-colors hover:text-foreground"
                       >
-                        <GithubIcon />
+                        <GithubIcon size={16} />
                       </Link>
                     )}
                     {member.linkedin && (
@@ -95,7 +95,7 @@ export function OurTeamGrid({ members }: { readonly members: TeamMember[] }) {
                         rel="noopener noreferrer"
                         className="text-muted-foreground transition-colors hover:text-foreground"
                       >
-                        <LinkedinIcon />
+                        <LinkedInIcon size={16} />
                       </Link>
                     )}
                   </div>
