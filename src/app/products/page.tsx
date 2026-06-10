@@ -3,8 +3,7 @@ import { Footer } from "@/components/footer"
 
 import { products } from "./data"
 import { ProductsHero } from "./_components/products-hero"
-import { AgentsSection } from "./_components/agents-section"
-import { ClawSection } from "./_components/claw-section"
+import { ProductsShowcase } from "./_components/products-showcase"
 import { UpcomingSection } from "./_components/upcoming-section"
 import { ProductsCta } from "./_components/products-cta"
 
@@ -19,11 +18,8 @@ export default function ProductsPage() {
         {/* ── Hero ─────────────────────────────────────────────────── */}
         <ProductsHero />
 
-        {/* ── RantAI Agents ────────────────────────────────────────── */}
-        <AgentsSection product={agents} />
-
-        {/* ── RantAI Claw ──────────────────────────────────────────── */}
-        <ClawSection product={claw} />
+        {/* ── Live products: Agents + Claw unified showcase ─────────── */}
+        <ProductsShowcase agents={agents} claw={claw} />
 
         {/* ── Upcoming: Analytics + ZeroCode ───────────────────────── */}
         <UpcomingSection analytics={analytics} zerocode={zerocode} />
