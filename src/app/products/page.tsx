@@ -1,15 +1,17 @@
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
-import { products } from "./data"
+import { ProductIntro } from "./_components/product-intro"
 import { ProductsHero } from "./_components/products-hero"
-import { ProductsShowcase } from "./_components/products-showcase"
-import { UpcomingSection } from "./_components/upcoming-section"
+import { ProductsRantAIAgents } from "./_components/products-rantai-agents"
+import { ProductsRantAIClaw } from "./_components/products-rantai-claw"
+import { ProductsRantAIAnalytics } from "./_components/products-rantai-analytics"
+import { ProductsRantAIZeroCode } from "./_components/products-rantai-zerocode"
 import { ProductsCta } from "./_components/products-cta"
+import { MotionInView } from "@/components/motion-in-view"
+import { OutlineSection } from "@/components/outline-section"
 
 export default function ProductsPage() {
-  const [agents, claw, analytics, zerocode] = products
-
   return (
     <div>
       <Navbar />
@@ -18,11 +20,20 @@ export default function ProductsPage() {
         {/* ── Hero ─────────────────────────────────────────────────── */}
         <ProductsHero />
 
-        {/* ── Live products: Agents + Claw unified showcase ─────────── */}
-        <ProductsShowcase agents={agents} claw={claw} />
+        {/* ── Intro ────────────────────────────────────────────────── */}
+        <ProductIntro />
 
-        {/* ── Upcoming: Analytics + ZeroCode ───────────────────────── */}
-        <UpcomingSection analytics={analytics} zerocode={zerocode} />
+        {/* ── Live products ────────────────────────────────────────── */}
+        <ProductsRantAIAgents />
+        <ProductsRantAIClaw />
+
+        {/* ── Upcoming ─────────────────────────────────────────────── */}
+        <MotionInView>
+          <OutlineSection className="flex flex-col sm:flex-row">
+            <ProductsRantAIAnalytics />
+            <ProductsRantAIZeroCode className="border-t border-border sm:border-t-0 sm:border-l" />
+          </OutlineSection>
+        </MotionInView>
 
         {/* ── CTA ──────────────────────────────────────────────────── */}
         <ProductsCta />
