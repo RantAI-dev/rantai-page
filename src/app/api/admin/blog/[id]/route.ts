@@ -3,6 +3,12 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
+import {
+  getBlogInputError,
+  getDatabaseErrorResponse,
+  isPublishedOnlyBlogUpdate,
+  normalizeBlogInput,
+} from "@/lib/blog-input";
 import { eq } from "drizzle-orm";
 
 function revalidateBlogPages() {
@@ -27,13 +33,30 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
-  const { title, content, excerpt, tag, author, thumbnail, published } = body;
-  const slug = typeof body.slug === "string" ? body.slug.trim().replaceAll("\r", "") : body.slug;
 
   try {
+    if (isPublishedOnlyBlogUpdate(body)) {
+      const [post] = await db
+        .update(blogPosts)
+        .set({ published: body.published, updatedAt: new Date() })
+        .where(eq(blogPosts.id, id))
+        .returning();
+
+      if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      revalidateBlogPages();
+      return NextResponse.json(post);
+    }
+
+    const input = normalizeBlogInput(body);
+    const inputError = getBlogInputError(input);
+
+    if (inputError) {
+      return NextResponse.json({ error: inputError }, { status: 400 });
+    }
+
     const [post] = await db
       .update(blogPosts)
-      .set({ title, slug, content, excerpt, tag, author, thumbnail, published, updatedAt: new Date() })
+      .set({ ...input, updatedAt: new Date() })
       .where(eq(blogPosts.id, id))
       .returning();
 
@@ -41,12 +64,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     revalidateBlogPages();
     return NextResponse.json(post);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Database error";
-    const isDuplicate = message.includes("unique") || message.includes("duplicate");
-    return NextResponse.json(
-      { error: isDuplicate ? "A post with this slug already exists." : message },
-      { status: isDuplicate ? 409 : 500 },
-    );
+    const { message, status } = getDatabaseErrorResponse(err);
+    return NextResponse.json({ error: message }, { status });
   }
 }
 

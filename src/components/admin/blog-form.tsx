@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
 import { ThumbnailUpload } from "@/components/admin/thumbnail-upload";
+import { normalizeBlogInput, normalizeSlug } from "@/lib/blog-input";
 import type { BlogPost } from "@/lib/db/schema";
 
 const TAGS = ["Product", "Academy", "Company"];
@@ -39,16 +40,9 @@ export function BlogForm({ post }: Props) {
   const [published, setPublished] = useState(post?.published ?? true);
   const [loading, setLoading] = useState(false);
 
-  function generateSlug(value: string) {
-    return value
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-  }
-
   function handleTitleChange(value: string) {
     setTitle(value);
-    if (!isEdit) setSlug(generateSlug(value));
+    if (!isEdit) setSlug(normalizeSlug(value));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -61,7 +55,7 @@ export function BlogForm({ post }: Props) {
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, slug, content, excerpt, tag, author: author || null, thumbnail: thumbnail || null, published }),
+      body: JSON.stringify(normalizeBlogInput({ title, slug, content, excerpt, tag, author, thumbnail, published })),
     });
 
     setLoading(false);
