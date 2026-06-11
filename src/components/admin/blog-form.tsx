@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TiptapEditor } from "@/components/admin/tiptap-editor";
+import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
 import { ThumbnailUpload } from "@/components/admin/thumbnail-upload";
 import { normalizeBlogInput, normalizeSlug } from "@/lib/blog-input";
 import type { BlogPost } from "@/lib/db/schema";
@@ -71,7 +71,7 @@ export function BlogForm({ post }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-7xl">
       <div className="space-y-2">
         <Label htmlFor="title">Title *</Label>
         <Input id="title" value={title} onChange={(e) => handleTitleChange(e.target.value)} required />
@@ -112,7 +112,7 @@ export function BlogForm({ post }: Props) {
 
       <div className="space-y-2">
         <Label>Content *</Label>
-        <TiptapEditor value={content} onChange={setContent} />
+        <RichTextEditor value={content} onChange={setContent} />
       </div>
 
       <div className="flex items-center gap-3">
