@@ -18,18 +18,28 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { title, slug, content, excerpt, tag, author, thumbnail, published } = body;
+  const { title, content, excerpt, tag, author, thumbnail, published } = body;
+  const slug = typeof body.slug === "string" ? body.slug.trim().replaceAll("\r", "") : body.slug;
 
   if (!title || !slug || !content || !excerpt || !tag) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  const [post] = await db
-    .insert(blogPosts)
-    .values({ title, slug, content, excerpt, tag, author, thumbnail, published: published ?? true })
-    .returning();
+  try {
+    const [post] = await db
+      .insert(blogPosts)
+      .values({ title, slug, content, excerpt, tag, author, thumbnail, published: published ?? true })
+      .returning();
 
-  revalidatePath("/blog");
-  revalidatePath("/blog/[slug]", "page");
-  return NextResponse.json(post, { status: 201 });
+    revalidatePath("/blog");
+    revalidatePath("/blog/[slug]", "page");
+    return NextResponse.json(post, { status: 201 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Database error";
+    const isDuplicate = message.includes("unique") || message.includes("duplicate");
+    return NextResponse.json(
+      { error: isDuplicate ? "A post with this slug already exists." : message },
+      { status: isDuplicate ? 409 : 500 },
+    );
+  }
 }

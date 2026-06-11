@@ -27,17 +27,27 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
-  const { title, slug, content, excerpt, tag, author, thumbnail, published } = body;
+  const { title, content, excerpt, tag, author, thumbnail, published } = body;
+  const slug = typeof body.slug === "string" ? body.slug.trim().replaceAll("\r", "") : body.slug;
 
-  const [post] = await db
-    .update(blogPosts)
-    .set({ title, slug, content, excerpt, tag, author, thumbnail, published, updatedAt: new Date() })
-    .where(eq(blogPosts.id, id))
-    .returning();
+  try {
+    const [post] = await db
+      .update(blogPosts)
+      .set({ title, slug, content, excerpt, tag, author, thumbnail, published, updatedAt: new Date() })
+      .where(eq(blogPosts.id, id))
+      .returning();
 
-  if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  revalidateBlogPages();
-  return NextResponse.json(post);
+    if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    revalidateBlogPages();
+    return NextResponse.json(post);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Database error";
+    const isDuplicate = message.includes("unique") || message.includes("duplicate");
+    return NextResponse.json(
+      { error: isDuplicate ? "A post with this slug already exists." : message },
+      { status: isDuplicate ? 409 : 500 },
+    );
+  }
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

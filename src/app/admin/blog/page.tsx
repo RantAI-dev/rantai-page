@@ -1,20 +1,53 @@
+import { Suspense } from "react";
 import Link from "next/link";
-import { Pencil, Share2 } from "lucide-react";
+import { asc, desc, ilike, or, count } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
-import { desc } from "drizzle-orm";
-import { siteConfig } from "@/lib/config";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { BlogPublishedToggle } from "@/components/admin/blog-published-toggle";
-import { ShareDropdown } from "@/components/share-dropdown";
-import { DeleteButton } from "@/components/admin/delete-button";
+import { DataTable } from "@/components/ui/data-table";
+import { blogColumns } from "./columns";
 
-export default async function AdminBlogPage() {
-  const posts = await db.select().from(blogPosts).orderBy(desc(blogPosts.createdAt));
+const PAGE_SIZE = 10;
+
+const sortableColumns = {
+  title: blogPosts.title,
+  tag: blogPosts.tag,
+  createdAt: blogPosts.createdAt,
+  updatedAt: blogPosts.updatedAt,
+} as const;
+
+export default async function AdminBlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
+  const params = await searchParams;
+
+  const q = params.q ?? "";
+  const sortKey = (params.sort ?? "createdAt") as keyof typeof sortableColumns;
+  const order = params.order === "asc" ? "asc" : "desc";
+  const page = Math.max(1, Number(params.page ?? "1"));
+
+  const col = sortableColumns[sortKey] ?? blogPosts.createdAt;
+  const orderFn = order === "asc" ? asc : desc;
+  const whereClause = q
+    ? or(ilike(blogPosts.title, `%${q}%`), ilike(blogPosts.tag, `%${q}%`))
+    : undefined;
+
+  const [posts, [{ total }]] = await Promise.all([
+    db
+      .select()
+      .from(blogPosts)
+      .where(whereClause)
+      .orderBy(orderFn(col))
+      .limit(PAGE_SIZE)
+      .offset((page - 1) * PAGE_SIZE),
+    db.select({ total: count() }).from(blogPosts).where(whereClause),
+  ]);
+
+  const pageCount = Math.ceil(Number(total) / PAGE_SIZE);
 
   return (
     <div>
@@ -24,68 +57,14 @@ export default async function AdminBlogPage() {
           <Button size="sm">New Post</Button>
         </Link>
       </div>
-
-      <div className="rounded-md border border-border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50">
-            <tr>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Title</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Tag</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Date</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
-              <th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {posts.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
-                  No posts yet.
-                </td>
-              </tr>
-            )}
-            {posts.map((post) => (
-              <tr key={post.id} className="hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-medium max-w-xs truncate">{post.title}</td>
-                <td className="px-4 py-3">
-                  <Badge variant="outline">{post.tag}</Badge>
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {new Date(post.createdAt).toLocaleDateString("en-GB")}
-                </td>
-                <td className="px-4 py-3">
-                  <BlogPublishedToggle id={post.id} published={post.published} />
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-1 justify-end">
-                    <Tooltip>
-                      <ShareDropdown url={`${siteConfig.url}/blog/${post.slug}`} title={post.title}>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost">
-                            <Share2 />
-                          </Button>
-                        </TooltipTrigger>
-                      </ShareDropdown>
-                      <TooltipContent>Share</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" asChild>
-                          <Link href={`/admin/blog/${post.id}/edit`} >
-                            <Pencil />
-                          </Link>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Edit</TooltipContent>
-                    </Tooltip>
-                    <DeleteButton id={post.id} endpoint="/api/admin/blog" redirectTo="/admin/blog" />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Suspense>
+        <DataTable
+          columns={blogColumns}
+          data={posts}
+          pageCount={pageCount}
+          searchPlaceholder="Search by title or tag..."
+        />
+      </Suspense>
     </div>
   );
 }
