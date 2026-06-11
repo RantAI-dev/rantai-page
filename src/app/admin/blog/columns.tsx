@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Pencil, Share2 } from "lucide-react";
+import { EyeIcon, Pencil, Share2 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { siteConfig } from "@/lib/config";
@@ -76,6 +76,20 @@ export const blogColumns: ColumnDef<BlogPost, any>[] = [
       const post = row.original;
       return (
         <div className="flex items-center gap-1 justify-end">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" asChild>
+                <Link
+                  href={`/admin/blog/preview/${post.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <EyeIcon className="h-4 w-4" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Preview</TooltipContent>
+          </Tooltip>
           <Tooltip>
             <ShareDropdown url={`${siteConfig.url}/blog/${post.slug}`} title={post.title}>
               <TooltipTrigger asChild>
