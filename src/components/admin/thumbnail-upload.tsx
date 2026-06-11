@@ -84,7 +84,7 @@ export function ThumbnailUpload({ value, onChange, label = "Thumbnail" }: Props)
           <UploadIcon className="mr-2 size-4" />
           {uploading ? "Uploading…" : "Upload Image"}
         </Button>
-        <span className="text-xs text-muted-foreground">atau</span>
+        <span className="text-xs text-muted-foreground">or</span>
         <Input
           placeholder="Paste URL langsung"
           value={value}
