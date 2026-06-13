@@ -53,9 +53,11 @@ function decoHexagons(ctx: CanvasRenderingContext2D, w: number, h: number) {
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
       const a = (Math.PI / 3) * i - Math.PI / 6;
-      i === 0
-        ? ctx.moveTo(cx + r * Math.cos(a), cy + r * Math.sin(a))
-        : ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
+      if (i === 0) {
+        ctx.moveTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
+      } else {
+        ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
+      }
     }
     ctx.closePath();
     ctx.stroke();
@@ -106,7 +108,11 @@ function decoWaves(ctx: CanvasRenderingContext2D, w: number, h: number) {
     ctx.beginPath();
     for (let x = 0; x <= w; x += 4) {
       const y = y0 + Math.sin(x * freq + row * 0.8) * amp;
-      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      if (x === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
     }
     ctx.stroke();
   }

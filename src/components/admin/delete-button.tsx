@@ -29,6 +29,7 @@ export function DeleteButton({ id, endpoint, redirectTo }: { id: string; endpoin
 
     if (res.ok) {
       toast.success("Deleted");
+      router.push(redirectTo);
       router.refresh();
     } else {
       toast.error("Failed to delete");

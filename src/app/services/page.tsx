@@ -24,8 +24,6 @@ import { softwareEngineering, aiEngineering, partners, whyRantAI } from "./data"
    ──────────────────────────────────────────────────────────────────────────── */
 function GridPattern() {
   const size = 32
-  const cols = 48
-  const rows = 16
   return (
     <svg
       className="pointer-events-none absolute inset-0 h-full w-full opacity-10"

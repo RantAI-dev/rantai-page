@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import type { ComponentProps, ElementType, ReactNode } from "react";
+import type { ReactNode } from "react";
 
 /* ------------------------------------------------------------------ */
 /*  Fade-up animation for sections                                     */

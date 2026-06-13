@@ -136,9 +136,31 @@ const ColorBends = React.memo(function ColorBends({
 	const pointerTargetRef = useRef<THREE.Vector2>(new THREE.Vector2(0, 0));
 	const pointerCurrentRef = useRef<THREE.Vector2>(new THREE.Vector2(0, 0));
 	const pointerSmoothRef = useRef<number>(8);
+	const initialUniformsRef = useRef({
+		speed,
+		transparent,
+		scale,
+		frequency,
+		warpStrength,
+		mouseInfluence,
+		parallax,
+		noise,
+	});
+
+	initialUniformsRef.current = {
+		speed,
+		transparent,
+		scale,
+		frequency,
+		warpStrength,
+		mouseInfluence,
+		parallax,
+		noise,
+	};
 
 	useEffect(() => {
 		const container = containerRef.current!;
+		const initialUniforms = initialUniformsRef.current;
 		const scene = new THREE.Scene();
 		const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
@@ -153,18 +175,18 @@ const ColorBends = React.memo(function ColorBends({
 			uniforms: {
 				uCanvas: { value: new THREE.Vector2(1, 1) },
 				uTime: { value: 0 },
-				uSpeed: { value: speed },
+				uSpeed: { value: initialUniforms.speed },
 				uRot: { value: new THREE.Vector2(1, 0) },
 				uColorCount: { value: 0 },
 				uColors: { value: uColorsArray },
-				uTransparent: { value: transparent ? 1 : 0 },
-				uScale: { value: scale },
-				uFrequency: { value: frequency },
-				uWarpStrength: { value: warpStrength },
+				uTransparent: { value: initialUniforms.transparent ? 1 : 0 },
+				uScale: { value: initialUniforms.scale },
+				uFrequency: { value: initialUniforms.frequency },
+				uWarpStrength: { value: initialUniforms.warpStrength },
 				uPointer: { value: new THREE.Vector2(0, 0) },
-				uMouseInfluence: { value: mouseInfluence },
-				uParallax: { value: parallax },
-				uNoise: { value: noise },
+				uMouseInfluence: { value: initialUniforms.mouseInfluence },
+				uParallax: { value: initialUniforms.parallax },
+				uNoise: { value: initialUniforms.noise },
 			},
 			premultipliedAlpha: true,
 			transparent: true,
@@ -180,9 +202,9 @@ const ColorBends = React.memo(function ColorBends({
 			alpha: true,
 		});
 		rendererRef.current = renderer;
-		(renderer as any).outputColorSpace = (THREE as any).SRGBColorSpace;
+		renderer.outputColorSpace = THREE.SRGBColorSpace;
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-		renderer.setClearColor(0x000000, transparent ? 0 : 1);
+		renderer.setClearColor(0x000000, initialUniforms.transparent ? 0 : 1);
 		renderer.domElement.style.width = "100%";
 		renderer.domElement.style.height = "100%";
 		renderer.domElement.style.display = "block";

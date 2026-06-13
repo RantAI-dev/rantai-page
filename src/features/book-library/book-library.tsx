@@ -4,7 +4,6 @@ import { useState } from "react"
 import Image from "next/image"
 import {
   SearchIcon,
-  FilterIcon,
   LayoutGridIcon,
   ListIcon,
   BookOpenIcon,
@@ -29,7 +28,6 @@ import {
   InputGroupText,
 } from "@/components/ui/input-group"
 
-import { cn } from "@/lib/utils"
 import { useBookFilter } from "./use-book-filter"
 import { type BookLibraryProps } from "./types"
 
