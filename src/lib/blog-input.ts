@@ -70,10 +70,31 @@ export function isPublishedOnlyBlogUpdate(body: BlogInputBody) {
   return keys.length === 1 && keys[0] === "published" && typeof body.published === "boolean";
 }
 
+// Postgres unique_violation. Drizzle wraps the driver error, so the real
+// code/message lives on the `cause` chain rather than the top-level error.
+const UNIQUE_VIOLATION = "23505";
+
+function isUniqueViolation(err: unknown) {
+  let current: unknown = err;
+
+  for (let depth = 0; current && depth < 5; depth++) {
+    const candidate = current as { code?: unknown; message?: unknown; cause?: unknown };
+
+    if (candidate.code === UNIQUE_VIOLATION) return true;
+
+    if (typeof candidate.message === "string") {
+      const message = candidate.message.toLowerCase();
+      if (message.includes("unique") || message.includes("duplicate")) return true;
+    }
+
+    current = candidate.cause;
+  }
+
+  return false;
+}
+
 export function getDatabaseErrorResponse(err: unknown) {
-  const message = err instanceof Error ? err.message : "Database error";
-  const normalizedMessage = message.toLowerCase();
-  const isDuplicate = normalizedMessage.includes("unique") || normalizedMessage.includes("duplicate");
+  const isDuplicate = isUniqueViolation(err);
 
   return {
     message: isDuplicate ? "A post with this slug already exists." : "Database error",
