@@ -28,6 +28,7 @@ interface DataTableProps<TData> {
   data: TData[];
   pageCount: number;
   searchPlaceholder?: string;
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData>({
@@ -35,6 +36,7 @@ export function DataTable<TData>({
   data,
   pageCount,
   searchPlaceholder = "Search...",
+  onRowClick,
 }: DataTableProps<TData>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -183,7 +185,13 @@ export function DataTable<TData>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="hover:bg-muted/30 transition-colors"
+                  className={`hover:bg-muted/30 transition-colors${onRowClick ? " cursor-pointer" : ""}`}
+                  onClick={(e) => {
+                    if (!onRowClick) return;
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button, a, input, [role="menuitem"], [role="checkbox"], [role="option"]')) return;
+                    onRowClick(row.original);
+                  }}
                 >
                   {row.getVisibleCells().map((cell, i) => (
                     <TableCell

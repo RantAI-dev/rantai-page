@@ -1,18 +1,178 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { EyeIcon, Pencil, Share2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { EyeIcon, MoreHorizontal, Trash2, Link2, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { siteConfig } from "@/lib/config";
 import type { BlogPost } from "@/lib/db/schema";
+import {
+  XIcon,
+  LinkedInIcon,
+  ThreadsIcon,
+  FacebookIcon,
+} from "@/components/icons";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { BlogPublishedToggle } from "@/components/admin/blog-published-toggle";
-import { ShareDropdown } from "@/components/share-dropdown";
-import { DeleteButton } from "@/components/admin/delete-button";
+
+function BlogActionsCell({ post }: { post: BlogPost }) {
+  const router = useRouter();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const url = `${siteConfig.url}/blog/${post.slug}`;
+
+  async function handleDelete() {
+    setDeleting(true);
+    const res = await fetch(`/api/admin/blog/${post.id}`, { method: "DELETE" });
+    setDeleting(false);
+    if (res.ok) {
+      toast.success("Deleted");
+      router.push("/admin/blog");
+      router.refresh();
+    } else {
+      toast.error("Failed to delete");
+    }
+  }
+
+  async function copyLink() {
+    await navigator.clipboard.writeText(url);
+    toast.success("Link copied!");
+  }
+
+  function shareX() {
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(url)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  }
+
+  function shareLinkedIn() {
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  }
+
+  function shareThreads() {
+    window.open(
+      `https://www.threads.net/intent/post?text=${encodeURIComponent(post.title + " " + url)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  }
+
+  function shareFacebook() {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  }
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <Link href={`/admin/blog/preview/${post.slug}`} target="_blank" rel="noreferrer">
+              <EyeIcon />
+              Preview
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Share2 />
+              Share
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onClick={copyLink}>
+                <Link2 />
+                Copy Link
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={shareX}>
+                <XIcon />
+                Share on X
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={shareLinkedIn}>
+                <LinkedInIcon />
+                Share on LinkedIn
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={shareThreads}>
+                <ThreadsIcon />
+                Share on Threads
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={shareFacebook}>
+                <FacebookIcon />
+                Share on Facebook
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => setDeleteOpen(true)}
+          >
+            <Trash2 />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete?</AlertDialogTitle>
+            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const blogColumns: ColumnDef<BlogPost, any>[] = [
@@ -71,49 +231,8 @@ export const blogColumns: ColumnDef<BlogPost, any>[] = [
   },
   {
     id: "actions",
-    header: "Actions",
-    cell: ({ row }) => {
-      const post = row.original;
-      return (
-        <div className="flex items-center gap-1 justify-end">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" asChild>
-                <Link
-                  href={`/admin/blog/preview/${post.slug}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <EyeIcon className="h-4 w-4" />
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Preview</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <ShareDropdown url={`${siteConfig.url}/blog/${post.slug}`} title={post.title}>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Share2 className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-            </ShareDropdown>
-            <TooltipContent>Share</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href={`/admin/blog/${post.id}/edit`}>
-                  <Pencil className="h-4 w-4" />
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
-          </Tooltip>
-          <DeleteButton id={post.id} endpoint="/api/admin/blog" redirectTo="/admin/blog" />
-        </div>
-      );
-    },
+    header: "",
+    cell: ({ row }) => <BlogActionsCell post={row.original} />,
     enableSorting: false,
     enableGlobalFilter: false,
   },

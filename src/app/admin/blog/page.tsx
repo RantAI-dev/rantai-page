@@ -1,13 +1,12 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { asc, desc, ilike, or, count } from "drizzle-orm";
+import { asc, desc, ilike, or, count, eq, and } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
 
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
-import { blogColumns } from "./columns";
+import { BlogTable } from "./blog-table";
 
 const PAGE_SIZE = 10;
 
@@ -26,17 +25,25 @@ export default async function AdminBlogPage({
   const params = await searchParams;
 
   const q = params.q ?? "";
+  const filterTag = params.tag ?? "";
+  const filterStatus = params.status ?? "";
   const sortKey = (params.sort ?? "createdAt") as keyof typeof sortableColumns;
   const order = params.order === "asc" ? "asc" : "desc";
   const page = Math.max(1, Number(params.page ?? "1"));
 
   const col = sortableColumns[sortKey] ?? blogPosts.createdAt;
   const orderFn = order === "asc" ? asc : desc;
-  const whereClause = q
-    ? or(ilike(blogPosts.title, `%${q}%`), ilike(blogPosts.tag, `%${q}%`))
-    : undefined;
 
-  const [posts, [{ total }]] = await Promise.all([
+  const conditions = [
+    q ? or(ilike(blogPosts.title, `%${q}%`), ilike(blogPosts.tag, `%${q}%`)) : undefined,
+    filterTag ? eq(blogPosts.tag, filterTag) : undefined,
+    filterStatus === "published" ? eq(blogPosts.published, true) : undefined,
+    filterStatus === "draft" ? eq(blogPosts.published, false) : undefined,
+  ].filter(Boolean) as Parameters<typeof and>;
+
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+  const [posts, [{ total }], uniqueTagRows] = await Promise.all([
     db
       .select()
       .from(blogPosts)
@@ -45,8 +52,10 @@ export default async function AdminBlogPage({
       .limit(PAGE_SIZE)
       .offset((page - 1) * PAGE_SIZE),
     db.select({ total: count() }).from(blogPosts).where(whereClause),
+    db.selectDistinct({ tag: blogPosts.tag }).from(blogPosts).orderBy(asc(blogPosts.tag)),
   ]);
 
+  const tags = uniqueTagRows.map((r) => r.tag);
   const pageCount = Math.ceil(Number(total) / PAGE_SIZE);
 
   return (
@@ -58,11 +67,12 @@ export default async function AdminBlogPage({
         </Link>
       </div>
       <Suspense>
-        <DataTable
-          columns={blogColumns}
+        <BlogTable
           data={posts}
           pageCount={pageCount}
-          searchPlaceholder="Search by title or tag..."
+          tags={tags}
+          initialTag={filterTag}
+          initialStatus={filterStatus}
         />
       </Suspense>
     </div>
