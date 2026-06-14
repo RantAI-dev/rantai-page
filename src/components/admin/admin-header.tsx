@@ -31,14 +31,17 @@ function getBreadcrumbLabel(segment: string) {
 
 function getBreadcrumbItems(pathname: string) {
   const segments = pathname.split("/").filter(Boolean)
-  const items = [{ href: "/admin", label: "Dashboard" }]
+  const items: { href: string; label: string }[] = []
   let href = ""
 
   for (let index = 0; index < segments.length; index += 1) {
     const segment = segments[index]
     href += `/${segment}`
 
-    if (segment === "admin") {
+    // Only show "Dashboard" as a crumb on the root /admin page itself.
+    // For deeper pages (e.g. /admin/blog), treat the first real section as
+    // the root so Blog is a peer of Dashboard rather than nested under it.
+    if (segment === "admin" && segments.length > 1) {
       continue
     }
 
@@ -79,13 +82,7 @@ export function AdminHeader() {
                 {index > 0 ? (
                   <BreadcrumbSeparator className="hidden md:block" />
                 ) : null}
-                <BreadcrumbItem
-                  className={
-                    index === 0 && !isCurrentPage
-                      ? "hidden md:block"
-                      : undefined
-                  }
-                >
+                <BreadcrumbItem>
                   {isCurrentPage ? (
                     <BreadcrumbPage>{item.label}</BreadcrumbPage>
                   ) : (
