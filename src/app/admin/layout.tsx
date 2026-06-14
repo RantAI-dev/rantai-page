@@ -11,9 +11,9 @@ export default function AdminLayout({
   return (
     <SidebarProvider>
       <AdminSidebar />
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <AdminHeader />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="min-w-0 flex-1 overflow-auto p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   )

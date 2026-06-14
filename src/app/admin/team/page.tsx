@@ -1,13 +1,76 @@
+import { Suspense } from "react";
+import Link from "next/link";
+import { asc, desc, ilike, or, count, and, inArray } from "drizzle-orm";
+
 import { db } from "@/lib/db";
 import { teamMembers } from "@/lib/db/schema";
-import { asc } from "drizzle-orm";
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { DeleteButton } from "@/components/admin/delete-button";
 
-export default async function AdminTeamPage() {
-  const members = await db.select().from(teamMembers).orderBy(asc(teamMembers.orderIndex));
+import { Button } from "@/components/ui/button";
+import { TeamTable } from "./team-table";
+
+const DEFAULT_PAGE_SIZE = 10;
+
+const sortableColumns = {
+  name: teamMembers.name,
+  role: teamMembers.role,
+  orderIndex: teamMembers.orderIndex,
+  createdAt: teamMembers.createdAt,
+  updatedAt: teamMembers.updatedAt,
+} as const;
+
+function parseSort(value: string | undefined) {
+  try {
+    const parsed = JSON.parse(value ?? "");
+    if (Array.isArray(parsed) && parsed[0] && typeof parsed[0].id === "string") {
+      const id = parsed[0].id as keyof typeof sortableColumns;
+      if (id in sortableColumns) {
+        return { key: id, desc: Boolean(parsed[0].desc) };
+      }
+    }
+  } catch {
+    // fall through to default
+  }
+  return { key: "orderIndex" as const, desc: false };
+}
+
+export default async function AdminTeamPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
+  const params = await searchParams;
+
+  const q = params.q ?? "";
+  const page = Math.max(1, Number(params.page ?? "1"));
+  const perPage = Math.max(1, Number(params.perPage ?? DEFAULT_PAGE_SIZE));
+
+  const { key: sortKey, desc: sortDesc } = parseSort(params.sort);
+  const col = sortableColumns[sortKey];
+  const orderFn = sortDesc ? desc : asc;
+
+  const roleFilter = params.role ? params.role.split(",").filter(Boolean) : [];
+
+  const conditions = [
+    q ? or(ilike(teamMembers.name, `%${q}%`), ilike(teamMembers.role, `%${q}%`)) : undefined,
+    roleFilter.length ? inArray(teamMembers.role, roleFilter) : undefined,
+  ].filter(Boolean) as Parameters<typeof and>;
+
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+  const [members, [{ total }], uniqueRoleRows] = await Promise.all([
+    db
+      .select()
+      .from(teamMembers)
+      .where(whereClause)
+      .orderBy(orderFn(col))
+      .limit(perPage)
+      .offset((page - 1) * perPage),
+    db.select({ total: count() }).from(teamMembers).where(whereClause),
+    db.selectDistinct({ role: teamMembers.role }).from(teamMembers).orderBy(asc(teamMembers.role)),
+  ]);
+
+  const roles = uniqueRoleRows.map((r) => r.role);
+  const pageCount = Math.ceil(Number(total) / perPage);
 
   return (
     <div>
@@ -17,51 +80,9 @@ export default async function AdminTeamPage() {
           <Button size="sm">New Member</Button>
         </Link>
       </div>
-
-      <div className="rounded-md border border-border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50">
-            <tr>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground w-12">Photo</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Name</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Role</th>
-              <th className="px-4 py-3" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {members.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">No team members yet.</td>
-              </tr>
-            )}
-            {members.map((m) => (
-              <tr key={m.id} className="hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3">
-                  {m.imageUrl ? (
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden">
-                      <Image src={m.imageUrl} alt={m.name} fill className="object-cover" unoptimized />
-                    </div>
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
-                      {m.name.charAt(0)}
-                    </div>
-                  )}
-                </td>
-                <td className="px-4 py-3 font-medium">{m.name}</td>
-                <td className="px-4 py-3 text-muted-foreground">{m.role}</td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2 justify-end">
-                    <Link href={`/admin/team/${m.id}/edit`}>
-                      <Button variant="ghost" size="sm">Edit</Button>
-                    </Link>
-                    <DeleteButton id={m.id} endpoint="/api/admin/team" redirectTo="/admin/team" />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Suspense>
+        <TeamTable data={members} pageCount={pageCount} roles={roles} />
+      </Suspense>
     </div>
   );
 }

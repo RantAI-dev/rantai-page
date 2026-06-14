@@ -1,14 +1,79 @@
+import { Suspense } from "react";
+import Link from "next/link";
+import { asc, desc, ilike, or, count, and, inArray } from "drizzle-orm";
+
 import { db } from "@/lib/db";
 import { books } from "@/lib/db/schema";
-import { asc } from "drizzle-orm";
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { DeleteButton } from "@/components/admin/delete-button";
 
-export default async function AdminBooksPage() {
-  const allBooks = await db.select().from(books).orderBy(asc(books.orderIndex));
+import { Button } from "@/components/ui/button";
+import { BooksTable } from "./books-table";
+
+const DEFAULT_PAGE_SIZE = 10;
+
+const sortableColumns = {
+  code: books.code,
+  name: books.name,
+  category: books.category,
+  orderIndex: books.orderIndex,
+  createdAt: books.createdAt,
+  updatedAt: books.updatedAt,
+} as const;
+
+function parseSort(value: string | undefined) {
+  try {
+    const parsed = JSON.parse(value ?? "");
+    if (Array.isArray(parsed) && parsed[0] && typeof parsed[0].id === "string") {
+      const id = parsed[0].id as keyof typeof sortableColumns;
+      if (id in sortableColumns) {
+        return { key: id, desc: Boolean(parsed[0].desc) };
+      }
+    }
+  } catch {
+    // fall through to default
+  }
+  return { key: "orderIndex" as const, desc: false };
+}
+
+export default async function AdminBooksPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
+  const params = await searchParams;
+
+  const q = params.q ?? "";
+  const page = Math.max(1, Number(params.page ?? "1"));
+  const perPage = Math.max(1, Number(params.perPage ?? DEFAULT_PAGE_SIZE));
+
+  const { key: sortKey, desc: sortDesc } = parseSort(params.sort);
+  const col = sortableColumns[sortKey];
+  const orderFn = sortDesc ? desc : asc;
+
+  const categoryFilter = params.category
+    ? params.category.split(",").filter(Boolean)
+    : [];
+
+  const conditions = [
+    q ? or(ilike(books.code, `%${q}%`), ilike(books.name, `%${q}%`)) : undefined,
+    categoryFilter.length ? inArray(books.category, categoryFilter) : undefined,
+  ].filter(Boolean) as Parameters<typeof and>;
+
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+  const [rows, [{ total }], uniqueCategoryRows] = await Promise.all([
+    db
+      .select()
+      .from(books)
+      .where(whereClause)
+      .orderBy(orderFn(col))
+      .limit(perPage)
+      .offset((page - 1) * perPage),
+    db.select({ total: count() }).from(books).where(whereClause),
+    db.selectDistinct({ category: books.category }).from(books).orderBy(asc(books.category)),
+  ]);
+
+  const categories = uniqueCategoryRows.map((r) => r.category);
+  const pageCount = Math.ceil(Number(total) / perPage);
 
   return (
     <div>
@@ -18,47 +83,9 @@ export default async function AdminBooksPage() {
           <Button size="sm">New Book</Button>
         </Link>
       </div>
-
-      <div className="rounded-md border border-border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50">
-            <tr>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground w-12">Cover</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Code</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Name</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Category</th>
-              <th className="px-4 py-3" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {allBooks.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">No books yet.</td>
-              </tr>
-            )}
-            {allBooks.map((book) => (
-              <tr key={book.id} className="hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3">
-                  <div className="relative w-8 h-10 rounded overflow-hidden">
-                    <Image src={book.imageUrl} alt={book.name} fill className="object-cover" unoptimized />
-                  </div>
-                </td>
-                <td className="px-4 py-3 font-mono text-xs font-medium">{book.code}</td>
-                <td className="px-4 py-3 max-w-xs truncate">{book.name}</td>
-                <td className="px-4 py-3"><Badge variant="outline">{book.category}</Badge></td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2 justify-end">
-                    <Link href={`/admin/books/${book.id}/edit`}>
-                      <Button variant="ghost" size="sm">Edit</Button>
-                    </Link>
-                    <DeleteButton id={book.id} endpoint="/api/admin/books" redirectTo="/admin/books" />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Suspense>
+        <BooksTable data={rows} pageCount={pageCount} categories={categories} />
+      </Suspense>
     </div>
   );
 }

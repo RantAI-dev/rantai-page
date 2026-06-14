@@ -41,6 +41,7 @@ export function BlogTable({ data, pageCount, tags }: BlogTableProps) {
     startTransition,
     initialState: {
       sorting: [{ id: "createdAt", desc: true }],
+      columnPinning: { right: ["actions"] },
       pagination: { pageIndex: 0, pageSize: 10 },
     },
     getRowId: (row) => row.id,

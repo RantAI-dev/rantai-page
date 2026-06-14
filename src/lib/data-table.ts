@@ -31,7 +31,9 @@ export function getColumnPinningStyle<TData>({
     right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
     opacity: isPinned ? 0.97 : 1,
     position: isPinned ? "sticky" : "relative",
-    background: isPinned ? "var(--background)" : "var(--background)",
+    // Only pinned cells need an opaque background to cover content scrolling
+    // beneath them; non-pinned cells stay transparent so the row hover shows.
+    background: isPinned ? "var(--background)" : undefined,
     width: column.getSize(),
     zIndex: isPinned ? 1 : undefined,
   };
