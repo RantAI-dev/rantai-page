@@ -9,12 +9,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { XIcon, LinkedInIcon } from "@/components/icons"
+import {
+  XIcon,
+  LinkedInIcon,
+  ThreadsIcon,
+  FacebookIcon,
+} from "@/components/icons"
 
 interface ShareDropdownProps {
-  url: string
-  title: string
-  children: React.ReactNode
+  readonly url: string
+  readonly title: string
+  readonly children: React.ReactNode
 }
 
 export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
@@ -22,7 +27,7 @@ export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
       "_blank",
-      "noopener,noreferrer",
+      "noopener,noreferrer"
     )
   }
 
@@ -30,7 +35,23 @@ export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
     window.open(
       `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
       "_blank",
-      "noopener,noreferrer",
+      "noopener,noreferrer"
+    )
+  }
+
+  function shareThreads() {
+    window.open(
+      `https://www.threads.net/intent/post?text=${encodeURIComponent(title + " " + url)}`,
+      "_blank",
+      "noopener,noreferrer"
+    )
+  }
+
+  function shareFacebook() {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+      "_blank",
+      "noopener,noreferrer"
     )
   }
 
@@ -42,7 +63,12 @@ export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-40">
+      <DropdownMenuContent align="end" className="min-w-44">
+        <DropdownMenuItem onClick={copyLink}>
+          <Link2 />
+          Copy Link
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={shareX}>
           <XIcon />
           Share on X
@@ -51,10 +77,13 @@ export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
           <LinkedInIcon />
           Share on LinkedIn
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={copyLink}>
-          <Link2 />
-          Copy Link
+        <DropdownMenuItem onClick={shareThreads}>
+          <ThreadsIcon />
+          Share on Threads
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={shareFacebook}>
+          <FacebookIcon />
+          Share on Facebook
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
