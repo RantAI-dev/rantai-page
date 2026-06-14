@@ -9,6 +9,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import { siteConfig } from "@/lib/config";
 import type { BlogPost } from "@/lib/db/schema";
+import type { Option } from "@/types/data-table";
 import {
   XIcon,
   LinkedInIcon,
@@ -18,6 +19,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -174,66 +176,92 @@ function BlogActionsCell({ post }: { post: BlogPost }) {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const blogColumns: ColumnDef<BlogPost, any>[] = [
-  {
-    accessorKey: "title",
-    header: "Title",
-    cell: ({ getValue }) => (
-      <span className="font-medium max-w-xs truncate block">{getValue<string>()}</span>
-    ),
-    enableSorting: true,
-    enableGlobalFilter: true,
-  },
-  {
-    accessorKey: "tag",
-    header: "Tag",
-    cell: ({ getValue }) => <Badge variant="outline">{getValue<string>()}</Badge>,
-    enableSorting: true,
-    enableGlobalFilter: true,
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Created",
-    cell: ({ getValue }) => (
-      <span className="text-muted-foreground">
-        {new Date(getValue<Date>()).toLocaleString("en-GB", {
-          dateStyle: "short",
-          timeStyle: "short",
-        })}
-      </span>
-    ),
-    enableSorting: true,
-    enableGlobalFilter: false,
-  },
-  {
-    accessorKey: "updatedAt",
-    header: "Modified",
-    cell: ({ getValue }) => (
-      <span className="text-muted-foreground">
-        {new Date(getValue<Date>()).toLocaleString("en-GB", {
-          dateStyle: "short",
-          timeStyle: "short",
-        })}
-      </span>
-    ),
-    enableSorting: true,
-    enableGlobalFilter: false,
-  },
-  {
-    accessorKey: "published",
-    header: "Status",
-    cell: ({ getValue, row }) => (
-      <BlogPublishedToggle id={row.original.id} published={getValue<boolean>()} />
-    ),
-    enableSorting: false,
-    enableGlobalFilter: false,
-  },
-  {
-    id: "actions",
-    header: "",
-    cell: ({ row }) => <BlogActionsCell post={row.original} />,
-    enableSorting: false,
-    enableGlobalFilter: false,
-  },
+export const STATUS_OPTIONS: Option[] = [
+  { label: "Published", value: "true" },
+  { label: "Draft", value: "false" },
 ];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getBlogColumns(tagOptions: Option[]): ColumnDef<BlogPost, any>[] {
+  return [
+    {
+      id: "title",
+      accessorKey: "title",
+      header: ({ column }) => <DataTableColumnHeader column={column} label="Title" />,
+      cell: ({ getValue }) => (
+        <span className="font-medium block truncate">{getValue<string>()}</span>
+      ),
+      meta: { label: "Title" },
+      size: 640,
+      enableSorting: true,
+      enableHiding: false,
+    },
+    {
+      id: "tag",
+      accessorKey: "tag",
+      header: ({ column }) => <DataTableColumnHeader column={column} label="Tag" />,
+      cell: ({ getValue }) => <Badge variant="outline">{getValue<string>()}</Badge>,
+      meta: { label: "Tag", variant: "multiSelect", options: tagOptions },
+      size: 130,
+      enableSorting: true,
+      enableColumnFilter: true,
+    },
+    {
+      id: "createdAt",
+      accessorKey: "createdAt",
+      header: ({ column }) => <DataTableColumnHeader column={column} label="Created" />,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">
+          {new Date(getValue<Date>()).toLocaleString("en-GB", {
+            dateStyle: "short",
+            timeStyle: "short",
+          })}
+        </span>
+      ),
+      meta: { label: "Created" },
+      size: 180,
+      enableSorting: true,
+    },
+    {
+      id: "updatedAt",
+      accessorKey: "updatedAt",
+      header: ({ column }) => <DataTableColumnHeader column={column} label="Modified" />,
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">
+          {new Date(getValue<Date>()).toLocaleString("en-GB", {
+            dateStyle: "short",
+            timeStyle: "short",
+          })}
+        </span>
+      ),
+      meta: { label: "Modified" },
+      size: 180,
+      enableSorting: true,
+    },
+    {
+      id: "published",
+      accessorKey: "published",
+      header: "Status",
+      cell: ({ getValue, row }) => (
+        <BlogPublishedToggle id={row.original.id} published={getValue<boolean>()} />
+      ),
+      meta: { label: "Status", variant: "multiSelect", options: STATUS_OPTIONS },
+      size: 100,
+      enableSorting: false,
+      enableColumnFilter: true,
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => (
+        <div className="flex justify-end">
+          <BlogActionsCell post={row.original} />
+        </div>
+      ),
+      size: 64,
+      enableSorting: false,
+      enableHiding: false,
+      enableResizing: false,
+    },
+  ];
+}

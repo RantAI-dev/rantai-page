@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { asc, desc, ilike, or, count, eq, and } from "drizzle-orm";
+import { asc, desc, ilike, or, count, eq, and, inArray } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
@@ -8,7 +8,7 @@ import { blogPosts } from "@/lib/db/schema";
 import { Button } from "@/components/ui/button";
 import { BlogTable } from "./blog-table";
 
-const PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 10;
 
 const sortableColumns = {
   title: blogPosts.title,
@@ -16,6 +16,21 @@ const sortableColumns = {
   createdAt: blogPosts.createdAt,
   updatedAt: blogPosts.updatedAt,
 } as const;
+
+function parseSort(value: string | undefined) {
+  try {
+    const parsed = JSON.parse(value ?? "");
+    if (Array.isArray(parsed) && parsed[0] && typeof parsed[0].id === "string") {
+      const id = parsed[0].id as keyof typeof sortableColumns;
+      if (id in sortableColumns) {
+        return { key: id, desc: Boolean(parsed[0].desc) };
+      }
+    }
+  } catch {
+    // fall through to default
+  }
+  return { key: "createdAt" as const, desc: true };
+}
 
 export default async function AdminBlogPage({
   searchParams,
@@ -25,20 +40,25 @@ export default async function AdminBlogPage({
   const params = await searchParams;
 
   const q = params.q ?? "";
-  const filterTag = params.tag ?? "";
-  const filterStatus = params.status ?? "";
-  const sortKey = (params.sort ?? "createdAt") as keyof typeof sortableColumns;
-  const order = params.order === "asc" ? "asc" : "desc";
   const page = Math.max(1, Number(params.page ?? "1"));
+  const perPage = Math.max(1, Number(params.perPage ?? DEFAULT_PAGE_SIZE));
 
-  const col = sortableColumns[sortKey] ?? blogPosts.createdAt;
-  const orderFn = order === "asc" ? asc : desc;
+  const { key: sortKey, desc: sortDesc } = parseSort(params.sort);
+  const col = sortableColumns[sortKey];
+  const orderFn = sortDesc ? desc : asc;
+
+  const tagFilter = params.tag ? params.tag.split(",").filter(Boolean) : [];
+  const statusFilter = params.published
+    ? params.published.split(",").filter(Boolean)
+    : [];
 
   const conditions = [
     q ? or(ilike(blogPosts.title, `%${q}%`), ilike(blogPosts.tag, `%${q}%`)) : undefined,
-    filterTag ? eq(blogPosts.tag, filterTag) : undefined,
-    filterStatus === "published" ? eq(blogPosts.published, true) : undefined,
-    filterStatus === "draft" ? eq(blogPosts.published, false) : undefined,
+    tagFilter.length ? inArray(blogPosts.tag, tagFilter) : undefined,
+    // Only constrain status when exactly one of published/draft is selected.
+    statusFilter.length === 1
+      ? eq(blogPosts.published, statusFilter[0] === "true")
+      : undefined,
   ].filter(Boolean) as Parameters<typeof and>;
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
@@ -49,14 +69,14 @@ export default async function AdminBlogPage({
       .from(blogPosts)
       .where(whereClause)
       .orderBy(orderFn(col))
-      .limit(PAGE_SIZE)
-      .offset((page - 1) * PAGE_SIZE),
+      .limit(perPage)
+      .offset((page - 1) * perPage),
     db.select({ total: count() }).from(blogPosts).where(whereClause),
     db.selectDistinct({ tag: blogPosts.tag }).from(blogPosts).orderBy(asc(blogPosts.tag)),
   ]);
 
   const tags = uniqueTagRows.map((r) => r.tag);
-  const pageCount = Math.ceil(Number(total) / PAGE_SIZE);
+  const pageCount = Math.ceil(Number(total) / perPage);
 
   return (
     <div>
@@ -67,13 +87,7 @@ export default async function AdminBlogPage({
         </Link>
       </div>
       <Suspense>
-        <BlogTable
-          data={posts}
-          pageCount={pageCount}
-          tags={tags}
-          initialTag={filterTag}
-          initialStatus={filterStatus}
-        />
+        <BlogTable data={posts} pageCount={pageCount} tags={tags} />
       </Suspense>
     </div>
   );

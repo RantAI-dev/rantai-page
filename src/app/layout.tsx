@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import "./globals.css";
 import { META_THEME_COLORS, siteConfig } from "@/lib/config";
@@ -78,11 +79,13 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="RantAI" />
       </head>
       <body>
-        <ThemeProvider>
-          <TooltipProvider>
-            {children}
-          </TooltipProvider>
-        </ThemeProvider>
+        <NuqsAdapter>
+          <ThemeProvider>
+            <TooltipProvider>
+              {children}
+            </TooltipProvider>
+          </ThemeProvider>
+        </NuqsAdapter>
         <Toaster />
         <Analytics />
         <SpeedInsights />
