@@ -19,13 +19,22 @@ export function NoiseControl({
 }: NoiseControlProps) {
   return (
     <div className="mb-5">
-      <div className="mb-3 flex items-center gap-2">
-        <Switch id="noise-enabled" checked={enabled} onCheckedChange={onEnabledChange} />
-        <Label htmlFor="noise-enabled" className="cursor-pointer text-sm font-semibold">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <Label
+          htmlFor="noise-enabled"
+          className="cursor-pointer text-sm font-semibold"
+        >
           Noise
         </Label>
+        <Switch
+          id="noise-enabled"
+          checked={enabled}
+          onCheckedChange={onEnabledChange}
+        />
       </div>
-      <div className={`transition-opacity ${enabled ? "opacity-100" : "pointer-events-none opacity-40"}`}>
+      <div
+        className={`transition-opacity ${enabled ? "opacity-100" : "pointer-events-none opacity-40"}`}
+      >
         <div className="flex items-center gap-3">
           <Slider
             min={0}

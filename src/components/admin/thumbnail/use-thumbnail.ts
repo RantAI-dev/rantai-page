@@ -1,19 +1,12 @@
 import { useRef, useEffect, useState } from "react"
-import { iconNames } from "lucide-react/dynamic"
 
-import {
-  CANVAS_W,
-  CANVAS_H,
-  COLOR_PRESETS,
-  MAX_ICONS_NO_SEARCH,
-  MAX_ICONS_WITH_SEARCH,
-} from "./constants"
+import { CANVAS_W, CANVAS_H, COLOR_PRESETS } from "./constants"
 import { DECO_OPTIONS, type DecoKey } from "./decorations"
 import { drawThumbnail } from "./canvas-helpers"
+import { DEFAULT_ASSETS } from "./default-assets"
 
 export function useThumbnail() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const hiddenIconRef = useRef<HTMLDivElement>(null)
 
   // Appearance
   const [color, setColor] = useState<string>(COLOR_PRESETS[0].value)
@@ -30,18 +23,13 @@ export function useThumbnail() {
   const [noiseEnabled, setNoiseEnabled] = useState(true)
   const [noiseIntensity, setNoiseIntensity] = useState(50)
 
-  // Icon
-  const [iconName, setIconName] = useState("brain")
-  const [iconType, setIconType] = useState<"lucide" | "custom">("lucide")
-  const [customIconUrl, setCustomIconUrl] = useState<string | null>(null)
+  // Asset (upload or default — always a URL)
+  const [customIconUrl, setCustomIconUrl] = useState<string>(DEFAULT_ASSETS[0].url)
   const [customIconSize, setCustomIconSize] = useState(100)
   const prevCustomIconUrl = useRef<string | null>(null)
   const customIconInputRef = useRef<HTMLInputElement>(null)
 
-  // Search
-  const [search, setSearch] = useState("")
-
-  // Cleanup object URLs on unmount
+  // Cleanup blob URLs on unmount
   useEffect(() => {
     return () => {
       if (prevCustomIconUrl.current) URL.revokeObjectURL(prevCustomIconUrl.current)
@@ -51,71 +39,29 @@ export function useThumbnail() {
 
   const selectedDeco = DECO_OPTIONS.find((d) => d.key === deco)!
 
-  const filteredIcons = (() => {
-    const q = search.trim().toLowerCase()
-    if (!q) return iconNames.slice(0, MAX_ICONS_NO_SEARCH)
-    return iconNames.filter((n) => n.includes(q)).slice(0, MAX_ICONS_WITH_SEARCH)
-  })()
-
-  const totalMatches = (() => {
-    const q = search.trim().toLowerCase()
-    return q ? iconNames.filter((n) => n.includes(q)).length : iconNames.length
-  })()
-
   // Canvas draw effect
   useEffect(() => {
     const canvas = canvasRef.current
-    const div = hiddenIconRef.current
-    if (!canvas || !div) return
+    if (!canvas) return
 
-    let observer: MutationObserver | null = null
-
-    const buildOpts = (svgEl?: SVGSVGElement) => ({
+    drawThumbnail(canvas, {
       color,
       deco: decorationType === "builtin" ? selectedDeco : null,
       customDecorationUrl: decorationType === "custom" ? customDecoUrl : null,
       customDecorationScale: customDecoSize,
-      iconSource:
-        iconType === "custom" && customIconUrl
-          ? { type: "url" as const, url: customIconUrl }
-          : { type: "svg" as const, el: svgEl! },
-      iconScale: iconType === "custom" ? customIconSize : 100,
+      iconSource: { type: "url", url: customIconUrl },
+      iconScale: customIconSize,
       noiseEnabled,
       noiseIntensity,
     })
-
-    const draw = async () => {
-      if (iconType === "custom") {
-        if (!customIconUrl) return false
-        await drawThumbnail(canvas, buildOpts())
-        return true
-      }
-      const svgEl = div.querySelector("svg") as SVGSVGElement | null
-      if (!svgEl) return false
-      await drawThumbnail(canvas, buildOpts(svgEl))
-      return true
-    }
-
-    draw().then((done) => {
-      if (!done) {
-        observer = new MutationObserver(async () => {
-          if (await draw()) observer?.disconnect()
-        })
-        observer.observe(div, { childList: true, subtree: true })
-      }
-    })
-
-    return () => observer?.disconnect()
   }, [
-    iconName,
-    iconType,
-    customIconUrl,
     color,
     deco,
     selectedDeco,
     decorationType,
     customDecoUrl,
     customDecoSize,
+    customIconUrl,
     customIconSize,
     noiseEnabled,
     noiseIntensity,
@@ -129,15 +75,13 @@ export function useThumbnail() {
     const url = URL.createObjectURL(file)
     prevCustomIconUrl.current = url
     setCustomIconUrl(url)
-    setIconType("custom")
     e.target.value = ""
   }
 
-  function clearCustomIcon() {
+  function handleDefaultAssetSelect(url: string) {
     if (prevCustomIconUrl.current) URL.revokeObjectURL(prevCustomIconUrl.current)
     prevCustomIconUrl.current = null
-    setCustomIconUrl(null)
-    setIconType("lucide")
+    setCustomIconUrl(url)
   }
 
   function handleCustomDecoUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -170,7 +114,6 @@ export function useThumbnail() {
   return {
     // Refs
     canvasRef,
-    hiddenIconRef,
     customIconInputRef,
     customDecoInputRef,
     // Canvas size
@@ -190,22 +133,14 @@ export function useThumbnail() {
     setNoiseEnabled,
     noiseIntensity,
     setNoiseIntensity,
-    iconName,
-    setIconName,
-    iconType,
-    setIconType,
     customIconUrl,
     customIconSize,
     setCustomIconSize,
-    search,
-    setSearch,
     // Derived
     selectedDeco,
-    filteredIcons,
-    totalMatches,
     // Handlers
     handleCustomIconUpload,
-    clearCustomIcon,
+    handleDefaultAssetSelect,
     handleCustomDecoUpload,
     clearCustomDeco,
     handleDownload,

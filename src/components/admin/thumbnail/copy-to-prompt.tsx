@@ -15,6 +15,19 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -39,8 +52,7 @@ import { Separator } from "@/components/ui/separator"
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface CopyToPromptProps {
-  iconName: string
-  iconType: "lucide" | "custom"
+  initialSubject?: SubjectMode
 }
 
 type SubjectMode = "asset" | "decoration"
@@ -51,17 +63,10 @@ type FormatMode = "png" | "svg"
 function buildPrompt(
   subject: SubjectMode,
   format: FormatMode,
-  description: string,
-  iconName: string,
-  iconType: "lucide" | "custom"
+  description: string
 ): string {
-  const fallbackIcon =
-    iconType === "custom"
-      ? "an icon"
-      : `a "${iconName.replace(/-/g, " ")}" icon`
-
   if (subject === "asset") {
-    const desc = description.trim() || fallbackIcon
+    const desc = description.trim() || "Random Object"
     if (format === "png") {
       return [
         `Create ${desc} as a square (1:1) PNG image.`,
@@ -82,7 +87,7 @@ function buildPrompt(
     ].join("\n")
   }
 
-  const desc = description.trim() || "a geometric decorative pattern"
+  const desc = description.trim() || "Random Object"
   if (format === "png") {
     return [
       `Create ${desc} as a decorative graphic element, square (1:1) PNG image.`,
@@ -186,14 +191,14 @@ function PromptActions({ getPrompt }: { getPrompt: () => string }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export function CopyToPrompt({ iconName, iconType }: CopyToPromptProps) {
-  const [subject, setSubject] = useState<SubjectMode>("asset")
+export function CopyToPrompt({ initialSubject = "asset" }: CopyToPromptProps) {
+  const [subject, setSubject] = useState<SubjectMode>(initialSubject)
   const [description, setDescription] = useState("")
   const [format, setFormat] = useState<FormatMode>("png")
 
   const prompt = useMemo(
-    () => buildPrompt(subject, format, description, iconName, iconType),
-    [subject, format, description, iconName, iconType]
+    () => buildPrompt(subject, format, description),
+    [subject, format, description]
   )
 
   const placeholder =
@@ -294,5 +299,58 @@ export function CopyToPrompt({ iconName, iconType }: CopyToPromptProps) {
         <PromptActions getPrompt={() => prompt} />
       </div>
     </div>
+  )
+}
+
+// ── Dialog wrapper ────────────────────────────────────────────────────────────
+
+export interface CopyToPromptDialogProps {
+  initialSubject: SubjectMode
+}
+
+export function CopyToPromptDialog({
+  initialSubject,
+}: CopyToPromptDialogProps) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="w-full" variant={"outline"}>
+          <Sparkles />
+          Generate with AI
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="sr-only">Generate with AI</DialogTitle>
+          <DialogDescription className="sr-only">Description</DialogDescription>
+        </DialogHeader>
+        <CopyToPrompt initialSubject={initialSubject} />
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ── Popover wrapper ───────────────────────────────────────────────────────────
+
+export function CopyToPromptPopover({
+  initialSubject,
+}: CopyToPromptDialogProps) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className="w-full">
+          <Sparkles />
+          Generate with AI
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-[500px]"
+        align="start"
+        side="right"
+        sideOffset={24}
+      >
+        <CopyToPrompt initialSubject={initialSubject} />
+      </PopoverContent>
+    </Popover>
   )
 }

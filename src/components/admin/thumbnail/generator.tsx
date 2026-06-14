@@ -1,9 +1,9 @@
 "use client"
 
-import { Suspense } from "react"
-import { Download } from "lucide-react"
-import { DynamicIcon } from "lucide-react/dynamic"
+import { useState } from "react"
+import { Download, Grid3x3 } from "lucide-react"
 
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -14,16 +14,16 @@ import {
 import { Separator } from "@/components/ui/separator"
 
 import { useThumbnail } from "./use-thumbnail"
+import { CanvasGrid } from "./canvas-grid"
 import { ColorPicker } from "./color-picker"
 import { DecorationPicker } from "./decoration-picker"
 import { NoiseControl } from "./noise-control"
 import { IconPicker } from "./icon-picker"
-import { CopyToPrompt } from "./copy-to-prompt"
+import { CopyToPromptDialog, CopyToPromptPopover } from "./copy-to-prompt"
 
 export function ThumbnailGenerator() {
   const {
     canvasRef,
-    hiddenIconRef,
     customIconInputRef,
     customDecoInputRef,
     CANVAS_W,
@@ -41,54 +41,36 @@ export function ThumbnailGenerator() {
     setNoiseEnabled,
     noiseIntensity,
     setNoiseIntensity,
-    iconName,
-    setIconName,
-    iconType,
-    setIconType,
     customIconUrl,
     customIconSize,
     setCustomIconSize,
-    search,
-    setSearch,
-    filteredIcons,
     handleCustomIconUpload,
-    clearCustomIcon,
+    handleDefaultAssetSelect,
     handleCustomDecoUpload,
     clearCustomDeco,
     handleDownload,
   } = useThumbnail()
 
-  return (
-    <div className="relative">
-      {/* Hidden icon renderer for canvas */}
-      <div
-        ref={hiddenIconRef}
-        className="pointer-events-none invisible absolute"
-        aria-hidden="true"
-      >
-        <Suspense key={iconName} fallback={null}>
-          <DynamicIcon
-            name={iconName as Parameters<typeof DynamicIcon>[0]["name"]}
-            size={400}
-            color="white"
-            strokeWidth={1.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </Suspense>
-      </div>
+  const [showGrid, setShowGrid] = useState(false)
 
-      <ResizablePanelGroup
-        // direction="horizontal"
-        className="min-h-[calc(100vh-120px)] w-full border border-border"
-      >
+  // Mirror canvas-helpers.ts: size = min(W,H) * 0.32 * (scale/100)
+  const iconSizePx =
+    Math.min(CANVAS_W, CANVAS_H) * 0.32 * (customIconSize / 100)
+
+  return (
+    <div className="relative h-full">
+      <ResizablePanelGroup>
         {/* Controls panel */}
         <ResizablePanel defaultSize={30} minSize={30}>
-          <Card>
+          <Card className="h-full overflow-y-scroll">
             <CardContent>
               <ColorPicker color={color} onColorChange={setColor} />
 
               <Separator className="mb-5" />
+
+              <CopyToPromptDialog initialSubject="asset" />
+
+              <Separator className="my-5" />
 
               <DecorationPicker
                 deco={deco}
@@ -117,29 +99,13 @@ export function ThumbnailGenerator() {
               <Separator className="mb-5" />
 
               <IconPicker
-                iconName={iconName}
-                iconType={iconType}
                 customIconUrl={customIconUrl}
                 customIconSize={customIconSize}
                 inputRef={customIconInputRef}
-                search={search}
-                filteredIcons={filteredIcons}
-                onIconSelect={(name) => {
-                  setIconName(name)
-                  setIconType("lucide")
-                }}
+                onAssetSelect={handleDefaultAssetSelect}
                 onCustomIconSizeChange={setCustomIconSize}
-                onSearchChange={setSearch}
                 onUpload={handleCustomIconUpload}
-                onClear={clearCustomIcon}
               />
-
-              <Separator className="mb-5" />
-
-              <Button className="w-full" size="lg" onClick={handleDownload}>
-                <Download />
-                Download PNG
-              </Button>
             </CardContent>
           </Card>
         </ResizablePanel>
@@ -147,23 +113,43 @@ export function ThumbnailGenerator() {
         <ResizableHandle withHandle />
 
         {/* Right panel: canvas preview + AI prompt */}
-        <ResizablePanel defaultSize={70} minSize={30}>
-          <div className="flex h-full flex-col gap-6 overflow-y-auto p-6">
-            <div className="overflow-hidden rounded-lg border border-border">
-              <canvas
-                ref={canvasRef}
-                width={CANVAS_W}
-                height={CANVAS_H}
-                className="block h-auto w-full"
-              />
-            </div>
+        <ResizablePanel
+          defaultSize={70}
+          minSize={30}
+          className="flex flex-col justify-center gap-2 p-6"
+        >
+          <div className="relative rounded-lg border border-border">
+            {showGrid && (
+              <Alert className="absolute -top-22 w-full">
+                <Grid3x3 className="h-4 w-4" />
+                <AlertDescription>
+                  Use the grid to keep your asset the same visual size across
+                  all thumbnails. Adjust <strong>Asset size</strong> until the
+                  dashed asset zone fits snugly inside the grid square. The grid
+                  is a visual aid only and won't appear in the downloaded PNG.
+                </AlertDescription>
+              </Alert>
+            )}
+            <canvas
+              ref={canvasRef}
+              width={CANVAS_W}
+              height={CANVAS_H}
+              className="block h-auto w-full"
+            />
 
-            <Card>
-              <CardContent>
-                <CopyToPrompt iconName={iconName} iconType={iconType} />
-              </CardContent>
-            </Card>
+            <CanvasGrid
+              canvasW={CANVAS_W}
+              canvasH={CANVAS_H}
+              iconSizePx={iconSizePx}
+              showGrid={showGrid}
+              onToggle={() => setShowGrid((v) => !v)}
+            />
           </div>
+
+          <Button className="w-full" size="lg" onClick={handleDownload}>
+            <Download />
+            Download PNG
+          </Button>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
