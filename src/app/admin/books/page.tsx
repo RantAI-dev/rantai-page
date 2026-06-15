@@ -80,7 +80,7 @@ export default async function AdminBooksPage({
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Books</h1>
         <Link href="/admin/books/new">
-          <Button size="sm">New Book</Button>
+          <Button>New Book</Button>
         </Link>
       </div>
       <Suspense>

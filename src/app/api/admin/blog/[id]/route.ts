@@ -54,9 +54,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: inputError }, { status: 400 });
     }
 
+    // Slug is generated once at creation and kept stable on edit so existing
+    // URLs and inbound links never break, even when the title changes.
+    const { slug, ...updatable } = input;
+    void slug;
     const [post] = await db
       .update(blogPosts)
-      .set({ ...input, updatedAt: new Date() })
+      .set({ ...updatable, updatedAt: new Date() })
       .where(eq(blogPosts.id, id))
       .returning();
 

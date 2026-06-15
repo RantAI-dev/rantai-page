@@ -77,7 +77,7 @@ export default async function AdminTeamPage({
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Team Members</h1>
         <Link href="/admin/team/new">
-          <Button size="sm">New Member</Button>
+          <Button>New Member</Button>
         </Link>
       </div>
       <Suspense>

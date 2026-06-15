@@ -83,7 +83,7 @@ export default async function AdminBlogPage({
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Blog Posts</h1>
         <Link href="/admin/blog/new">
-          <Button size="sm">New Post</Button>
+          <Button>New Post</Button>
         </Link>
       </div>
       <Suspense>
