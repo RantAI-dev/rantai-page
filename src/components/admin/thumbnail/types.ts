@@ -5,6 +5,7 @@ export interface DrawThumbnailOptions {
   deco: DecoOption | null;
   customDecorationUrl: string | null;
   customDecorationScale: number;
+  customDecorationOpacity: number;
   iconSource: { type: "svg"; el: SVGSVGElement } | { type: "url"; url: string };
   iconScale: number;
   noiseEnabled: boolean;

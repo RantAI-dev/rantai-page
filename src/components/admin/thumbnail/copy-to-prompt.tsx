@@ -87,24 +87,26 @@ function buildPrompt(
     ].join("\n")
   }
 
-  const desc = description.trim() || "Random Object"
+  const desc = description.trim() || "an abstract geometric pattern"
   if (format === "png") {
     return [
-      `Create ${desc} as a decorative graphic element, square (1:1) PNG image.`,
-      `White (#FFFFFF), stroke-width 3px, rounded caps and joins, no fill — outline style only.`,
-      `Fill 85–90% of the canvas, minimal padding (max 5–8% per side).`,
+      `Create ${desc} as a subtle background decoration pattern, 16:9 landscape PNG image (1920×1080).`,
+      `Thin white (#FFFFFF) outlines, stroke-width 2–3px, rounded caps and joins, no fill — outline style only.`,
+      `Low opacity / faint look: lines at roughly 10–18% opacity so it reads as a soft background texture, not a foreground subject.`,
+      `Full-bleed: extend the pattern edge-to-edge with NO padding (it can bleed off all four edges).`,
       `Background: transparent (preferred). Fallback: pure black (#000000).`,
-      `Abstract, geometric, repeating or symmetrical. No text, no icons, decoration only.`,
+      `Abstract, geometric, repeating or symmetrical, evenly distributed across the whole canvas. No text, no icons, no central focal object — decoration only.`,
     ].join(" ")
   }
   return [
-    `Generate a decorative SVG pattern of ${desc}.`,
-    `- viewBox="0 0 100 100", square canvas`,
+    `Generate a subtle background decoration SVG pattern of ${desc}.`,
+    `- viewBox="0 0 160 90", 16:9 landscape canvas (matches a 1920×1080 thumbnail)`,
     `- Transparent background (no <rect> fill)`,
-    `- stroke="#FFFFFF", stroke-width="3", stroke-linecap="round", stroke-linejoin="round"`,
+    `- stroke="#FFFFFF", stroke-width="2.5", stroke-linecap="round", stroke-linejoin="round"`,
     `- fill="none" (outline only)`,
-    `- Abstract geometric, repeating or symmetrical. No text, no icons.`,
-    `- Fill 80–90% of the viewBox`,
+    `- Faint look: set stroke-opacity between 0.10 and 0.18 so it reads as a soft background texture`,
+    `- Abstract geometric, repeating or symmetrical, evenly distributed. No text, no icons, no central focal object.`,
+    `- Full-bleed: extend edge-to-edge with no padding (shapes may bleed off the viewBox)`,
     `Output only raw SVG code. No explanation, no markdown code block.`,
   ].join("\n")
 }
@@ -117,6 +119,7 @@ const AI_PROVIDERS = [
     label: "Open in ChatGPT",
     description: "Transparent PNG & SVG · Best choice",
     url: "https://chatgpt.com/",
+    promptParam: "prompt",
     icon: <OpenAIIcon size={18} />,
   },
   {
@@ -124,6 +127,7 @@ const AI_PROVIDERS = [
     label: "Open in Claude",
     description: "SVG only · Cannot generate images",
     url: "https://claude.ai/new",
+    promptParam: "q",
     icon: <ClaudeIcon size={18} />,
   },
   {
@@ -131,6 +135,7 @@ const AI_PROVIDERS = [
     label: "Open in Gemini",
     description: "Image only · No transparent or SVG support",
     url: "https://gemini.google.com/app",
+    promptParam: null,
     icon: <GoogleIcon size={18} />,
   },
 ] as const
@@ -146,8 +151,13 @@ function PromptActions({ getPrompt }: { getPrompt: () => string }) {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  async function handleOpenAI(url: string) {
-    await navigator.clipboard.writeText(getPrompt())
+  async function handleOpenAI(provider: (typeof AI_PROVIDERS)[number]) {
+    const text = getPrompt()
+    // Copy to clipboard as a fallback (needed for providers without prefill).
+    await navigator.clipboard.writeText(text)
+    const url = provider.promptParam
+      ? `${provider.url}?${provider.promptParam}=${encodeURIComponent(text)}`
+      : provider.url
     window.open(url, "_blank", "noopener,noreferrer")
   }
 
@@ -169,7 +179,7 @@ function PromptActions({ getPrompt }: { getPrompt: () => string }) {
             {AI_PROVIDERS.map((ai) => (
               <DropdownMenuItem
                 key={ai.key}
-                onClick={() => handleOpenAI(ai.url)}
+                onClick={() => handleOpenAI(ai)}
               >
                 <Item size="xs" className="w-full">
                   <ItemMedia>{ai.icon}</ItemMedia>

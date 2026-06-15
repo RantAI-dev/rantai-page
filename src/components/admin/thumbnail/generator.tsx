@@ -37,6 +37,8 @@ export function ThumbnailGenerator() {
     customDecoUrl,
     customDecoSize,
     setCustomDecoSize,
+    customDecoOpacity,
+    setCustomDecoOpacity,
     noiseEnabled,
     setNoiseEnabled,
     noiseIntensity,
@@ -77,12 +79,14 @@ export function ThumbnailGenerator() {
                 decorationType={decorationType}
                 customDecoUrl={customDecoUrl}
                 customDecoSize={customDecoSize}
+                customDecoOpacity={customDecoOpacity}
                 inputRef={customDecoInputRef}
                 onSelect={(key) => {
                   setDeco(key)
                   setDecorationType("builtin")
                 }}
                 onCustomDecoSizeChange={setCustomDecoSize}
+                onCustomDecoOpacityChange={setCustomDecoOpacity}
                 onUpload={handleCustomDecoUpload}
                 onClear={clearCustomDeco}
               />

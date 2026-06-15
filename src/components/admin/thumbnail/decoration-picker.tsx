@@ -10,9 +10,11 @@ interface DecorationPickerProps {
   decorationType: "builtin" | "custom"
   customDecoUrl: string | null
   customDecoSize: number
+  customDecoOpacity: number
   inputRef: React.RefObject<HTMLInputElement | null>
   onSelect: (key: DecoKey) => void
   onCustomDecoSizeChange: (size: number) => void
+  onCustomDecoOpacityChange: (opacity: number) => void
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
   onClear: () => void
 }
@@ -22,9 +24,11 @@ export function DecorationPicker({
   decorationType,
   customDecoUrl,
   customDecoSize,
+  customDecoOpacity,
   inputRef,
   onSelect,
   onCustomDecoSizeChange,
+  onCustomDecoOpacityChange,
   onUpload,
   onClear,
 }: DecorationPickerProps) {
@@ -87,10 +91,23 @@ export function DecorationPicker({
               </div>
               <Slider
                 min={40}
-                max={220}
+                max={500}
                 step={1}
                 value={[customDecoSize]}
                 onValueChange={([value]) => onCustomDecoSizeChange(value)}
+              />
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <span className="text-xs font-medium">Decoration opacity</span>
+                <span className="font-mono text-xs text-muted-foreground">{customDecoOpacity}%</span>
+              </div>
+              <Slider
+                min={0}
+                max={100}
+                step={1}
+                value={[customDecoOpacity]}
+                onValueChange={([value]) => onCustomDecoOpacityChange(value)}
               />
             </div>
           </div>

@@ -16,6 +16,7 @@ export function useThumbnail() {
   const [decorationType, setDecorationType] = useState<"builtin" | "custom">("builtin")
   const [customDecoUrl, setCustomDecoUrl] = useState<string | null>(null)
   const [customDecoSize, setCustomDecoSize] = useState(100)
+  const [customDecoOpacity, setCustomDecoOpacity] = useState(13)
   const prevCustomDecoUrl = useRef<string | null>(null)
   const customDecoInputRef = useRef<HTMLInputElement>(null)
 
@@ -49,6 +50,7 @@ export function useThumbnail() {
       deco: decorationType === "builtin" ? selectedDeco : null,
       customDecorationUrl: decorationType === "custom" ? customDecoUrl : null,
       customDecorationScale: customDecoSize,
+      customDecorationOpacity: customDecoOpacity,
       iconSource: { type: "url", url: customIconUrl },
       iconScale: customIconSize,
       noiseEnabled,
@@ -61,6 +63,7 @@ export function useThumbnail() {
     decorationType,
     customDecoUrl,
     customDecoSize,
+    customDecoOpacity,
     customIconUrl,
     customIconSize,
     noiseEnabled,
@@ -129,6 +132,8 @@ export function useThumbnail() {
     customDecoUrl,
     customDecoSize,
     setCustomDecoSize,
+    customDecoOpacity,
+    setCustomDecoOpacity,
     noiseEnabled,
     setNoiseEnabled,
     noiseIntensity,

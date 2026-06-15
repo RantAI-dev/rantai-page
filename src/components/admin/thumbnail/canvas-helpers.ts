@@ -76,13 +76,14 @@ async function drawImageAsDecoration(
   url: string,
   w: number,
   h: number,
-  scale: number
+  scale: number,
+  opacity: number
 ) {
   const img = await loadImageFromUrl(url);
   const drawW = w * (scale / 100);
   const drawH = h * (scale / 100);
   ctx.save();
-  ctx.globalAlpha = 0.13;
+  ctx.globalAlpha = opacity / 100;
   ctx.drawImage(img, w / 2 - drawW / 2, h / 2 - drawH / 2, drawW, drawH);
   ctx.restore();
 }
@@ -105,7 +106,7 @@ export async function drawThumbnail(
     opts.deco.draw(ctx, w, h);
   }
   if (opts.customDecorationUrl !== null) {
-    await drawImageAsDecoration(ctx, opts.customDecorationUrl, w, h, opts.customDecorationScale);
+    await drawImageAsDecoration(ctx, opts.customDecorationUrl, w, h, opts.customDecorationScale, opts.customDecorationOpacity);
   }
 
   // 3. Icon
