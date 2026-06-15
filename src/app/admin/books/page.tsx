@@ -77,8 +77,13 @@ export default async function AdminBooksPage({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Books</h1>
+      <div className="mb-6 flex items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">Books</h1>
+          <p className="text-sm text-muted-foreground">
+            Curate academy resources and external reading recommendations.
+          </p>
+        </div>
         <Link href="/admin/books/new">
           <Button>New Book</Button>
         </Link>

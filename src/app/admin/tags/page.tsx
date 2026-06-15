@@ -64,8 +64,13 @@ export default async function AdminTagsPage({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Tags</h1>
+      <div className="mb-6 flex items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">Tags</h1>
+          <p className="text-sm text-muted-foreground">
+            Organize blog topics and keep the content taxonomy tidy.
+          </p>
+        </div>
         <Link href="/admin/tags/new">
           <Button>New Tag</Button>
         </Link>

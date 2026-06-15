@@ -74,8 +74,13 @@ export default async function AdminTeamPage({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Team Members</h1>
+      <div className="mb-6 flex items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">Team Members</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage public team profiles, roles, and profile images.
+          </p>
+        </div>
         <Link href="/admin/team/new">
           <Button>New Member</Button>
         </Link>

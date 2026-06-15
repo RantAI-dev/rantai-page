@@ -80,8 +80,13 @@ export default async function AdminBlogPage({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Blog Posts</h1>
+      <div className="mb-6 flex items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">Blog Posts</h1>
+          <p className="text-sm text-muted-foreground">
+            Create, review, and publish editorial content for the RantAI site.
+          </p>
+        </div>
         <Link href="/admin/blog/new">
           <Button>New Post</Button>
         </Link>
