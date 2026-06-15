@@ -3,7 +3,7 @@ import Link from "next/link";
 import { asc, desc, ilike, or, count, eq, and, inArray } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { blogPosts } from "@/lib/db/schema";
+import { blogPosts, tags as tagsTable } from "@/lib/db/schema";
 
 import { Button } from "@/components/ui/button";
 import { BlogTable } from "./blog-table";
@@ -63,7 +63,7 @@ export default async function AdminBlogPage({
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-  const [posts, [{ total }], uniqueTagRows] = await Promise.all([
+  const [posts, [{ total }], tagRows] = await Promise.all([
     db
       .select()
       .from(blogPosts)
@@ -72,10 +72,10 @@ export default async function AdminBlogPage({
       .limit(perPage)
       .offset((page - 1) * perPage),
     db.select({ total: count() }).from(blogPosts).where(whereClause),
-    db.selectDistinct({ tag: blogPosts.tag }).from(blogPosts).orderBy(asc(blogPosts.tag)),
+    db.select({ name: tagsTable.name }).from(tagsTable).orderBy(asc(tagsTable.orderIndex)),
   ]);
 
-  const tags = uniqueTagRows.map((r) => r.tag);
+  const tags = tagRows.map((r) => r.name);
   const pageCount = Math.ceil(Number(total) / perPage);
 
   return (

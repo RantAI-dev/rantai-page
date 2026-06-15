@@ -11,13 +11,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
@@ -25,10 +18,9 @@ import {
 import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
 import { ThumbnailUpload } from "@/components/admin/thumbnail-upload";
 import { AuthorSelect, type TeamAuthor } from "@/components/admin/author-select";
+import { TagSelect, type TagOption } from "@/components/admin/tag-select";
 import { normalizeBlogInput } from "@/lib/blog-input";
 import type { BlogPost } from "@/lib/db/schema";
-
-const TAGS = ["Product", "Academy", "Company"];
 
 // Soft target for SEO meta descriptions; we warn past this, never block.
 const EXCERPT_RECOMMENDED = 160;
@@ -36,18 +28,19 @@ const EXCERPT_RECOMMENDED = 160;
 type Props = {
   post?: BlogPost;
   authors: TeamAuthor[];
+  tags: TagOption[];
   heading: string;
   className?: string;
 };
 
-export function BlogForm({ post, authors, heading, className }: Props) {
+export function BlogForm({ post, authors, tags, heading, className }: Props) {
   const router = useRouter();
   const isEdit = !!post;
 
   const [title, setTitle] = useState(post?.title ?? "");
   const [content, setContent] = useState(post?.content ?? "");
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? "");
-  const [tag, setTag] = useState(post?.tag ?? "Product");
+  const [tag, setTag] = useState(post?.tag ?? tags[0]?.name ?? "");
   const [author, setAuthor] = useState(post?.author ?? "");
   const [thumbnail, setThumbnail] = useState(post?.thumbnail ?? "");
   const [published, setPublished] = useState(post?.published ?? true);
@@ -62,6 +55,13 @@ export function BlogForm({ post, authors, heading, className }: Props) {
     author && !authors.some((member) => member.name === author)
       ? [{ name: author, role: null, imageUrl: null }, ...authors]
       : authors;
+
+  // Keep a legacy tag selectable if a post still references a tag that was
+  // since removed from the master list, so editing doesn't silently change it.
+  const tagOptions: TagOption[] =
+    tag && !tags.some((t) => t.name === tag)
+      ? [{ name: tag, color: "slate" }, ...tags]
+      : tags;
 
   useEffect(() => {
     if (!fullscreen) return;
@@ -165,19 +165,8 @@ export function BlogForm({ post, authors, heading, className }: Props) {
             </div>
 
             <div className="space-y-2">
-              <Label>Tag *</Label>
-              <Select value={tag} onValueChange={setTag}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TAGS.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="tag">Tag *</Label>
+              <TagSelect value={tag} options={tagOptions} onChange={setTag} />
             </div>
 
             <div className="space-y-2">

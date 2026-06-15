@@ -1,17 +1,20 @@
 import { asc } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { teamMembers } from "@/lib/db/schema";
+import { tags, teamMembers } from "@/lib/db/schema";
 import { BlogForm } from "@/components/admin/blog-form";
 
 export default async function NewBlogPage() {
-  const team = await db
-    .select({
-      name: teamMembers.name,
-      role: teamMembers.role,
-      imageUrl: teamMembers.imageUrl,
-    })
-    .from(teamMembers)
-    .orderBy(asc(teamMembers.orderIndex));
+  const [team, tagRows] = await Promise.all([
+    db
+      .select({
+        name: teamMembers.name,
+        role: teamMembers.role,
+        imageUrl: teamMembers.imageUrl,
+      })
+      .from(teamMembers)
+      .orderBy(asc(teamMembers.orderIndex)),
+    db.select({ name: tags.name, color: tags.color }).from(tags).orderBy(asc(tags.orderIndex)),
+  ]);
 
-  return <BlogForm authors={team} heading="New Blog Post" />;
+  return <BlogForm authors={team} tags={tagRows} heading="New Blog Post" />;
 }

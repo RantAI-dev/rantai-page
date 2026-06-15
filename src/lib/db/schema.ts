@@ -39,9 +39,23 @@ export const teamMembers = pgTable("team_members", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const tags = pgTable("tags", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull().unique(),
+  // Preset key (e.g. "blue") resolved to a gradient in src/lib/tag-colors.ts.
+  // Stored as a key — not raw Tailwind classes — so the JIT compiler still
+  // sees the gradient classes literally in code.
+  color: text("color").notNull().default("slate"),
+  orderIndex: integer("order_index").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type NewBlogPost = typeof blogPosts.$inferInsert;
 export type Book = typeof books.$inferSelect;
 export type NewBook = typeof books.$inferInsert;
 export type TeamMember = typeof teamMembers.$inferSelect;
 export type NewTeamMember = typeof teamMembers.$inferInsert;
+export type Tag = typeof tags.$inferSelect;
+export type NewTag = typeof tags.$inferInsert;
