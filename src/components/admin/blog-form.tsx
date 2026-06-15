@@ -31,9 +31,18 @@ type Props = {
   tags: TagOption[];
   heading: string;
   className?: string;
+  /** Prefilled thumbnail URL for new posts (e.g. from the generator). */
+  initialThumbnail?: string;
 };
 
-export function BlogForm({ post, authors, tags, heading, className }: Props) {
+export function BlogForm({
+  post,
+  authors,
+  tags,
+  heading,
+  className,
+  initialThumbnail,
+}: Props) {
   const router = useRouter();
   const isEdit = !!post;
 
@@ -42,7 +51,7 @@ export function BlogForm({ post, authors, tags, heading, className }: Props) {
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? "");
   const [tag, setTag] = useState(post?.tag ?? tags[0]?.name ?? "");
   const [author, setAuthor] = useState(post?.author ?? "");
-  const [thumbnail, setThumbnail] = useState(post?.thumbnail ?? "");
+  const [thumbnail, setThumbnail] = useState(post?.thumbnail ?? initialThumbnail ?? "");
   const [published, setPublished] = useState(post?.published ?? true);
   const [loading, setLoading] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);

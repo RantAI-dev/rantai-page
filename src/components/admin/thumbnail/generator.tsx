@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Download, Grid3x3 } from "lucide-react"
+import { Check, Download, Grid3x3 } from "lucide-react"
+import { toast } from "sonner"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -21,7 +22,18 @@ import { NoiseControl } from "./noise-control"
 import { IconPicker } from "./icon-picker"
 import { CopyToPromptDialog, CopyToPromptPopover } from "./copy-to-prompt"
 
-export function ThumbnailGenerator() {
+interface ThumbnailGeneratorProps {
+  /** When provided, shows a primary button that uploads the current canvas and
+   *  passes back the hosted URL. */
+  onUse?: (url: string) => void
+  /** Label for the primary button. Defaults to "Use this thumbnail". */
+  useLabel?: string
+}
+
+export function ThumbnailGenerator({
+  onUse,
+  useLabel = "Use this thumbnail",
+}: ThumbnailGeneratorProps) {
   const {
     canvasRef,
     customIconInputRef,
@@ -54,10 +66,46 @@ export function ThumbnailGenerator() {
   } = useThumbnail()
 
   const [showGrid, setShowGrid] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   // Mirror canvas-helpers.ts: size = min(W,H) * 0.32 * (scale/100)
   const iconSizePx =
     Math.min(CANVAS_W, CANVAS_H) * 0.32 * (customIconSize / 100)
+
+  async function handleUse() {
+    const canvas = canvasRef.current
+    if (!canvas || !onUse) return
+
+    setUploading(true)
+    try {
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/png")
+      )
+      if (!blob) throw new Error("Could not render the thumbnail")
+
+      const formData = new FormData()
+      formData.append(
+        "file",
+        new File([blob], `thumbnail-${Date.now()}.png`, { type: "image/png" })
+      )
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error ?? "Upload failed")
+      }
+
+      const { url } = await res.json()
+      onUse(url)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed")
+    } finally {
+      setUploading(false)
+    }
+  }
 
   return (
     <div className="relative h-full">
@@ -150,10 +198,28 @@ export function ThumbnailGenerator() {
             />
           </div>
 
-          <Button className="w-full" size="lg" onClick={handleDownload}>
-            <Download />
-            Download PNG
-          </Button>
+          <div className="flex w-full gap-2">
+            {onUse && (
+              <Button
+                className="flex-1"
+                size="lg"
+                onClick={handleUse}
+                disabled={uploading}
+              >
+                <Check />
+                {uploading ? "Uploading…" : useLabel}
+              </Button>
+            )}
+            <Button
+              className={onUse ? undefined : "w-full"}
+              variant={onUse ? "outline" : "default"}
+              size="lg"
+              onClick={handleDownload}
+            >
+              <Download />
+              {onUse ? "Download" : "Download PNG"}
+            </Button>
+          </div>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

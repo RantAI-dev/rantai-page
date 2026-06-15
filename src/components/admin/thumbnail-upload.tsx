@@ -4,9 +4,9 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UploadIcon, XIcon } from "lucide-react";
+import { ThumbnailGeneratorDialog } from "@/components/admin/thumbnail/generator-dialog";
 
 interface Props {
   value: string;
@@ -84,12 +84,11 @@ export function ThumbnailUpload({ value, onChange, label = "Thumbnail" }: Props)
           <UploadIcon className="mr-2 size-4" />
           {uploading ? "Uploading…" : "Upload Image"}
         </Button>
-        <span className="text-xs text-muted-foreground">or</span>
-        <Input
-          placeholder="Paste URL langsung"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="max-w-sm"
+        <ThumbnailGeneratorDialog
+          onUse={(url) => {
+            onChange(url);
+            toast.success("Thumbnail attached");
+          }}
         />
       </div>
 
