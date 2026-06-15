@@ -10,6 +10,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:generate-hash": "npx tsx src/lib/db/generate-hash.ts",
+    "db:seed-tags": "npx tsx src/lib/db/seed-tags.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"

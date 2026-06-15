@@ -22,6 +22,7 @@ const breadcrumbLabels: Record<string, string> = {
   edit: "Edit",
   new: "New",
   team: "Team",
+  tags: "Tags",
   thumbnail: "Thumbnail",
 }
 

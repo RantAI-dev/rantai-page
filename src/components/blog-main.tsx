@@ -5,30 +5,27 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowRightIcon, SearchIcon, XIcon } from "lucide-react"
 import type { BlogPost } from "@/lib/blog"
+import { gradientForColor } from "@/lib/tag-colors"
 
 type Post = Omit<BlogPost, "contentHtml">
 
 interface Props {
   posts: Post[]
-}
-
-const tagGradients: Record<string, string> = {
-  Product: "from-blue-950 via-indigo-900 to-blue-900",
-  Academy: "from-emerald-950 via-teal-900 to-emerald-900",
-  Company: "from-violet-950 via-purple-900 to-violet-900",
+  // Map of tag name → color preset key, used to resolve thumbnail gradients.
+  tagColors?: Record<string, string>
 }
 
 function Thumbnail({
   thumbnail,
   tag,
+  gradient,
   className = "",
 }: {
   thumbnail?: string
   tag: string
+  gradient: string
   className?: string
 }) {
-  const gradient = tagGradients[tag] ?? "from-zinc-900 via-zinc-800 to-zinc-900"
-
   if (thumbnail) {
     return (
       <div className={`relative aspect-video overflow-hidden ${className}`}>
@@ -63,7 +60,7 @@ function formatDate(date: string) {
   })
 }
 
-export function BlogMain({ posts }: Props) {
+export function BlogMain({ posts, tagColors }: Props) {
   const [query, setQuery] = useState("")
 
   const filtered = useMemo(() => {
@@ -134,6 +131,7 @@ export function BlogMain({ posts }: Props) {
                 <Thumbnail
                   thumbnail={featured.thumbnail}
                   tag={featured.tag}
+                  gradient={gradientForColor(tagColors?.[featured.tag])}
                   className="rounded-xl"
                 />
 
@@ -182,6 +180,7 @@ export function BlogMain({ posts }: Props) {
                   <Thumbnail
                     thumbnail={post.thumbnail}
                     tag={post.tag}
+                    gradient={gradientForColor(tagColors?.[post.tag])}
                     className="rounded-lg"
                   />
 

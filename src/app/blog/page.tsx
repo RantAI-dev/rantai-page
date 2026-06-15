@@ -1,3 +1,5 @@
+import { db } from "@/lib/db"
+import { tags } from "@/lib/db/schema"
 import { getAllPosts } from "@/lib/blog"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -12,7 +14,12 @@ export const metadata = {
 }
 
 export default async function BlogPage() {
-  const posts = await getAllPosts()
+  const [posts, tagRows] = await Promise.all([
+    getAllPosts(),
+    db.select({ name: tags.name, color: tags.color }).from(tags),
+  ])
+
+  const tagColors = Object.fromEntries(tagRows.map((t) => [t.name, t.color]))
 
   return (
     <div>
@@ -25,7 +32,7 @@ export default async function BlogPage() {
         {/* Posts */}
         <MotionInView>
           <OutlineSection className="p-8">
-            <BlogMain posts={posts} />
+            <BlogMain posts={posts} tagColors={tagColors} />
           </OutlineSection>
         </MotionInView>
       </main>

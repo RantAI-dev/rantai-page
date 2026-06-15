@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, FileText, BookOpen, Users, ImageIcon, LogOut } from "lucide-react"
+import { LayoutDashboard, FileText, BookOpen, Users, ImageIcon, Tag, LogOut } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +19,7 @@ import {
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/blog", label: "Blog", icon: FileText },
+  { href: "/admin/tags", label: "Tags", icon: Tag },
   { href: "/admin/books", label: "Books", icon: BookOpen },
   { href: "/admin/team", label: "Team", icon: Users },
   { href: "/admin/thumbnail", label: "Thumbnail", icon: ImageIcon },
