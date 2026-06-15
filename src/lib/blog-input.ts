@@ -20,7 +20,9 @@ export type NormalizedBlogInput = {
   published: boolean;
 };
 
-const REQUIRED_FIELDS = ["title", "slug", "content", "excerpt", "tag"] as const;
+// Slug is intentionally omitted: it is generated server-side from the title
+// (see generateUniqueSlug) so it is always present and unique, never user input.
+const REQUIRED_FIELDS = ["title", "content", "excerpt", "tag"] as const;
 
 function requiredText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";

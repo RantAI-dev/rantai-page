@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Maximize2, Minimize2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,23 +17,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
 import { ThumbnailUpload } from "@/components/admin/thumbnail-upload";
-import { normalizeBlogInput, normalizeSlug } from "@/lib/blog-input";
+import { AuthorSelect, type TeamAuthor } from "@/components/admin/author-select";
+import { normalizeBlogInput } from "@/lib/blog-input";
 import type { BlogPost } from "@/lib/db/schema";
 
 const TAGS = ["Product", "Academy", "Company"];
 
+// Soft target for SEO meta descriptions; we warn past this, never block.
+const EXCERPT_RECOMMENDED = 160;
+
 type Props = {
   post?: BlogPost;
+  authors: TeamAuthor[];
+  heading: string;
+  className?: string;
 };
 
-export function BlogForm({ post }: Props) {
+export function BlogForm({ post, authors, heading, className }: Props) {
   const router = useRouter();
   const isEdit = !!post;
 
   const [title, setTitle] = useState(post?.title ?? "");
-  const [slug, setSlug] = useState(post?.slug ?? "");
   const [content, setContent] = useState(post?.content ?? "");
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? "");
   const [tag, setTag] = useState(post?.tag ?? "Product");
@@ -39,11 +52,25 @@ export function BlogForm({ post }: Props) {
   const [thumbnail, setThumbnail] = useState(post?.thumbnail ?? "");
   const [published, setPublished] = useState(post?.published ?? true);
   const [loading, setLoading] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
 
-  function handleTitleChange(value: string) {
-    setTitle(value);
-    if (!isEdit) setSlug(normalizeSlug(value));
-  }
+  const excerptOver = excerpt.length > EXCERPT_RECOMMENDED;
+
+  // Keep a legacy author selectable so editing an old post never silently
+  // drops its byline just because that person is no longer on the team.
+  const authorOptions: TeamAuthor[] =
+    author && !authors.some((member) => member.name === author)
+      ? [{ name: author, role: null, imageUrl: null }, ...authors]
+      : authors;
+
+  useEffect(() => {
+    if (!fullscreen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setFullscreen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [fullscreen]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,7 +82,7 @@ export function BlogForm({ post }: Props) {
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(normalizeBlogInput({ title, slug, content, excerpt, tag, author, thumbnail, published })),
+      body: JSON.stringify(normalizeBlogInput({ title, content, excerpt, tag, author, thumbnail, published })),
     });
 
     setLoading(false);
@@ -71,63 +98,147 @@ export function BlogForm({ post }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-7xl">
-      <div className="space-y-2">
-        <Label htmlFor="title">Title *</Label>
-        <Input id="title" value={title} onChange={(e) => handleTitleChange(e.target.value)} required />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="slug">Slug *</Label>
-        <Input id="slug" value={slug} onChange={(e) => setSlug(e.target.value)} required />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="excerpt">Excerpt *</Label>
-        <Textarea id="excerpt" value={excerpt} onChange={(e) => setExcerpt(e.target.value)} rows={2} required />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Tag *</Label>
-          <Select value={tag} onValueChange={setTag}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TAGS.map((t) => (
-                <SelectItem key={t} value={t}>{t}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="author">Author</Label>
-          <Input id="author" value={author} onChange={(e) => setAuthor(e.target.value)} />
+    <form
+      onSubmit={handleSubmit}
+      className={cn(
+        "flex h-[calc(100vh-112px)] flex-col gap-4",
+        className
+      )}
+    >
+      {/* Sticky header — title + actions stay visible without scrolling */}
+      <div className="-top-6 -mx-6 -mt-6 flex items-center justify-between gap-3 border-b bg-background px-6 py-3">
+        <h1 className="truncate text-xl font-semibold">{heading}</h1>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/admin/blog")}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? "Saving…" : isEdit ? "Update Post" : "Create Post"}
+          </Button>
         </div>
       </div>
 
-      <ThumbnailUpload value={thumbnail} onChange={setThumbnail} />
+      <ResizablePanelGroup
+        orientation="horizontal"
+        className="h-[calc(100svh-11rem)] min-h-96 rounded-lg border"
+      >
+        {/* Left panel — metadata */}
+        <ResizablePanel defaultSize={38} minSize={28}>
+          <div className="h-full space-y-6 overflow-y-auto p-5">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title *</Label>
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
 
-      <div className="space-y-2">
-        <Label>Content *</Label>
-        <RichTextEditor value={content} onChange={setContent} />
-      </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="excerpt">Excerpt *</Label>
+                <span
+                  className={cn(
+                    "text-xs",
+                    excerptOver ? "text-destructive" : "text-muted-foreground"
+                  )}
+                >
+                  {excerpt.length}/{EXCERPT_RECOMMENDED}
+                </span>
+              </div>
+              <Textarea
+                id="excerpt"
+                value={excerpt}
+                onChange={(e) => setExcerpt(e.target.value)}
+                rows={4}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                Ringkasan singkat untuk kartu blog &amp; preview SEO. Disarankan
+                maks. {EXCERPT_RECOMMENDED} karakter.
+              </p>
+            </div>
 
-      <div className="flex items-center gap-3">
-        <Switch id="published" checked={published} onCheckedChange={setPublished} />
-        <Label htmlFor="published">Published</Label>
-      </div>
+            <div className="space-y-2">
+              <Label>Tag *</Label>
+              <Select value={tag} onValueChange={setTag}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TAGS.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-      <div className="flex gap-3">
-        <Button type="submit" disabled={loading}>
-          {loading ? "Saving…" : isEdit ? "Update Post" : "Create Post"}
-        </Button>
-        <Button type="button" variant="outline" onClick={() => router.push("/admin/blog")}>
-          Cancel
-        </Button>
-      </div>
+            <div className="space-y-2">
+              <Label htmlFor="author">Author</Label>
+              <AuthorSelect
+                value={author}
+                options={authorOptions}
+                onChange={setAuthor}
+              />
+            </div>
+
+            <ThumbnailUpload value={thumbnail} onChange={setThumbnail} />
+
+            <div className="flex items-center gap-3">
+              <Switch
+                id="published"
+                checked={published}
+                onCheckedChange={setPublished}
+              />
+              <Label htmlFor="published">Published</Label>
+            </div>
+          </div>
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
+
+        {/* Right panel — content editor */}
+        <ResizablePanel defaultSize={62} minSize={30}>
+          <div
+            className={cn(
+              "flex min-h-0 flex-col gap-2",
+              fullscreen ? "fixed inset-0 z-50 bg-background p-4" : "h-full p-5"
+            )}
+          >
+            <div className="flex shrink-0 items-center justify-between">
+              <Label>Content *</Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setFullscreen((v) => !v)}
+              >
+                {fullscreen ? (
+                  <>
+                    <Minimize2 className="mr-2 size-4" /> Exit fullscreen
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 className="mr-2 size-4" /> Fullscreen
+                  </>
+                )}
+              </Button>
+            </div>
+            <RichTextEditor
+              value={content}
+              onChange={setContent}
+              className="max-h-none min-h-0 flex-1"
+            />
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </form>
-  );
+  )
 }

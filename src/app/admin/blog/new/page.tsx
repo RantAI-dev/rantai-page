@@ -1,10 +1,17 @@
+import { asc } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { teamMembers } from "@/lib/db/schema";
 import { BlogForm } from "@/components/admin/blog-form";
 
-export default function NewBlogPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-6">New Blog Post</h1>
-      <BlogForm />
-    </div>
-  );
+export default async function NewBlogPage() {
+  const team = await db
+    .select({
+      name: teamMembers.name,
+      role: teamMembers.role,
+      imageUrl: teamMembers.imageUrl,
+    })
+    .from(teamMembers)
+    .orderBy(asc(teamMembers.orderIndex));
+
+  return <BlogForm authors={team} heading="New Blog Post" />;
 }

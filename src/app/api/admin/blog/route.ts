@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
 import { getBlogInputError, getDatabaseErrorResponse, normalizeBlogInput } from "@/lib/blog-input";
+import { generateUniqueSlug } from "@/lib/blog-slug";
 import { desc } from "drizzle-orm";
 
 export async function GET() {
@@ -26,9 +27,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const slug = await generateUniqueSlug(input.title);
     const [post] = await db
       .insert(blogPosts)
-      .values(input)
+      .values({ ...input, slug })
       .returning();
 
     revalidatePath("/blog");
