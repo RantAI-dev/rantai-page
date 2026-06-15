@@ -54,16 +54,16 @@ export function ProductsRantAIAgents() {
         <Tabs
           value={activeFeatureValue}
           onValueChange={setActiveFeatureValue}
-          className="grid grid-cols-1 lg:grid-cols-2"
+          className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-0"
         >
           <ProductInfoPanel
             logo="/logo/RantAI Agents Dark.svg"
             logoAlt="RantAI Agents logo"
             title="RantAI Agents"
             subtitle="Deploy AI agents that handle real work, not just demos."
-            className="border-b lg:border-r"
+            className="p-8"
           >
-            <TabsList className="grid h-auto w-full grid-cols-2 gap-0 rounded-none border-y bg-transparent p-0 sm:grid-cols-4">
+            <TabsList className="w-full">
               {features.map((feature) => (
                   <TabsTrigger
                     key={feature.value}
@@ -75,12 +75,9 @@ export function ProductsRantAIAgents() {
               ))}
             </TabsList>
 
-            <div className="flex flex-1 flex-col justify-between gap-16 p-8 lg:p-10">
+            <div className="flex flex-1 flex-col justify-between mt-4">
               <div className="flex max-w-xl flex-col gap-3">
-                <h3 className="text-2xl font-medium tracking-tight">
-                  {activeFeature.title}
-                </h3>
-                <p className="text-lg leading-relaxed font-light text-muted-foreground">
+                <p className="leading-relaxed font-light text-muted-foreground">
                   {activeFeature.body}
                 </p>
               </div>
@@ -91,7 +88,7 @@ export function ProductsRantAIAgents() {
             </div>
           </ProductInfoPanel>
 
-          <ProductMediaPanel className="bg-linear-to-b from-sky-50 via-white to-sky-400">
+          <ProductMediaPanel className="bg-linear-to-r from-background via-slate-900 to-primary">
             {features.map((feature) => (
               <TabsContent
                 key={feature.value}
@@ -109,7 +106,7 @@ export function ProductsRantAIAgents() {
                   loop
                   muted
                   playsInline
-                  className="h-full w-full rounded-[8px] border border-black/10 object-cover shadow-2xl shadow-sky-950/20"
+                  className="h-full w-full rounded-[8px] border border-white/10 object-cover shadow-2xl shadow-black/40"
                 />
               </TabsContent>
             ))}

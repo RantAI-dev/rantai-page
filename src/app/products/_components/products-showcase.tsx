@@ -20,8 +20,8 @@ export function ProductInfoPanel({
   children: React.ReactNode
 }) {
   return (
-    <section className={cn("flex min-h-[520px] flex-col", className)}>
-      <div className="flex items-center gap-4 p-8 lg:p-10">
+    <section className={cn("flex min-h-130 flex-col", className)}>
+      <div className="flex items-center gap-4 mb-8">
         <Image
           src={logo}
           alt={logoAlt}
@@ -30,8 +30,8 @@ export function ProductInfoPanel({
           className="size-14 shrink-0 rounded-[8px] object-contain"
         />
         <div className="min-w-0">
-          <h2 className="text-3xl font-medium tracking-tight">{title}</h2>
-          <p className="mt-1 text-base font-light text-muted-foreground">
+          <h2 className="text-2xl font-medium tracking-tight">{title}</h2>
+          <p className="text-sm font-light text-muted-foreground">
             {subtitle}
           </p>
         </div>
@@ -51,11 +51,11 @@ export function ProductMediaPanel({
   return (
     <div
       className={cn(
-        "relative flex min-h-105 items-center justify-center overflow-hidden p-2 sm:p-4 lg:min-h-130",
+        "relative flex min-h-80 items-center justify-center overflow-hidden p-2 sm:p-3 lg:min-h-80",
         className,
       )}
     >
-      <div className="relative aspect-video w-full max-w-3xl">{children}</div>
+      <div className="relative aspect-video w-full max-w-4xl">{children}</div>
     </div>
   )
 }
