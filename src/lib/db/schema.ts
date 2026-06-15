@@ -1,4 +1,6 @@
-import { pgTable, text, boolean, integer, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, integer, jsonb, timestamp, uuid } from "drizzle-orm/pg-core";
+
+import type { ThumbnailDesignConfig } from "@/lib/thumbnail-design";
 
 export const blogPosts = pgTable("blog_posts", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -51,6 +53,15 @@ export const tags = pgTable("tags", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const thumbnailDesigns = pgTable("thumbnail_designs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  previewUrl: text("preview_url"),
+  design: jsonb("design").$type<ThumbnailDesignConfig>().notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type NewBlogPost = typeof blogPosts.$inferInsert;
 export type Book = typeof books.$inferSelect;
@@ -59,3 +70,5 @@ export type TeamMember = typeof teamMembers.$inferSelect;
 export type NewTeamMember = typeof teamMembers.$inferInsert;
 export type Tag = typeof tags.$inferSelect;
 export type NewTag = typeof tags.$inferInsert;
+export type ThumbnailDesign = typeof thumbnailDesigns.$inferSelect;
+export type NewThumbnailDesign = typeof thumbnailDesigns.$inferInsert;

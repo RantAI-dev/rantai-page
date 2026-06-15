@@ -1,20 +1,29 @@
-"use client"
+import { desc } from "drizzle-orm"
 
-import { useRouter } from "next/navigation"
+import { db } from "@/lib/db"
+import { thumbnailDesigns } from "@/lib/db/schema"
+import {
+  ThumbnailLibrary,
+  type ThumbnailDesignListItem,
+} from "@/components/admin/thumbnail/library"
 
-import { ThumbnailGenerator } from "@/components/admin/thumbnail/generator"
+export default async function ThumbnailPage() {
+  const designs = await db
+    .select({
+      id: thumbnailDesigns.id,
+      name: thumbnailDesigns.name,
+      previewUrl: thumbnailDesigns.previewUrl,
+      createdAt: thumbnailDesigns.createdAt,
+      updatedAt: thumbnailDesigns.updatedAt,
+    })
+    .from(thumbnailDesigns)
+    .orderBy(desc(thumbnailDesigns.updatedAt))
 
-export default function ThumbnailPage() {
-  const router = useRouter()
+  const items: ThumbnailDesignListItem[] = designs.map((design) => ({
+    ...design,
+    createdAt: design.createdAt.toISOString(),
+    updatedAt: design.updatedAt.toISOString(),
+  }))
 
-  return (
-    <div className="h-[calc(100vh-112px)] max-w-7xl space-y-6">
-      <ThumbnailGenerator
-        useLabel="Create blog with this thumbnail"
-        onUse={(url) =>
-          router.push(`/admin/blog/new?thumbnail=${encodeURIComponent(url)}`)
-        }
-      />
-    </div>
-  )
+  return <ThumbnailLibrary designs={items} />
 }

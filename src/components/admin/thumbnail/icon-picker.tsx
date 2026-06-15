@@ -14,7 +14,8 @@ interface IconPickerProps {
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const isUploadedUrl = (url: string) => url.startsWith("blob:")
+const isDefaultAssetUrl = (url: string) =>
+  DEFAULT_ASSETS.some((asset) => asset.url === url)
 
 export function IconPicker({
   customIconUrl,
@@ -24,7 +25,7 @@ export function IconPicker({
   onCustomIconSizeChange,
   onUpload,
 }: IconPickerProps) {
-  const isCustom = isUploadedUrl(customIconUrl)
+  const isCustom = !isDefaultAssetUrl(customIconUrl)
 
   return (
     <div className="mb-5">

@@ -277,7 +277,7 @@ export function CopyToPrompt({ initialSubject = "asset" }: CopyToPromptProps) {
             <Alert>
               <Scissors />
               <AlertDescription>
-                If the result isn't transparent, remove the background at{" "}
+                If the result isn&apos;t transparent, remove the background at{" "}
                 <a
                   href="https://remove.bg"
                   target="_blank"

@@ -1,12 +1,30 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Download, Grid3x3 } from "lucide-react"
+import { createPortal } from "react-dom"
+import {
+  Check,
+  Download,
+  FileCode2,
+  Grid3x3,
+  MoreHorizontal,
+  Save,
+  Trash2,
+} from "lucide-react"
 import { toast } from "sonner"
+
+import type { ThumbnailDesignConfig } from "@/lib/thumbnail-design"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -20,7 +38,7 @@ import { ColorPicker } from "./color-picker"
 import { DecorationPicker } from "./decoration-picker"
 import { NoiseControl } from "./noise-control"
 import { IconPicker } from "./icon-picker"
-import { CopyToPromptDialog, CopyToPromptPopover } from "./copy-to-prompt"
+import { CopyToPromptDialog } from "./copy-to-prompt"
 
 interface ThumbnailGeneratorProps {
   /** When provided, shows a primary button that uploads the current canvas and
@@ -28,11 +46,29 @@ interface ThumbnailGeneratorProps {
   onUse?: (url: string) => void
   /** Label for the primary button. Defaults to "Use this thumbnail". */
   useLabel?: string
+  /** Design state to load into the editor. */
+  initialDesign?: ThumbnailDesignConfig
+  /** Saves the editable design recipe plus a rendered preview URL. */
+  onSaveDesign?: (payload: {
+    design: ThumbnailDesignConfig
+    previewUrl: string
+  }) => Promise<void>
+  /** Label for the save button. Defaults to "Save design". */
+  saveLabel?: string
+  /** Optional external container for the action buttons. */
+  actionsContainer?: HTMLElement | null
+  /** Optional destructive action shown inside the overflow menu. */
+  onDelete?: () => void
 }
 
 export function ThumbnailGenerator({
   onUse,
   useLabel = "Use this thumbnail",
+  initialDesign,
+  onSaveDesign,
+  saveLabel = "Save design",
+  actionsContainer,
+  onDelete,
 }: ThumbnailGeneratorProps) {
   const {
     canvasRef,
@@ -58,47 +94,66 @@ export function ThumbnailGenerator({
     customIconUrl,
     customIconSize,
     setCustomIconSize,
+    customIconFile,
+    customDecoFile,
     handleCustomIconUpload,
     handleDefaultAssetSelect,
     handleCustomDecoUpload,
     clearCustomDeco,
     handleDownload,
-  } = useThumbnail()
+    handleDownloadSvg,
+    getDesign,
+    markDesignSaved,
+  } = useThumbnail(initialDesign)
 
   const [showGrid, setShowGrid] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   // Mirror canvas-helpers.ts: size = min(W,H) * 0.32 * (scale/100)
   const iconSizePx =
     Math.min(CANVAS_W, CANVAS_H) * 0.32 * (customIconSize / 100)
 
-  async function handleUse() {
+  async function uploadFile(file: File) {
+    const formData = new FormData()
+    formData.append("file", file)
+
+    const res = await fetch("/api/admin/upload", {
+      method: "POST",
+      body: formData,
+    })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.error ?? "Upload failed")
+    }
+
+    const data = (await res.json()) as { url?: string }
+    if (!data.url) throw new Error("Upload failed")
+    return data.url
+  }
+
+  async function uploadCanvasPng(prefix: string) {
     const canvas = canvasRef.current
-    if (!canvas || !onUse) return
+    if (!canvas) throw new Error("Could not render the thumbnail")
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/png")
+    )
+    if (!blob) throw new Error("Could not render the thumbnail")
+
+    return uploadFile(
+      new File([blob], `${prefix}-${Date.now()}.png`, { type: "image/png" })
+    )
+  }
+
+  async function handleUse() {
+    if (!onUse) return
 
     setUploading(true)
     try {
-      const blob = await new Promise<Blob | null>((resolve) =>
-        canvas.toBlob(resolve, "image/png")
-      )
-      if (!blob) throw new Error("Could not render the thumbnail")
-
-      const formData = new FormData()
-      formData.append(
-        "file",
-        new File([blob], `thumbnail-${Date.now()}.png`, { type: "image/png" })
-      )
-
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.error ?? "Upload failed")
-      }
-
-      const { url } = await res.json()
+      const url = onSaveDesign
+        ? await saveCurrentDesign("thumbnail")
+        : await uploadCanvasPng("thumbnail")
       onUse(url)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed")
@@ -107,8 +162,113 @@ export function ThumbnailGenerator({
     }
   }
 
+  async function saveCurrentDesign(previewPrefix: string): Promise<string> {
+    if (!onSaveDesign) throw new Error("Save is not available")
+
+    const [assetUrl, savedCustomDecoUrl, previewUrl] = await Promise.all([
+      customIconFile
+        ? uploadFile(customIconFile)
+        : Promise.resolve(customIconUrl),
+      customDecoFile
+        ? uploadFile(customDecoFile)
+        : Promise.resolve(customDecoUrl),
+      uploadCanvasPng(previewPrefix),
+    ])
+    const design = getDesign({
+      assetUrl,
+      customDecoUrl: savedCustomDecoUrl,
+    })
+
+    await onSaveDesign({ design, previewUrl })
+    markDesignSaved(design)
+    toast.success("Thumbnail design saved")
+    return previewUrl
+  }
+
+  async function handleSaveDesign() {
+    if (!onSaveDesign) return
+
+    setSaving(true)
+    try {
+      await saveCurrentDesign("thumbnail-preview")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save design")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const isUsingExternalActions = actionsContainer !== undefined
+  const actions = (
+    <div
+      className={
+        isUsingExternalActions
+          ? "flex flex-wrap items-center justify-end gap-2"
+          : "flex w-full flex-wrap gap-2"
+      }
+    >
+      {onSaveDesign && (
+        <Button
+          className={isUsingExternalActions ? undefined : "flex-1"}
+          variant={onUse ? "outline" : "default"}
+          size={isUsingExternalActions ? "default" : "lg"}
+          onClick={handleSaveDesign}
+          disabled={saving || uploading}
+        >
+          <Save />
+          {saving ? "Saving…" : saveLabel}
+        </Button>
+      )}
+      {onUse && (
+        <Button
+          className={isUsingExternalActions ? undefined : "flex-1"}
+          size={isUsingExternalActions ? "default" : "lg"}
+          onClick={handleUse}
+          disabled={uploading || saving}
+        >
+          <Check />
+          {uploading ? "Uploading…" : useLabel}
+        </Button>
+      )}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            className={
+              !isUsingExternalActions && !onUse && !onSaveDesign ? "w-full" : undefined
+            }
+            variant="outline"
+            size={isUsingExternalActions ? "icon" : "icon-lg"}
+            aria-label="Thumbnail actions"
+          >
+            <MoreHorizontal />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuItem onClick={handleDownload}>
+            <Download />
+            Download PNG
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleDownloadSvg}>
+            <FileCode2 />
+            Download SVG
+          </DropdownMenuItem>
+          {onDelete ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive" onClick={onDelete}>
+                <Trash2 />
+                Delete
+              </DropdownMenuItem>
+            </>
+          ) : null}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
+
   return (
     <div className="relative h-full">
+      {actionsContainer ? createPortal(actions, actionsContainer) : null}
       <ResizablePanelGroup>
         {/* Controls panel */}
         <ResizablePanel defaultSize={30} minSize={30}>
@@ -178,7 +338,8 @@ export function ThumbnailGenerator({
                   Use the grid to keep your asset the same visual size across
                   all thumbnails. Adjust <strong>Asset size</strong> until the
                   dashed asset zone fits snugly inside the grid square. The grid
-                  is a visual aid only and won't appear in the downloaded PNG.
+                  is a visual aid only and won&apos;t appear in the downloaded
+                  PNG.
                 </AlertDescription>
               </Alert>
             )}
@@ -198,28 +359,7 @@ export function ThumbnailGenerator({
             />
           </div>
 
-          <div className="flex w-full gap-2">
-            {onUse && (
-              <Button
-                className="flex-1"
-                size="lg"
-                onClick={handleUse}
-                disabled={uploading}
-              >
-                <Check />
-                {uploading ? "Uploading…" : useLabel}
-              </Button>
-            )}
-            <Button
-              className={onUse ? undefined : "w-full"}
-              variant={onUse ? "outline" : "default"}
-              size="lg"
-              onClick={handleDownload}
-            >
-              <Download />
-              {onUse ? "Download" : "Download PNG"}
-            </Button>
-          </div>
+          {actionsContainer === undefined ? actions : null}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
