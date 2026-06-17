@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { EyeIcon, MoreHorizontal, Trash2, Link2, Share2 } from "lucide-react";
+import { EyeIcon, MoreHorizontal, Trash2, Link2, Share2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import type { ColumnDef } from "@tanstack/react-table";
 
@@ -184,6 +184,30 @@ export const STATUS_OPTIONS: Option[] = [
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getBlogColumns(tagOptions: Option[]): ColumnDef<BlogPost, any>[] {
   return [
+    {
+      id: "thumbnail",
+      accessorKey: "thumbnail",
+      header: "",
+      cell: ({ getValue }) => {
+        const src = getValue<string | null>();
+        return src ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src}
+            alt=""
+            className="h-10 w-16 rounded object-cover bg-muted"
+          />
+        ) : (
+          <div className="flex h-10 w-16 items-center justify-center rounded bg-muted text-muted-foreground">
+            <ImageIcon className="h-4 w-4" />
+          </div>
+        );
+      },
+      meta: { label: "Thumbnail" },
+      size: 80,
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       id: "title",
       accessorKey: "title",
