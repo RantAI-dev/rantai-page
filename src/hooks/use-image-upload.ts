@@ -1,14 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { MAX_UPLOAD_BYTES, MAX_UPLOAD_LABEL, type UploadFolder } from "@/lib/upload";
 
 interface UseImageUploadProps {
   onUpload?: (url: string) => void;
+  /** Blob storage folder for uploaded files. Defaults to "uploads". */
+  folder?: UploadFolder;
 }
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+// Photos/covers are raster-only here by design (SVG excluded), but share the
+// app-wide size cap from @/lib/upload so client and server stay in sync.
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
-export function useImageUpload({ onUpload }: UseImageUploadProps = {}) {
+export function useImageUpload({ onUpload, folder }: UseImageUploadProps = {}) {
   const previewRef = useRef<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -22,6 +26,7 @@ export function useImageUpload({ onUpload }: UseImageUploadProps = {}) {
 
       const formData = new FormData();
       formData.append("file", file);
+      if (folder) formData.append("folder", folder);
 
       const response = await fetch("/api/admin/upload", {
         method: "POST",
@@ -63,8 +68,8 @@ export function useImageUpload({ onUpload }: UseImageUploadProps = {}) {
           return;
         }
 
-        if (file.size > MAX_FILE_SIZE) {
-          const message = "File too large (max 5MB)";
+        if (file.size > MAX_UPLOAD_BYTES) {
+          const message = `File too large (max ${MAX_UPLOAD_LABEL})`;
           setError(message);
           toast.error(message);
           return;
@@ -87,7 +92,7 @@ export function useImageUpload({ onUpload }: UseImageUploadProps = {}) {
         }
       }
     },
-    [onUpload]
+    [onUpload, folder]
   );
 
   const handleRemove = useCallback(() => {

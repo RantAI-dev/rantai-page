@@ -103,6 +103,7 @@ function TiptapImage(props: NodeViewProps) {
       handleRemove();
       setOpenedMore(false);
     },
+    folder: "content",
   });
 
   function handleResizingPosition({
