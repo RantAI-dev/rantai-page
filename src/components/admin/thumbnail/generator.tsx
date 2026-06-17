@@ -58,6 +58,13 @@ interface ThumbnailGeneratorProps {
   actionsContainer?: HTMLElement | null
   /** Optional destructive action shown inside the overflow menu. */
   onDelete?: () => void
+  /**
+   * Render the controls/preview split as drag-resizable panels. Disable when
+   * mounting inside a portal (e.g. a Dialog) that already lives within another
+   * resizable group — react-resizable-panels shares global pointer state across
+   * all mounted groups and a second nested group throws on resize.
+   */
+  resizable?: boolean
 }
 
 export function ThumbnailGenerator({
@@ -68,6 +75,7 @@ export function ThumbnailGenerator({
   saveLabel = "Save design",
   actionsContainer,
   onDelete,
+  resizable = true,
 }: ThumbnailGeneratorProps) {
   const {
     canvasRef,
@@ -265,14 +273,9 @@ export function ThumbnailGenerator({
     </div>
   )
 
-  return (
-    <div className="relative h-full">
-      {actionsContainer ? createPortal(actions, actionsContainer) : null}
-      <ResizablePanelGroup>
-        {/* Controls panel */}
-        <ResizablePanel defaultSize={30} minSize={30}>
-          <Card className="h-full overflow-y-scroll">
-            <CardContent>
+  const controlsPanel = (
+    <Card className="h-full overflow-y-scroll">
+      <CardContent>
               <ColorPicker color={color} onColorChange={setColor} />
 
               <Separator className="mb-5" />
@@ -305,58 +308,79 @@ export function ThumbnailGenerator({
 
               <Separator className="mb-5" />
 
-              <IconPicker
-                customIconUrl={customIconUrl}
-                customIconSize={customIconSize}
-                inputRef={customIconInputRef}
-                onAssetSelect={handleDefaultAssetSelect}
-                onCustomIconSizeChange={setCustomIconSize}
-                onUpload={handleCustomIconUpload}
-              />
-            </CardContent>
-          </Card>
-        </ResizablePanel>
+        <IconPicker
+          customIconUrl={customIconUrl}
+          customIconSize={customIconSize}
+          inputRef={customIconInputRef}
+          onAssetSelect={handleDefaultAssetSelect}
+          onCustomIconSizeChange={setCustomIconSize}
+          onUpload={handleCustomIconUpload}
+        />
+      </CardContent>
+    </Card>
+  )
 
-        <ResizableHandle withHandle />
+  const previewPanel = (
+    <>
+      <div className="relative rounded-lg border border-border">
+        {showGrid && (
+          <Alert className="absolute -top-22 w-full">
+            <Grid3x3 className="h-4 w-4" />
+            <AlertDescription>
+              Use the grid to keep your asset the same visual size across all
+              thumbnails. Adjust <strong>Asset size</strong> until the dashed
+              asset zone fits snugly inside the grid square. The grid is a
+              visual aid only and won&apos;t appear in the downloaded PNG.
+            </AlertDescription>
+          </Alert>
+        )}
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_W}
+          height={CANVAS_H}
+          className="block h-auto w-full"
+        />
 
-        {/* Right panel: canvas preview + AI prompt */}
-        <ResizablePanel
-          defaultSize={70}
-          minSize={30}
-          className="flex flex-col justify-center gap-2 p-6"
-        >
-          <div className="relative rounded-lg border border-border">
-            {showGrid && (
-              <Alert className="absolute -top-22 w-full">
-                <Grid3x3 className="h-4 w-4" />
-                <AlertDescription>
-                  Use the grid to keep your asset the same visual size across
-                  all thumbnails. Adjust <strong>Asset size</strong> until the
-                  dashed asset zone fits snugly inside the grid square. The grid
-                  is a visual aid only and won&apos;t appear in the downloaded
-                  PNG.
-                </AlertDescription>
-              </Alert>
-            )}
-            <canvas
-              ref={canvasRef}
-              width={CANVAS_W}
-              height={CANVAS_H}
-              className="block h-auto w-full"
-            />
+        <CanvasGrid
+          canvasW={CANVAS_W}
+          canvasH={CANVAS_H}
+          iconSizePx={iconSizePx}
+          showGrid={showGrid}
+          onToggle={() => setShowGrid((v) => !v)}
+        />
+      </div>
 
-            <CanvasGrid
-              canvasW={CANVAS_W}
-              canvasH={CANVAS_H}
-              iconSizePx={iconSizePx}
-              showGrid={showGrid}
-              onToggle={() => setShowGrid((v) => !v)}
-            />
+      {actionsContainer === undefined ? actions : null}
+    </>
+  )
+
+  return (
+    <div className="relative h-full">
+      {actionsContainer ? createPortal(actions, actionsContainer) : null}
+      {resizable ? (
+        <ResizablePanelGroup>
+          <ResizablePanel defaultSize={30} minSize={30}>
+            {controlsPanel}
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          <ResizablePanel
+            defaultSize={70}
+            minSize={30}
+            className="flex flex-col justify-center gap-2 p-6"
+          >
+            {previewPanel}
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      ) : (
+        <div className="flex h-full w-full flex-col gap-4 lg:flex-row">
+          <div className="lg:w-[34%] lg:min-w-[300px]">{controlsPanel}</div>
+          <div className="flex min-h-0 flex-1 flex-col justify-center gap-2 p-6">
+            {previewPanel}
           </div>
-
-          {actionsContainer === undefined ? actions : null}
-        </ResizablePanel>
-      </ResizablePanelGroup>
+        </div>
+      )}
     </div>
   )
 }
