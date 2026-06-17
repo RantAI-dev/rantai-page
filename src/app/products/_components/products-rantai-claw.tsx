@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { DownloadIcon, GlobeIcon, LayersIcon, WorkflowIcon } from "lucide-react"
+import { BlocksIcon, LayoutDashboardIcon, TerminalIcon } from "lucide-react"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MotionInView } from "@/components/motion-in-view"
@@ -14,36 +14,28 @@ const clawVideo =
 
 const features = [
   {
-    value: "extract",
-    label: "Extract",
-    icon: GlobeIcon,
+    value: "tui",
+    label: "TUI",
+    icon: TerminalIcon,
     video: clawVideo,
-    title: "Web Extraction",
-    body: "Pull clean, reliable data from any website at scale — pages, listings, documents, and dynamic content rendered just like a real browser.",
+    title: "Terminal UI",
+    body: "Chat with your agents straight from the terminal. Launch the interactive TUI for a fast, keyboard-driven session — no browser required, fully self-hosted.",
   },
   {
-    value: "structure",
-    label: "Structure",
-    icon: LayersIcon,
+    value: "web-ui",
+    label: "Web UI",
+    icon: LayoutDashboardIcon,
     video: clawVideo,
-    title: "Structure & Normalize",
-    body: "Transform messy web content into clean, typed, and consistent records ready to use across your applications and pipelines.",
+    title: "Web Control UI",
+    body: "Run, monitor, and configure agents from the browser. The gateway control plane surfaces live sessions, channels, memory, and status in a single dashboard.",
   },
   {
-    value: "workflows",
-    label: "Workflows",
-    icon: WorkflowIcon,
+    value: "skills",
+    label: "Skills",
+    icon: BlocksIcon,
     video: clawVideo,
-    title: "Automated Workflows",
-    body: "Chain extraction, transformation, and actions into repeatable workflows that run on schedule or trigger from your systems.",
-  },
-  {
-    value: "export",
-    label: "Export",
-    icon: DownloadIcon,
-    video: clawVideo,
-    title: "Export & Integrate",
-    body: "Deliver structured data straight into your stack via APIs, webhooks, and exports — JSON, CSV, databases, and more.",
+    title: "Skills",
+    body: "Extend agents with reusable, domain-specific skills. Bundle tools and instructions into installable recipes, or pull ready-made ones from the ClawHub marketplace.",
   },
 ]
 
@@ -87,7 +79,7 @@ export function ProductsRantAIClaw() {
             logo="/logo/RantAIClaw Dark.svg"
             logoAlt="RantAIClaw logo"
             title="RantAIClaw"
-            subtitle="Extract, structure, and act on web data — at enterprise scale."
+            subtitle="A production multi-agent runtime in 100% Rust — run, control, and extend autonomous agents your way."
             className="p-8"
           >
             <TabsList className="w-full">
