@@ -1,18 +1,30 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRightIcon, SearchIcon, XIcon } from "lucide-react"
-import type { BlogPost } from "@/lib/blog"
+import { ArrowRightIcon, Loader2Icon, SearchIcon, XIcon } from "lucide-react"
+import type { PostListItem, PostsPage } from "@/lib/blog"
 import { gradientForColor } from "@/lib/tag-colors"
 
-type Post = Omit<BlogPost, "contentHtml">
+type Post = PostListItem
 
 interface Props {
-  posts: Post[]
+  // First page rendered on the server for fast initial paint & SEO.
+  initialPosts: Post[]
+  // Cursor for the page after `initialPosts`, or null if there are no more.
+  initialCursor: string | null
   // Map of tag name → color preset key, used to resolve thumbnail gradients.
   tagColors?: Record<string, string>
+}
+
+async function fetchPosts(params: { cursor?: string; q?: string }): Promise<PostsPage> {
+  const search = new URLSearchParams()
+  if (params.cursor) search.set("cursor", params.cursor)
+  if (params.q) search.set("q", params.q)
+  const res = await fetch(`/api/blog?${search.toString()}`)
+  if (!res.ok) throw new Error("Failed to load posts")
+  return res.json()
 }
 
 function Thumbnail({
@@ -60,27 +72,65 @@ function formatDate(date: string) {
   })
 }
 
-export function BlogMain({ posts, tagColors }: Props) {
+export function BlogMain({ initialPosts, initialCursor, tagColors }: Props) {
   const [query, setQuery] = useState("")
+  const [posts, setPosts] = useState<Post[]>(initialPosts)
+  const [cursor, setCursor] = useState<string | null>(initialCursor)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [searching, setSearching] = useState(false)
 
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim()
-    if (!q) return posts
-    return posts.filter(
-      (p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.excerpt.toLowerCase().includes(q) ||
-        p.tag.toLowerCase().includes(q),
-    )
-  }, [posts, query])
+  const trimmedQuery = query.trim()
+  const isSearching = trimmedQuery.length > 0
 
-  const [featured, ...rest] = filtered
+  // Re-query the server (debounced) whenever the search term changes. Skips the
+  // first render so the server-provided initial page isn't re-fetched on mount.
+  const didMount = useRef(false)
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true
+      return
+    }
+
+    const q = query.trim()
+    setSearching(true)
+    const handle = setTimeout(async () => {
+      try {
+        const page = await fetchPosts({ q })
+        setPosts(page.posts)
+        setCursor(page.nextCursor)
+      } finally {
+        setSearching(false)
+      }
+    }, 300)
+
+    return () => clearTimeout(handle)
+  }, [query])
+
+  const loadMore = useCallback(async () => {
+    if (!cursor || loadingMore) return
+    setLoadingMore(true)
+    try {
+      const page = await fetchPosts({ cursor, q: trimmedQuery || undefined })
+      setPosts((prev) => [...prev, ...page.posts])
+      setCursor(page.nextCursor)
+    } finally {
+      setLoadingMore(false)
+    }
+  }, [cursor, loadingMore, trimmedQuery])
+
+  // Featured layout only makes sense for the default chronological feed.
+  const featured = isSearching ? undefined : posts[0]
+  const rest = isSearching ? posts : posts.slice(1)
 
   return (
     <div className="flex flex-col gap-8">
       {/* Search bar */}
       <div className="relative">
-        <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        {searching ? (
+          <Loader2Icon className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+        ) : (
+          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        )}
         <input
           type="text"
           value={query}
@@ -99,25 +149,33 @@ export function BlogMain({ posts, tagColors }: Props) {
         )}
       </div>
 
-      {/* Results count */}
+      {/* Results count — `+` denotes more pages available beyond what's loaded. */}
       <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
-        {query
-          ? `${filtered.length} result${filtered.length !== 1 ? "s" : ""} for "${query}"`
-          : `${posts.length} article${posts.length !== 1 ? "s" : ""}`}
+        {(() => {
+          const more = cursor ? "+" : ""
+          const noun = posts.length === 1 ? "" : "s"
+          return isSearching
+            ? `${posts.length}${more} result${noun} for "${trimmedQuery}"`
+            : `${posts.length}${more} article${noun}`
+        })()}
       </p>
 
       {/* Empty state */}
-      {filtered.length === 0 ? (
+      {!searching && posts.length === 0 ? (
         <div className="py-16 text-center">
           <p className="font-mono text-sm text-muted-foreground">
-            No articles found for &ldquo;{query}&rdquo;.
+            {isSearching
+              ? `No articles found for “${trimmedQuery}”.`
+              : "No articles published yet."}
           </p>
-          <button
-            onClick={() => setQuery("")}
-            className="mt-3 font-mono text-xs uppercase tracking-wider text-foreground underline underline-offset-4 transition-colors hover:text-primary"
-          >
-            Clear search
-          </button>
+          {isSearching && (
+            <button
+              onClick={() => setQuery("")}
+              className="mt-3 font-mono text-xs uppercase tracking-wider text-foreground underline underline-offset-4 transition-colors hover:text-primary"
+            >
+              Clear search
+            </button>
+          )}
         </div>
       ) : (
         <>
@@ -215,6 +273,26 @@ export function BlogMain({ posts, tagColors }: Props) {
                   </div>
                 </Link>
               ))}
+            </div>
+          )}
+
+          {/* Load more */}
+          {cursor && (
+            <div className="flex justify-center pt-4">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-muted/30 px-6 py-3 font-mono text-xs uppercase tracking-wider text-foreground transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loadingMore ? (
+                  <>
+                    <Loader2Icon className="size-3.5 animate-spin" />
+                    Loading
+                  </>
+                ) : (
+                  "Load more"
+                )}
+              </button>
             </div>
           )}
         </>
