@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ThumbnailUpload } from "@/components/admin/thumbnail-upload";
+import { ImageUpload } from "@/components/admin/image-upload";
 import type { TeamMember } from "@/lib/db/schema";
 
 export function TeamForm({ member }: { member?: TeamMember }) {
@@ -73,7 +73,7 @@ export function TeamForm({ member }: { member?: TeamMember }) {
         <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
       </div>
 
-      <ThumbnailUpload label="Photo" value={imageUrl} onChange={setImageUrl} folder="team" />
+      <ImageUpload label="Photo" value={imageUrl} onChange={setImageUrl} folder="team" />
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">

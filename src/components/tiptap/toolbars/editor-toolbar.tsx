@@ -26,7 +26,7 @@ export const EditorToolbar = ({ editor }: { editor: Editor }) => {
   return (
     <div className="sticky top-0 z-[1] w-full border-b bg-background hidden sm:block">
       <ToolbarProvider editor={editor}>
-        <TooltipProvider>
+        <TooltipProvider delayDuration={500}>
           <ScrollArea className="h-fit py-0.5">
             <div>
               <div className="flex items-center gap-1 px-2">

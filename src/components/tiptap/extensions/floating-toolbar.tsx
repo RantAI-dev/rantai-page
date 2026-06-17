@@ -43,7 +43,7 @@ export function FloatingToolbar({ editor }: { editor: Editor | null }) {
 
   if (isMobile) {
     return (
-      <TooltipProvider>
+      <TooltipProvider delayDuration={500}>
         <BubbleMenu
           appendTo={() => document.body}
           options={{

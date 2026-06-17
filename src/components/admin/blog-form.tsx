@@ -16,7 +16,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
-import { ThumbnailUpload } from "@/components/admin/thumbnail-upload";
+import { ImageUpload } from "@/components/admin/image-upload";
 import { AuthorSelect, type TeamAuthor } from "@/components/admin/author-select";
 import { TagSelect, type TagOption } from "@/components/admin/tag-select";
 import { normalizeBlogInput } from "@/lib/blog-input";
@@ -52,7 +52,7 @@ export function BlogForm({
   const [tag, setTag] = useState(post?.tag ?? tags[0]?.name ?? "");
   const [author, setAuthor] = useState(post?.author ?? "");
   const [thumbnail, setThumbnail] = useState(post?.thumbnail ?? initialThumbnail ?? "");
-  const [published, setPublished] = useState(post?.published ?? true);
+  const [published, setPublished] = useState(post?.published ?? false);
   const [loading, setLoading] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
 
@@ -138,6 +138,8 @@ export function BlogForm({
         {/* Left panel — metadata */}
         <ResizablePanel defaultSize={38} minSize={28}>
           <div className="h-full space-y-6 overflow-y-auto p-5">
+            <ImageUpload label="Thumbnail" value={thumbnail} onChange={setThumbnail} folder="thumbnails" showGenerator />
+
             <div className="space-y-2">
               <Label htmlFor="title">Title *</Label>
               <Input
@@ -168,8 +170,8 @@ export function BlogForm({
                 required
               />
               <p className="text-xs text-muted-foreground">
-                Ringkasan singkat untuk kartu blog &amp; preview SEO. Disarankan
-                maks. {EXCERPT_RECOMMENDED} karakter.
+                Short summary for the blog card &amp; SEO preview. Recommended max
+                {" "}{EXCERPT_RECOMMENDED} characters.
               </p>
             </div>
 
@@ -186,8 +188,6 @@ export function BlogForm({
                 onChange={setAuthor}
               />
             </div>
-
-            <ThumbnailUpload value={thumbnail} onChange={setThumbnail} folder="thumbnails" />
 
             <div className="flex items-center gap-3">
               <Switch

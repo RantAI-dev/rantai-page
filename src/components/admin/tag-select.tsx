@@ -34,9 +34,9 @@ export function TagSelect({ value, options, onChange }: Props) {
       itemToStringLabel={(item) => item.name}
       isItemEqualToValue={(a, b) => a.name === b.name}
     >
-      <ComboboxInput placeholder="Cari tag…" />
+      <ComboboxInput placeholder="Search tags…" />
       <ComboboxContent>
-        <ComboboxEmpty>Tag tidak ditemukan.</ComboboxEmpty>
+        <ComboboxEmpty>No tags found.</ComboboxEmpty>
         <ComboboxList>
           {(item: TagOption) => (
             <ComboboxItem key={item.name} value={item}>

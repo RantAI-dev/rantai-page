@@ -52,9 +52,9 @@ export function AuthorSelect({ value, options, onChange }: Props) {
       itemToStringLabel={(item) => item.name}
       isItemEqualToValue={(a, b) => a.name === b.name}
     >
-      <ComboboxInput placeholder="Cari penulis…" showClear />
+      <ComboboxInput placeholder="Search authors…" showClear />
       <ComboboxContent>
-        <ComboboxEmpty>Penulis tidak ditemukan.</ComboboxEmpty>
+        <ComboboxEmpty>No authors found.</ComboboxEmpty>
         <ComboboxList>
           {(item: TeamAuthor) => (
             <ComboboxItem key={item.name} value={item}>

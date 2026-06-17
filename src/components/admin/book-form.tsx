@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ThumbnailUpload } from "@/components/admin/thumbnail-upload";
+import { ImageUpload } from "@/components/admin/image-upload";
 import type { Book } from "@/lib/db/schema";
 
 const CATEGORIES = ["Foundation", "Architecture", "Algorithms", "AI/ML", "Data", "Business"];
@@ -84,7 +84,7 @@ export function BookForm({ book }: { book?: Book }) {
         <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
 
-      <ThumbnailUpload value={imageUrl} onChange={setImageUrl} label="Cover Image *" folder="books" />
+      <ImageUpload value={imageUrl} onChange={setImageUrl} label="Cover Image *" folder="books" />
 
       <div className="space-y-2">
         <Label htmlFor="url">Book URL</Label>
