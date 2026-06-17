@@ -101,6 +101,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
 			handleRemove();
 			setIsExpanded(false);
 		},
+		folder: "content",
 	});
 
 	const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {

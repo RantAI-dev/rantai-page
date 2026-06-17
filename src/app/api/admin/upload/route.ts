@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { getSession } from "@/lib/auth";
+import { getUploadError, resolveUploadFolder } from "@/lib/upload";
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
@@ -11,16 +12,14 @@ export async function POST(req: NextRequest) {
 
   if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
-  if (!allowedTypes.includes(file.type)) {
-    return NextResponse.json({ error: "File type not allowed" }, { status: 400 });
+  const uploadError = getUploadError(file);
+  if (uploadError) {
+    return NextResponse.json({ error: uploadError }, { status: 400 });
   }
 
-  if (file.size > 5 * 1024 * 1024) {
-    return NextResponse.json({ error: "File too large (max 5MB)" }, { status: 400 });
-  }
+  const folder = resolveUploadFolder(formData.get("folder") as string | null);
 
-  const blob = await put(`thumbnails/${Date.now()}-${file.name}`, file, {
+  const blob = await put(`${folder}/${Date.now()}-${file.name}`, file, {
     access: "public",
   });
 
