@@ -7,14 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { UploadIcon, XIcon } from "lucide-react";
 import { ThumbnailGeneratorDialog } from "@/components/admin/thumbnail/generator-dialog";
+import { getUploadError, type UploadFolder } from "@/lib/upload";
 
 interface Props {
   value: string;
   onChange: (url: string) => void;
   label?: string;
+  /** Blob storage folder for uploads. Defaults to "thumbnails". */
+  folder?: UploadFolder;
 }
 
-export function ThumbnailUpload({ value, onChange, label = "Thumbnail" }: Props) {
+export function ThumbnailUpload({
+  value,
+  onChange,
+  label = "Thumbnail",
+  folder = "thumbnails",
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -22,9 +30,17 @@ export function ThumbnailUpload({ value, onChange, label = "Thumbnail" }: Props)
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const validationError = getUploadError(file);
+    if (validationError) {
+      toast.error(validationError);
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
+
     setUploading(true);
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("folder", folder);
 
     const res = await fetch("/api/admin/upload", {
       method: "POST",
@@ -85,6 +101,7 @@ export function ThumbnailUpload({ value, onChange, label = "Thumbnail" }: Props)
           {uploading ? "Uploading…" : "Upload Image"}
         </Button>
         <ThumbnailGeneratorDialog
+          folder={folder}
           onUse={(url) => {
             onChange(url);
             toast.success("Thumbnail attached");
