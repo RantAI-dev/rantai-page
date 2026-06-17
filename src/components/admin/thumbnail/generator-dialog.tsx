@@ -13,14 +13,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
+import type { UploadFolder } from "@/lib/upload"
+
 import { ThumbnailGenerator } from "./generator"
 
 interface ThumbnailGeneratorDialogProps {
   onUse: (url: string) => void
+  /** Blob storage folder for the generated thumbnail. */
+  folder?: UploadFolder
 }
 
 export function ThumbnailGeneratorDialog({
   onUse,
+  folder,
 }: ThumbnailGeneratorDialogProps) {
   const [open, setOpen] = useState(false)
 
@@ -43,6 +48,7 @@ export function ThumbnailGeneratorDialog({
         <div className="min-h-0 flex-1">
           <ThumbnailGenerator
             resizable={false}
+            folder={folder}
             onUse={(url) => {
               onUse(url)
               setOpen(false)

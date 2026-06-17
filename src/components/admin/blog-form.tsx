@@ -187,7 +187,7 @@ export function BlogForm({
               />
             </div>
 
-            <ThumbnailUpload value={thumbnail} onChange={setThumbnail} />
+            <ThumbnailUpload value={thumbnail} onChange={setThumbnail} folder="thumbnails" />
 
             <div className="flex items-center gap-3">
               <Switch

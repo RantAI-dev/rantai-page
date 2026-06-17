@@ -84,7 +84,7 @@ export function BookForm({ book }: { book?: Book }) {
         <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
 
-      <ThumbnailUpload value={imageUrl} onChange={setImageUrl} label="Cover Image *" />
+      <ThumbnailUpload value={imageUrl} onChange={setImageUrl} label="Cover Image *" folder="books" />
 
       <div className="space-y-2">
         <Label htmlFor="url">Book URL</Label>

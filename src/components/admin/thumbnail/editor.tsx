@@ -145,6 +145,7 @@ export function ThumbnailEditor({ design }: ThumbnailEditorProps) {
             onSaveDesign={handleSave}
             saveLabel={design ? "Save changes" : "Save design"}
             useLabel="Use for Blog"
+            folder="assets"
             actionsContainer={actionsContainer}
             onDelete={design ? () => setDeleteOpen(true) : undefined}
             onUse={(url) =>

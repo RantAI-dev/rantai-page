@@ -73,7 +73,7 @@ export function TeamForm({ member }: { member?: TeamMember }) {
         <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
       </div>
 
-      <ThumbnailUpload label="Photo" value={imageUrl} onChange={setImageUrl} />
+      <ThumbnailUpload label="Photo" value={imageUrl} onChange={setImageUrl} folder="team" />
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">

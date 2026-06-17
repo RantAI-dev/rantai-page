@@ -4,9 +4,9 @@ import { useState } from "react"
 import { createPortal } from "react-dom"
 import {
   Check,
-  Download,
-  FileCode2,
   Grid3x3,
+  ImageIcon,
+  ImageDown,
   MoreHorizontal,
   Save,
   Trash2,
@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner"
 
 import type { ThumbnailDesignConfig } from "@/lib/thumbnail-design"
+import { getUploadError, type UploadFolder } from "@/lib/upload"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -58,6 +59,9 @@ interface ThumbnailGeneratorProps {
   actionsContainer?: HTMLElement | null
   /** Optional destructive action shown inside the overflow menu. */
   onDelete?: () => void
+  /** Blob storage folder for the rendered thumbnail. Defaults to "uploads".
+   *  Custom icons/decorations always go to "assets" regardless. */
+  folder?: UploadFolder
   /**
    * Render the controls/preview split as drag-resizable panels. Disable when
    * mounting inside a portal (e.g. a Dialog) that already lives within another
@@ -76,6 +80,7 @@ export function ThumbnailGenerator({
   actionsContainer,
   onDelete,
   resizable = true,
+  folder = "uploads",
 }: ThumbnailGeneratorProps) {
   const {
     canvasRef,
@@ -107,8 +112,8 @@ export function ThumbnailGenerator({
     handleDefaultAssetSelect,
     handleCustomDecoUpload,
     clearCustomDeco,
-    handleDownload,
-    handleDownloadSvg,
+    handleDownloadWebp,
+    handleDownloadPng,
     getDesign,
     markDesignSaved,
   } = useThumbnail(initialDesign)
@@ -121,9 +126,14 @@ export function ThumbnailGenerator({
   const iconSizePx =
     Math.min(CANVAS_W, CANVAS_H) * 0.32 * (customIconSize / 100)
 
-  async function uploadFile(file: File) {
+  async function uploadFile(file: File, targetFolder: UploadFolder) {
+    // Fail fast on the client so oversized/invalid files don't waste a full upload.
+    const validationError = getUploadError(file)
+    if (validationError) throw new Error(validationError)
+
     const formData = new FormData()
     formData.append("file", file)
+    formData.append("folder", targetFolder)
 
     const res = await fetch("/api/admin/upload", {
       method: "POST",
@@ -139,17 +149,20 @@ export function ThumbnailGenerator({
     return data.url
   }
 
-  async function uploadCanvasPng(prefix: string) {
+  async function uploadCanvasImage(prefix: string) {
     const canvas = canvasRef.current
     if (!canvas) throw new Error("Could not render the thumbnail")
 
+    // WebP keeps these gradient/decorative thumbnails ~10x smaller than PNG
+    // (~200KB vs ~3MB at 1920x1080) with no visible loss and no transparency need.
     const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, "image/png")
+      canvas.toBlob(resolve, "image/webp", 0.92)
     )
     if (!blob) throw new Error("Could not render the thumbnail")
 
     return uploadFile(
-      new File([blob], `${prefix}-${Date.now()}.png`, { type: "image/png" })
+      new File([blob], `${prefix}-${Date.now()}.webp`, { type: "image/webp" }),
+      folder,
     )
   }
 
@@ -160,7 +173,7 @@ export function ThumbnailGenerator({
     try {
       const url = onSaveDesign
         ? await saveCurrentDesign("thumbnail")
-        : await uploadCanvasPng("thumbnail")
+        : await uploadCanvasImage("thumbnail")
       onUse(url)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed")
@@ -174,12 +187,12 @@ export function ThumbnailGenerator({
 
     const [assetUrl, savedCustomDecoUrl, previewUrl] = await Promise.all([
       customIconFile
-        ? uploadFile(customIconFile)
+        ? uploadFile(customIconFile, "assets")
         : Promise.resolve(customIconUrl),
       customDecoFile
-        ? uploadFile(customDecoFile)
+        ? uploadFile(customDecoFile, "assets")
         : Promise.resolve(customDecoUrl),
-      uploadCanvasPng(previewPrefix),
+      uploadCanvasImage(previewPrefix),
     ])
     const design = getDesign({
       assetUrl,
@@ -250,14 +263,24 @@ export function ThumbnailGenerator({
             <MoreHorizontal />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-40">
-          <DropdownMenuItem onClick={handleDownload}>
-            <Download />
-            Download PNG
+        <DropdownMenuContent align="end" className="w-72">
+          <DropdownMenuItem onClick={handleDownloadWebp} className="items-start gap-2.5">
+            <ImageDown className="mt-0.5 shrink-0" />
+            <div className="flex flex-col">
+              <span>Download WebP</span>
+              <span className="text-xs text-muted-foreground">
+                Smallest file, best for web & uploads
+              </span>
+            </div>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleDownloadSvg}>
-            <FileCode2 />
-            Download SVG
+          <DropdownMenuItem onClick={handleDownloadPng} className="items-start gap-2.5">
+            <ImageIcon className="mt-0.5 shrink-0" />
+            <div className="flex flex-col">
+              <span>Download PNG</span>
+              <span className="text-xs text-muted-foreground">
+                Larger, for editing or wide compatibility
+              </span>
+            </div>
           </DropdownMenuItem>
           {onDelete ? (
             <>

@@ -163,29 +163,21 @@ export function useThumbnail(initialDesign?: ThumbnailDesignConfig) {
     setCustomDecoUrl(design.customDecoUrl)
   }
 
-  function handleDownload() {
+  function downloadCanvas(type: "image/webp" | "image/png", ext: string) {
     const canvas = canvasRef.current
     if (!canvas) return
     const link = document.createElement("a")
-    link.download = `thumbnail-${Date.now()}.png`
-    link.href = canvas.toDataURL("image/png")
+    link.download = `thumbnail-${Date.now()}.${ext}`
+    link.href = canvas.toDataURL(type, 0.92)
     link.click()
   }
 
-  function handleDownloadSvg() {
-    const canvas = canvasRef.current
-    if (!canvas) return
+  function handleDownloadWebp() {
+    downloadCanvas("image/webp", "webp")
+  }
 
-    const imageHref = canvas.toDataURL("image/png")
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}"><image href="${imageHref}" width="${CANVAS_W}" height="${CANVAS_H}"/></svg>`
-    const url = URL.createObjectURL(
-      new Blob([svg], { type: "image/svg+xml;charset=utf-8" })
-    )
-    const link = document.createElement("a")
-    link.download = `thumbnail-${Date.now()}.svg`
-    link.href = url
-    link.click()
-    URL.revokeObjectURL(url)
+  function handleDownloadPng() {
+    downloadCanvas("image/png", "png")
   }
 
   return {
@@ -224,8 +216,8 @@ export function useThumbnail(initialDesign?: ThumbnailDesignConfig) {
     handleDefaultAssetSelect,
     handleCustomDecoUpload,
     clearCustomDeco,
-    handleDownload,
-    handleDownloadSvg,
+    handleDownloadWebp,
+    handleDownloadPng,
     getDesign,
     markDesignSaved,
   }
