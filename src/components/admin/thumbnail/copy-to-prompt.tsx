@@ -316,19 +316,29 @@ export function CopyToPrompt({ initialSubject = "asset" }: CopyToPromptProps) {
 
 export interface CopyToPromptDialogProps {
   initialSubject: SubjectMode
+  /** Controlled open state. Omit for the uncontrolled built-in trigger. */
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  /** Hide the built-in trigger button when opening from an external control. */
+  showTrigger?: boolean
 }
 
 export function CopyToPromptDialog({
   initialSubject,
+  open,
+  onOpenChange,
+  showTrigger = true,
 }: CopyToPromptDialogProps) {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="w-full" variant={"outline"}>
-          <Sparkles />
-          Generate with AI
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {showTrigger && (
+        <DialogTrigger asChild>
+          <Button className="w-full" variant={"outline"}>
+            <Sparkles />
+            Generate with AI
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="sr-only">Generate with AI</DialogTitle>

@@ -38,7 +38,6 @@ import { ColorPicker } from "./color-picker"
 import { DecorationPicker } from "./decoration-picker"
 import { NoiseControl } from "./noise-control"
 import { IconPicker } from "./icon-picker"
-import { CopyToPromptDialog } from "./copy-to-prompt"
 
 interface ThumbnailGeneratorProps {
   /** When provided, shows a primary button that uploads the current canvas and
@@ -277,10 +276,6 @@ export function ThumbnailGenerator({
               <ColorPicker color={color} onColorChange={setColor} />
 
               <Separator className="mb-5" />
-
-              <CopyToPromptDialog initialSubject="asset" />
-
-              <Separator className="my-5" />
 
               <DecorationPicker
                 deco={deco}

@@ -6,8 +6,13 @@ export type ThumbnailDecorationKey =
   | "hexagons"
   | "grid"
   | "diagonals"
+  | "crosshatch"
   | "waves"
   | "triangles"
+  | "chevrons"
+  | "rings"
+  | "plus"
+  | "starburst"
   | "none";
 
 export interface ThumbnailDesignConfig {
@@ -36,8 +41,13 @@ const DECORATION_KEYS = new Set<ThumbnailDecorationKey>([
   "hexagons",
   "grid",
   "diagonals",
+  "crosshatch",
   "waves",
   "triangles",
+  "chevrons",
+  "rings",
+  "plus",
+  "starburst",
   "none",
 ]);
 

@@ -1,9 +1,12 @@
 "use client"
 
-import { Upload, X } from "lucide-react"
+import { useState } from "react"
+import { Sparkles, Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { DEFAULT_ASSETS } from "./default-assets"
+import { CopyToPromptDialog } from "./copy-to-prompt"
+import { OptionPopover, OptionTile } from "./option-popover"
 
 interface IconPickerProps {
   customIconUrl: string
@@ -25,98 +28,110 @@ export function IconPicker({
   onCustomIconSizeChange,
   onUpload,
 }: IconPickerProps) {
+  const [open, setOpen] = useState(false)
+  const [aiOpen, setAiOpen] = useState(false)
   const isCustom = !isDefaultAssetUrl(customIconUrl)
+  const selected = DEFAULT_ASSETS.find((asset) => asset.url === customIconUrl)
+
+  const triggerPreview = (
+    <img
+      src={customIconUrl}
+      alt={isCustom ? "Custom asset" : (selected?.label ?? "Asset")}
+      className="h-5 w-5 object-contain"
+    />
+  )
 
   return (
     <div className="mb-5">
-      <p className="mb-3 text-sm font-semibold">Assets</p>
-
-      <div className="grid grid-cols-5 gap-2">
-        {DEFAULT_ASSETS.map((asset) => {
-          const isSelected = !isCustom && customIconUrl === asset.url
-          return (
-            <button
-              key={asset.key}
-              onClick={() => onAssetSelect(asset.url)}
-              className={`flex flex-col items-center gap-1.5 overflow-hidden rounded-md border px-2 py-2.5 transition-colors ${
-                isSelected
-                  ? "border-foreground bg-accent text-foreground"
-                  : "border-border text-muted-foreground hover:border-foreground/50 hover:text-foreground"
-              }`}
+      <OptionPopover
+        label="Assets"
+        preview={triggerPreview}
+        value={isCustom ? "Custom" : (selected?.label ?? "Asset")}
+        searchPlaceholder="Search assets…"
+        open={open}
+        onOpenChange={setOpen}
+        actions={
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant={isCustom ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setOpen(false)
+                inputRef.current?.click()
+              }}
             >
-              <img
-                src={asset.url}
-                alt={asset.label}
-                className="h-5 w-5 object-contain"
-              />
-              <span className="text-[10px] leading-none">{asset.label}</span>
-            </button>
-          )
-        })}
-      </div>
-
-      <div className="mt-3">
-        <input
-          ref={inputRef}
-          type="file"
-          accept=".svg,.png,image/svg+xml,image/png"
-          className="hidden"
-          onChange={onUpload}
-        />
-
-        {isCustom ? (
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 rounded-md border border-foreground bg-accent px-3 py-2">
-              <img
-                src={customIconUrl}
-                alt="Uploaded asset"
-                className="h-4 w-4 shrink-0 object-contain"
-              />
-              <span className="flex-1 truncate text-[10px] text-foreground">Custom</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={() => onAssetSelect(DEFAULT_ASSETS[0].url)}
-              >
-                <X />
-              </Button>
-            </div>
-            <div className="rounded-md border border-border p-3">
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <span className="text-xs font-medium">Asset size</span>
-                <span className="font-mono text-xs text-muted-foreground">{customIconSize}%</span>
-              </div>
-              <Slider
-                min={10}
-                max={500}
-                step={1}
-                value={[customIconSize]}
-                onValueChange={([value]) => onCustomIconSizeChange(value)}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-3">
-            <Button variant="outline" className="w-full" onClick={() => inputRef.current?.click()}>
               <Upload />
-              Upload asset
+              Upload
             </Button>
-            <div className="rounded-md border border-border p-3">
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <span className="text-xs font-medium">Asset size</span>
-                <span className="font-mono text-xs text-muted-foreground">{customIconSize}%</span>
-              </div>
-              <Slider
-                min={10}
-                max={500}
-                step={1}
-                value={[customIconSize]}
-                onValueChange={([value]) => onCustomIconSizeChange(value)}
-              />
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setOpen(false)
+                setAiOpen(true)
+              }}
+            >
+              <Sparkles />
+              Generate
+            </Button>
           </div>
-        )}
+        }
+      >
+        {({ query, view }) => {
+          const matches = DEFAULT_ASSETS.filter((asset) =>
+            asset.label.toLowerCase().includes(query)
+          )
+          return (
+            <div className={view === "grid" ? "grid grid-cols-5 gap-2" : "flex flex-col gap-1"}>
+              {matches.map((asset) => (
+                <OptionTile
+                  key={asset.key}
+                  view={view}
+                  selected={!isCustom && customIconUrl === asset.url}
+                  onClick={() => onAssetSelect(asset.url)}
+                  label={asset.label}
+                  preview={
+                    <img src={asset.url} alt={asset.label} className="h-5 w-5 object-contain" />
+                  }
+                />
+              ))}
+              {matches.length === 0 && (
+                <p className="col-span-full py-6 text-center text-xs text-muted-foreground">
+                  No assets found
+                </p>
+              )}
+            </div>
+          )
+        }}
+      </OptionPopover>
+
+      <CopyToPromptDialog
+        initialSubject="asset"
+        open={aiOpen}
+        onOpenChange={setAiOpen}
+        showTrigger={false}
+      />
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".svg,.png,image/svg+xml,image/png"
+        className="hidden"
+        onChange={onUpload}
+      />
+
+      <div className="mt-3 rounded-md border border-border p-3">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <span className="text-xs font-medium">Asset size</span>
+          <span className="font-mono text-xs text-muted-foreground">{customIconSize}%</span>
+        </div>
+        <Slider
+          min={10}
+          max={500}
+          step={1}
+          value={[customIconSize]}
+          onValueChange={([value]) => onCustomIconSizeChange(value)}
+        />
       </div>
     </div>
   )
