@@ -51,29 +51,43 @@ export function IconPicker({
         open={open}
         onOpenChange={setOpen}
         actions={
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant={isCustom ? "default" : "outline"}
-              size="sm"
-              onClick={() => {
-                setOpen(false)
-                inputRef.current?.click()
-              }}
-            >
-              <Upload />
-              Upload
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setOpen(false)
-                setAiOpen(true)
-              }}
-            >
-              <Sparkles />
-              Generate
-            </Button>
+          <div className="space-y-2.5">
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant={isCustom ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setOpen(false)
+                  inputRef.current?.click()
+                }}
+              >
+                <Upload />
+                Upload
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setOpen(false)
+                  setAiOpen(true)
+                }}
+              >
+                <Sparkles />
+                Generate
+              </Button>
+            </div>
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              Upload SVG/PNG — grab free icons from{" "}
+              <a
+                href="https://lucide.dev/icons/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-foreground underline underline-offset-2"
+              >
+                lucide.dev/icons
+              </a>{" "}
+              (Download SVG).
+            </p>
           </div>
         }
       >
