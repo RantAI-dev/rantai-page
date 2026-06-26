@@ -7,6 +7,7 @@ export type BlogInputBody = {
   author?: unknown;
   thumbnail?: unknown;
   published?: unknown;
+  scheduledFor?: unknown;
 };
 
 export type NormalizedBlogInput = {
@@ -18,6 +19,9 @@ export type NormalizedBlogInput = {
   author: string | null;
   thumbnail: string | null;
   published: boolean;
+  // null = not scheduled. A Date in the future means the post stays hidden until
+  // then; a Date in the past is treated as "publish now" by the visibility rules.
+  scheduledFor: Date | null;
 };
 
 // Slug is intentionally omitted: it is generated server-side from the title
@@ -33,6 +37,33 @@ function nullableText(value: unknown) {
 
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
+}
+
+// Accepts a Date, an ISO string, or a datetime-local string ("2026-07-01T09:00").
+// Empty / absent → null (not scheduled). An unparseable value also collapses to
+// null here; callers that need to reject bad input use scheduleWasInvalid().
+function nullableDate(value: unknown): Date | null {
+  if (value == null) return null;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  if (typeof value === "string") {
+    if (!value.trim()) return null;
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (typeof value === "number") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  return null;
+}
+
+// True when a non-empty schedule value was supplied but could not be parsed,
+// so the route can return a 400 instead of silently dropping the schedule.
+export function scheduleWasInvalid(body: BlogInputBody): boolean {
+  const raw = body.scheduledFor;
+  if (raw == null) return false;
+  if (typeof raw === "string" && !raw.trim()) return false;
+  return nullableDate(raw) === null;
 }
 
 export function normalizeSlug(value: string) {
@@ -54,6 +85,7 @@ export function normalizeBlogInput(body: BlogInputBody): NormalizedBlogInput {
     author: nullableText(body.author),
     thumbnail: nullableText(body.thumbnail),
     published: typeof body.published === "boolean" ? body.published : true,
+    scheduledFor: nullableDate(body.scheduledFor),
   };
 }
 

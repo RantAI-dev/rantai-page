@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { startOfToday } from "date-fns";
 import { toast } from "sonner";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/resizable";
 import { RichTextEditor } from "@/components/tiptap/rich-text-editor";
 import { ImageUpload } from "@/components/admin/image-upload";
+import { DateTimePicker } from "@/components/admin/datetime-picker";
 import { AuthorSelect, type TeamAuthor } from "@/components/admin/author-select";
 import { TagSelect, type TagOption } from "@/components/admin/tag-select";
 import { normalizeBlogInput } from "@/lib/blog-input";
@@ -24,6 +26,16 @@ import type { BlogPost } from "@/lib/db/schema";
 
 // Soft target for SEO meta descriptions; we warn past this, never block.
 const EXCERPT_RECOMMENDED = 160;
+
+// Formats a Date (or serialized date string) for a <input type="datetime-local">,
+// which expects local-time "YYYY-MM-DDTHH:mm" with no timezone suffix.
+function toDatetimeLocal(value: Date | string | null | undefined): string {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+}
 
 type Props = {
   post?: BlogPost;
@@ -53,6 +65,7 @@ export function BlogForm({
   const [author, setAuthor] = useState(post?.author ?? "");
   const [thumbnail, setThumbnail] = useState(post?.thumbnail ?? initialThumbnail ?? "");
   const [published, setPublished] = useState(post?.published ?? false);
+  const [scheduledFor, setScheduledFor] = useState(toDatetimeLocal(post?.scheduledFor));
   const [loading, setLoading] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
 
@@ -83,6 +96,15 @@ export function BlogForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // A schedule only applies to unpublished posts; publishing now clears it.
+    const schedule = published ? "" : scheduledFor;
+
+    if (schedule && new Date(schedule).getTime() <= Date.now()) {
+      toast.error("Schedule time must be in the future");
+      return;
+    }
+
     setLoading(true);
 
     const url = isEdit ? `/api/admin/blog/${post.id}` : "/api/admin/blog";
@@ -91,7 +113,9 @@ export function BlogForm({
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(normalizeBlogInput({ title, content, excerpt, tag, author, thumbnail, published })),
+      body: JSON.stringify(
+        normalizeBlogInput({ title, content, excerpt, tag, author, thumbnail, published, scheduledFor: schedule }),
+      ),
     });
 
     setLoading(false);
@@ -197,6 +221,37 @@ export function BlogForm({
               />
               <Label htmlFor="published">Published</Label>
             </div>
+
+            {/* A schedule only makes sense for posts that aren't already live. */}
+            {!published && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="scheduledFor">Schedule publish</Label>
+                  {scheduledFor && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 text-xs text-muted-foreground"
+                      onClick={() => setScheduledFor("")}
+                    >
+                      Clear
+                    </Button>
+                  )}
+                </div>
+                <DateTimePicker
+                  id="scheduledFor"
+                  value={scheduledFor}
+                  onChange={setScheduledFor}
+                  disabled={(date) => date < startOfToday()}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {scheduledFor
+                    ? "The post stays hidden until this time, then publishes automatically — any day of the week, weekends included."
+                    : "Leave empty to keep this post as a draft. Set a future date & time to publish it automatically."}
+                </p>
+              </div>
+            )}
           </div>
         </ResizablePanel>
 

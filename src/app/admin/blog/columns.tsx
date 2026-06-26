@@ -40,7 +40,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { BlogPublishedToggle } from "@/components/admin/blog-published-toggle";
+import { BlogStatusBadge } from "@/components/admin/blog-status-badge";
 
 function BlogActionsCell({ post }: { post: BlogPost }) {
   const router = useRouter();
@@ -178,7 +178,7 @@ function BlogActionsCell({ post }: { post: BlogPost }) {
 
 export const STATUS_OPTIONS: Option[] = [
   { label: "Published", value: "true" },
-  { label: "Draft", value: "false" },
+  { label: "Unpublished", value: "false" },
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -267,7 +267,11 @@ export function getBlogColumns(tagOptions: Option[]): ColumnDef<BlogPost, any>[]
       accessorKey: "published",
       header: "Status",
       cell: ({ getValue, row }) => (
-        <BlogPublishedToggle id={row.original.id} published={getValue<boolean>()} />
+        <BlogStatusBadge
+          id={row.original.id}
+          published={getValue<boolean>()}
+          scheduledFor={row.original.scheduledFor}
+        />
       ),
       meta: { label: "Status", variant: "multiSelect", options: STATUS_OPTIONS },
       size: 100,

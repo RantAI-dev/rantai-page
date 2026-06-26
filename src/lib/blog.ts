@@ -1,6 +1,18 @@
 import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
-import { and, desc, eq, ilike, lt, or } from "drizzle-orm";
+import { and, desc, eq, ilike, lt, lte, or, type SQL } from "drizzle-orm";
+
+// A post is publicly visible ("live") when it has been published, OR when it was
+// scheduled for a time that has now passed. The scheduled half makes visibility
+// self-healing: a post appears at its scheduled time even if the publish cron
+// (see blog-publish.ts) hasn't yet flipped its `published` flag.
+function livePostCondition(now = new Date()): SQL {
+  return or(eq(blogPosts.published, true), lte(blogPosts.scheduledFor, now))!;
+}
+
+function isPostLive(p: typeof blogPosts.$inferSelect, now = new Date()): boolean {
+  return p.published || (p.scheduledFor != null && p.scheduledFor <= now);
+}
 
 export interface BlogPost {
   id: string;
@@ -62,7 +74,7 @@ export async function getPosts({
   query?: string;
   limit?: number;
 } = {}): Promise<PostsPage> {
-  const conditions = [eq(blogPosts.published, true)];
+  const conditions = [livePostCondition()];
 
   const decoded = cursor ? decodeCursor(cursor) : null;
   if (decoded) {
@@ -107,7 +119,7 @@ export async function getPosts({
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
-  if (!post || !post.published) return null;
+  if (!post || !isPostLive(post)) return null;
 
   return {
     id: post.id,
@@ -123,6 +135,6 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 }
 
 export async function getAllPostSlugs(): Promise<{ params: { slug: string } }[]> {
-  const posts = await db.select({ slug: blogPosts.slug }).from(blogPosts).where(eq(blogPosts.published, true));
+  const posts = await db.select({ slug: blogPosts.slug }).from(blogPosts).where(livePostCondition());
   return posts.map((p) => ({ params: { slug: p.slug } }));
 }

@@ -8,6 +8,7 @@ import {
   getDatabaseErrorResponse,
   isPublishedOnlyBlogUpdate,
   normalizeBlogInput,
+  scheduleWasInvalid,
 } from "@/lib/blog-input";
 import { eq } from "drizzle-orm";
 
@@ -38,7 +39,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (isPublishedOnlyBlogUpdate(body)) {
       const [post] = await db
         .update(blogPosts)
-        .set({ published: body.published, updatedAt: new Date() })
+        .set({ published: body.published, scheduledFor: null, updatedAt: new Date() })
         .where(eq(blogPosts.id, id))
         .returning();
 
@@ -52,6 +53,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     if (inputError) {
       return NextResponse.json({ error: inputError }, { status: 400 });
+    }
+
+    if (scheduleWasInvalid(body)) {
+      return NextResponse.json({ error: "Invalid schedule date" }, { status: 400 });
     }
 
     // Slug is generated once at creation and kept stable on edit so existing

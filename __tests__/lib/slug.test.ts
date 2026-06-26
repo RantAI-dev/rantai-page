@@ -4,6 +4,7 @@ import {
   isPublishedOnlyBlogUpdate,
   normalizeBlogInput,
   normalizeSlug,
+  scheduleWasInvalid,
 } from "@/lib/blog-input";
 
 describe("normalizeSlug", () => {
@@ -62,7 +63,45 @@ describe("normalizeBlogInput", () => {
       author: "RantAI",
       thumbnail: "https://example.com/image.png",
       published: false,
+      scheduledFor: null,
     });
+  });
+
+  it("defaults scheduledFor to null when absent", () => {
+    const input = normalizeBlogInput({ title: "T", content: "C", excerpt: "E", tag: "Tag" });
+    expect(input.scheduledFor).toBeNull();
+  });
+
+  it("parses an ISO schedule string into a Date", () => {
+    const input = normalizeBlogInput({
+      title: "T",
+      content: "C",
+      excerpt: "E",
+      tag: "Tag",
+      scheduledFor: "2026-07-01T09:00:00.000Z",
+    });
+    expect(input.scheduledFor).toBeInstanceOf(Date);
+    expect(input.scheduledFor?.toISOString()).toBe("2026-07-01T09:00:00.000Z");
+  });
+
+  it("treats an empty schedule string as not scheduled", () => {
+    const input = normalizeBlogInput({ title: "T", content: "C", excerpt: "E", tag: "Tag", scheduledFor: "  " });
+    expect(input.scheduledFor).toBeNull();
+  });
+});
+
+describe("scheduleWasInvalid", () => {
+  it("is false when no schedule is provided", () => {
+    expect(scheduleWasInvalid({ title: "T" })).toBe(false);
+    expect(scheduleWasInvalid({ scheduledFor: "" })).toBe(false);
+  });
+
+  it("is false for a valid schedule string", () => {
+    expect(scheduleWasInvalid({ scheduledFor: "2026-07-01T09:00" })).toBe(false);
+  });
+
+  it("is true for an unparseable schedule value", () => {
+    expect(scheduleWasInvalid({ scheduledFor: "not-a-date" })).toBe(true);
   });
 
   it("reports empty required fields", () => {

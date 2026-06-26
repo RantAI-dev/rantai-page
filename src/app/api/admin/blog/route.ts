@@ -3,7 +3,12 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
-import { getBlogInputError, getDatabaseErrorResponse, normalizeBlogInput } from "@/lib/blog-input";
+import {
+  getBlogInputError,
+  getDatabaseErrorResponse,
+  normalizeBlogInput,
+  scheduleWasInvalid,
+} from "@/lib/blog-input";
 import { generateUniqueSlug } from "@/lib/blog-slug";
 import { desc } from "drizzle-orm";
 
@@ -19,11 +24,16 @@ export async function POST(req: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const input = normalizeBlogInput(await req.json());
+  const body = await req.json();
+  const input = normalizeBlogInput(body);
   const inputError = getBlogInputError(input);
 
   if (inputError) {
     return NextResponse.json({ error: inputError }, { status: 400 });
+  }
+
+  if (scheduleWasInvalid(body)) {
+    return NextResponse.json({ error: "Invalid schedule date" }, { status: 400 });
   }
 
   try {

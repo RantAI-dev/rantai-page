@@ -12,6 +12,7 @@ export const blogPosts = pgTable("blog_posts", {
   author: text("author"),
   thumbnail: text("thumbnail"),
   published: boolean("published").notNull().default(true),
+  scheduledFor: timestamp("scheduled_for"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
