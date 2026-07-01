@@ -93,7 +93,6 @@ export function ProductsRantAIAgents() {
               <TabsContent
                 key={feature.value}
                 value={feature.value}
-                forceMount
                 className={cn(
                   "m-0 h-full",
                   activeFeatureValue !== feature.value && "hidden",
@@ -106,6 +105,7 @@ export function ProductsRantAIAgents() {
                   loop
                   muted
                   playsInline
+                  preload="none"
                   className="h-full w-full rounded-[8px] border border-white/10 object-cover shadow-2xl shadow-black/40"
                 />
               </TabsContent>
