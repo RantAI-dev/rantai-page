@@ -58,8 +58,7 @@ const productLinks = [
     darkLogo: "/logo/RantAI Agents Dark.svg",
     lightLogo: "/logo/RantAI Agents Light.svg",
     tagline: "Deploy AI agents that handle real work, not just demos.",
-    video:
-      "https://r3djfhutjr8af8rp.public.blob.vercel-storage.com/videos/rantai-agents/Agents%20-%20RAG%20Prompt.mp4",
+    video: "/videos/rantai-agents/rag-prompt.mp4",
   },
   {
     href: "https://claw.rantai.dev/",
@@ -68,8 +67,7 @@ const productLinks = [
     lightLogo: "/logo/RantAIClaw Light.svg",
     tagline:
       "A production multi-agent runtime in 100% Rust — run, control, and extend autonomous agents your way.",
-    video:
-      "https://r3djfhutjr8af8rp.public.blob.vercel-storage.com/videos/rantai-claw/claw-demo.mp4",
+    video: "/videos/rantai-claw/claw-demo.mp4",
   },
 ] as const
 

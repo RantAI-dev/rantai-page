@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 import { ProductInfoPanel, ProductLink, ProductMediaPanel } from "./products-showcase"
 
 const clawVideo =
-  "https://r3djfhutjr8af8rp.public.blob.vercel-storage.com/videos/rantai-claw/claw-demo.mp4"
+  "/videos/rantai-claw/claw-demo.mp4"
 
 const features = [
   {
