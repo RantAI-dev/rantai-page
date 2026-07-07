@@ -4,24 +4,25 @@ import { ArrowUpRightIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
-export function ProductsRantAIZeroCode({ className }: { className?: string }) {
+export function ProductsRantAILake({ className }: { className?: string }) {
   return (
     <div className={cn("flex w-full flex-col gap-4 sm:w-1/2", className)}>
       <div className="flex flex-1 flex-col gap-4 px-6 pb-8 pt-6">
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-2xl font-medium tracking-tight lg:text-[32px]">
-              RantAI ZeroCode
+              RantAI Lake
             </h3>
             <Badge
               variant="outline"
               className="shrink-0 font-mono tracking-wider uppercase bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300"
             >
-              Coming Soon
+              In Progress
             </Badge>
           </div>
           <p className="text-base leading-relaxed font-light text-muted-foreground">
-            Ship production software faster with AI that writes and manages code.
+            Build a sovereign AI-native lakehouse from raw data to BI-ready
+            insight.
           </p>
         </div>
 

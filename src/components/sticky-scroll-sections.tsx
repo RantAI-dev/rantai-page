@@ -194,7 +194,7 @@ function OurPlatformsContent() {
           </div>
         </div>
         <Separator />
-        {/* Analytics and ZeroCode */}
+        {/* LLMOps and Lake */}
         <div className="flex flex-col items-stretch gap-0 md:flex-row">
           <div className="flex flex-1 flex-col gap-4 rounded-xl p-6 transition-colors hover:bg-white/4">
             <div className="mb-2 flex items-center gap-3">
@@ -202,19 +202,20 @@ function OurPlatformsContent() {
               <span className="font-mono text-xl font-light text-white/80">
                 02
               </span>
+              <Badge className="bg-sky-100 text-sky-800">IN PROGRESS</Badge>
             </div>
             <div>
               <h3 className="text-3xl font-normal text-white">
-                RantAI Analytics
+                RantAI LLMOps
               </h3>
               <p className="font-mono text-sm font-light text-muted-foreground">
-                AI-Powered Business Intelligence
+                LLM Operations Platform
               </p>
             </div>
             <p className="leading-relaxed font-light text-white/80">
-              Your entire data warehouse, queryable in plain language. Like
-              having a senior SQL engineer on call 24/7 — except it also
-              explains the data and visualizes it automatically.
+              A sovereign control center for the full model lifecycle: registry,
+              fine-tuning, orchestration, evaluation, and playground workflows
+              in one enterprise-ready platform.
             </p>
           </div>
           <Separator orientation="vertical" />
@@ -224,20 +225,20 @@ function OurPlatformsContent() {
               <span className="font-mono text-xl font-light text-white/80">
                 03
               </span>
-              <Badge className="bg-[#dbf0dd] text-[#255a2a]">COMING SOON</Badge>
+              <Badge className="bg-[#dbf0dd] text-[#255a2a]">IN PROGRESS</Badge>
             </div>
             <div>
               <h3 className="text-3xl font-normal text-white">
-                RantAI ZeroCode
+                RantAI Lake
               </h3>
               <p className="font-mono text-sm font-light text-muted-foreground">
-                Autonomous Dev Environment
+                AI-Native Data Lakehouse
               </p>
             </div>
             <p className="leading-relaxed font-light text-white/80">
-              A fully autonomous development environment where AI agents manage
-              entire projects — from requirements to deployment. Not just code
-              snippets; complete production software.
+              A sovereign lakehouse that turns raw data into BI-ready insight
+              through medallion zones, visual pipelines, governance, and
+              plain-English query.
             </p>
           </div>
         </div>

@@ -5,8 +5,8 @@ import { ProductIntro } from "./_components/product-intro"
 import { ProductsHero } from "./_components/products-hero"
 import { ProductsRantAIAgents } from "./_components/products-rantai-agents"
 import { ProductsRantAIClaw } from "./_components/products-rantai-claw"
-import { ProductsRantAIAnalytics } from "./_components/products-rantai-analytics"
-import { ProductsRantAIZeroCode } from "./_components/products-rantai-zerocode"
+import { ProductsRantAILake } from "./_components/products-rantai-lake"
+import { ProductsRantAILLMOps } from "./_components/products-rantai-llmops"
 import { ProductsCta } from "./_components/products-cta"
 import { MotionInView } from "@/components/motion-in-view"
 import { OutlineSection } from "@/components/outline-section"
@@ -30,8 +30,8 @@ export default function ProductsPage() {
         {/* ── Upcoming ─────────────────────────────────────────────── */}
         <MotionInView>
           <OutlineSection className="flex flex-col sm:flex-row">
-            <ProductsRantAIAnalytics />
-            <ProductsRantAIZeroCode className="border-t border-border sm:border-t-0 sm:border-l" />
+            <ProductsRantAILLMOps />
+            <ProductsRantAILake className="border-t border-border sm:border-t-0 sm:border-l" />
           </OutlineSection>
         </MotionInView>
 

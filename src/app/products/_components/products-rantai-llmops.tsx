@@ -4,25 +4,25 @@ import { ArrowUpRightIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
-export function ProductsRantAIAnalytics({ className }: { className?: string }) {
+export function ProductsRantAILLMOps({ className }: { className?: string }) {
   return (
     <div className={cn("flex w-full flex-col gap-4 sm:w-1/2", className)}>
       <div className="flex flex-1 flex-col gap-4 px-6 pb-8 pt-6">
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-2xl font-medium tracking-tight lg:text-[32px]">
-              RantAI Analytics
+              RantAI LLMOps
             </h3>
             <Badge
               variant="outline"
               className="shrink-0 font-mono tracking-wider uppercase bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300"
-              
             >
               In Progress
             </Badge>
           </div>
           <p className="text-base leading-relaxed font-light text-muted-foreground">
-            Get answers from your data without writing SQL.
+            Control your model lifecycle with sovereign registry, fine-tuning,
+            orchestration, and evaluation.
           </p>
         </div>
 

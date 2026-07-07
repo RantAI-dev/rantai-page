@@ -4,7 +4,7 @@ import { StatsSection } from "@/components/stats-section"
 import { StickyScrollSections } from "@/components/sticky-scroll-sections"
 import { PartnersSection } from "@/components/partners-section"
 import { TeamSection } from "@/components/team-section"
-import { NewsSection } from "@/components/news-section"
+import { BlogSection } from "@/components/blog-section"
 import { Footer } from "@/components/footer"
 
 export default function Page() {
@@ -28,8 +28,8 @@ export default function Page() {
         {/* Team */}
         <TeamSection />
 
-        {/* News */}
-        <NewsSection />
+        {/* Blog */}
+        <BlogSection />
       </main>
 
       <Footer />
