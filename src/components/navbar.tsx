@@ -72,12 +72,12 @@ export function Navbar() {
 
           <div className="flex items-center gap-2">
             <Button asChild className="hidden sm:inline-flex" size={"lg"}>
-              <Link href="/#contact">Contact Us</Link>
+              <Link href="#contact">Contact Us</Link>
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="size-11 md:hidden"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
             >
@@ -110,7 +110,9 @@ export function Navbar() {
                 </Link>
               ))}
               <Button asChild size="sm" className="mt-2">
-                <Link href="/#contact">Contact Us</Link>
+                <Link href="#contact" onClick={() => setMobileOpen(false)}>
+                  Contact Us
+                </Link>
               </Button>
             </div>
           </nav>

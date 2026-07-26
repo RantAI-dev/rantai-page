@@ -20,7 +20,7 @@ export function ProductInfoPanel({
   children: React.ReactNode
 }) {
   return (
-    <section className={cn("flex min-h-130 flex-col", className)}>
+    <section className={cn("flex flex-col lg:min-h-130", className)}>
       <div className="flex items-center gap-4 mb-8">
         <Image
           src={logo}

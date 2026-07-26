@@ -84,13 +84,13 @@ export function ContactCard() {
       <div className="mb-6 flex flex-col justify-between gap-6 pb-6 lg:mb-10 lg:flex-row lg:items-center">
         {/* Left side */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col items-start gap-3 min-[360px]:flex-row min-[360px]:items-center min-[360px]:gap-6">
             <span className="text-sm font-bold tracking-widest text-foreground">
               CONTACT US
             </span>
 
             {/* Social Links */}
-            <div className="flex items-center gap-4 text-xs font-medium text-foreground/70 sm:gap-6 sm:text-sm">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium text-foreground/70 sm:gap-x-6 sm:text-sm">
               <a
                 href="mailto:admin@rantai.dev"
                 className="transition-colors hover:text-foreground hover:underline hover:underline-offset-4"
@@ -126,14 +126,14 @@ export function ContactCard() {
         </div>
 
         {/* Right side Location & Time */}
-        <div className="flex items-center justify-between gap-6 text-xs text-muted-foreground sm:justify-end sm:text-sm">
+        <div className="flex flex-col items-start gap-3 text-xs text-muted-foreground min-[360px]:flex-row min-[360px]:items-center min-[360px]:justify-between min-[360px]:gap-6 sm:justify-end sm:text-sm">
           <a
             href="https://maps.google.com/?q=Depok,+West+Java,+Indonesia"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-2 transition-colors hover:text-foreground"
+            className="flex items-start gap-2 transition-colors hover:text-foreground min-[360px]:items-center"
           >
-            <MapPin className="h-4 w-4 text-muted-foreground" />
+            <MapPin className="h-4 w-4 shrink-0 text-muted-foreground" />
             Depok, West Java, Indonesia
           </a>
           <LiveClock />

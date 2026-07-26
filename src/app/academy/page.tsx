@@ -90,7 +90,7 @@ export default async function AcademyPage() {
                   </p>
                 </div>
                 <Link
-                  href="/#contact"
+                  href="#contact"
                   className="group flex items-center justify-between border bg-foreground px-4 py-4 text-background transition-colors duration-300"
                 >
                   <span className="font-mono font-medium tracking-wider uppercase">

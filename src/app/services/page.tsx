@@ -65,7 +65,7 @@ export default function ServicesPage() {
       <main className="pt-16">
         {/* ── 1. Hero ──────────────────────────────────────────────── */}
         <MotionInView>
-          <section className="mx-auto flex w-full max-w-7xl items-center justify-between px-8 py-24 lg:px-0">
+          <section className="mx-auto flex w-full max-w-7xl flex-col items-start gap-8 px-6 py-16 sm:px-8 sm:py-20 md:flex-row md:items-end md:justify-between md:gap-12 lg:px-0 lg:py-24">
             <motion.h1
               className="text-6xl font-medium tracking-tight sm:text-8xl lg:text-9xl"
               initial={{ opacity: 0, y: 30 }}
@@ -75,7 +75,7 @@ export default function ServicesPage() {
               Services.
             </motion.h1>
             <motion.p
-              className="max-w-96 text-right leading-relaxed text-muted-foreground"
+              className="max-w-sm text-left text-base leading-relaxed text-muted-foreground sm:text-lg md:text-right"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
@@ -89,7 +89,7 @@ export default function ServicesPage() {
 
         {/* ── 2. Title Bar ─────────────────────────────────────────── */}
         <MotionInView>
-          <OutlineSection className="flex items-center justify-center px-6 py-24">
+          <OutlineSection className="flex items-center justify-center px-6 py-16 sm:py-20 lg:py-24">
             <h2 className="text-2xl tracking-tight italic sm:text-3xl lg:text-4xl">
               Focused on outcomes you can measure.
             </h2>
@@ -100,7 +100,7 @@ export default function ServicesPage() {
         <MotionInView>
           <OutlineSection className="flex flex-col lg:flex-row">
             {/* Left panel — dynamic content based on active tab */}
-            <div className="flex flex-1 flex-col justify-center p-8">
+            <div className="flex min-w-0 flex-1 flex-col justify-center p-6 sm:p-8">
               <AnimatePresence mode="wait">
                 <motion.h3
                   key={currentTab.title}
@@ -136,9 +136,9 @@ export default function ServicesPage() {
                   transition={{ duration: 0.3, delay: 0.1 }}
                 >
                   {currentTab.features.map((feat, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <CircleCheckBig className="size-5 text-muted-foreground" />
-                      <span className="text-base font-light text-muted-foreground">
+                    <li key={i} className="flex items-start gap-2">
+                      <CircleCheckBig className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
+                      <span className="text-sm leading-relaxed font-light text-muted-foreground sm:text-base">
                         {feat}
                       </span>
                     </li>
@@ -149,16 +149,22 @@ export default function ServicesPage() {
 
             {/* Right panel — tabs + content viewer */}
             <Tabs
-              className="max-w-1/2 min-w-1/2 gap-4"
+              className="w-full min-w-0 gap-4 lg:w-1/2 lg:max-w-1/2 lg:min-w-1/2"
               value={activeTab}
               onValueChange={(v) => setActiveTab(v as "software" | "ai")}
             >
-              <div className="px-4 pt-16">
-                <TabsList className="w-full">
-                  <TabsTrigger value="software" className="flex-1">
+              <div className="px-4 pt-8 sm:pt-12 lg:pt-16">
+                <TabsList className="grid h-auto w-full grid-cols-2">
+                  <TabsTrigger
+                    value="software"
+                    className="min-w-0 px-2 text-xs whitespace-normal sm:text-sm"
+                  >
                     Software Engineering
                   </TabsTrigger>
-                  <TabsTrigger value="ai" className="flex-1">
+                  <TabsTrigger
+                    value="ai"
+                    className="min-w-0 px-2 text-xs whitespace-normal sm:text-sm"
+                  >
                     AI Engineering
                   </TabsTrigger>
                 </TabsList>
@@ -195,7 +201,7 @@ export default function ServicesPage() {
                   </p>
                 </div>
                 <Link
-                  href="/#contact"
+                  href="#contact"
                   className="group flex items-center justify-between border bg-foreground px-4 py-4 text-background transition-colors duration-300"
                 >
                   <span className="font-mono font-medium tracking-wider uppercase">

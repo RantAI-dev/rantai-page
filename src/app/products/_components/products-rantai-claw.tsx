@@ -91,7 +91,7 @@ export function ProductsRantAIClaw() {
               ))}
             </TabsList>
 
-            <div className="mt-4 flex flex-1 flex-col justify-between">
+            <div className="mt-4 flex flex-1 flex-col justify-between gap-6">
               <div className="flex max-w-xl flex-col gap-3">
                 <p className="leading-relaxed font-light text-muted-foreground">
                   {activeFeature.body}

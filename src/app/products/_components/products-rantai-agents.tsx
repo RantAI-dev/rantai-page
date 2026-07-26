@@ -63,19 +63,21 @@ export function ProductsRantAIAgents() {
             subtitle="Deploy AI agents that handle real work, not just demos."
             className="p-8"
           >
-            <TabsList className="w-full">
+            <TabsList className="w-full max-sm:h-auto! max-sm:grid max-sm:grid-cols-2 max-sm:gap-1">
               {features.map((feature) => (
                   <TabsTrigger
                     key={feature.value}
                     value={feature.value}
                   >
                     <feature.icon />
-                    <span className="truncate">{feature.label}</span>
+                    <span className="text-[11px] leading-tight sm:text-sm">
+                      {feature.label}
+                    </span>
                   </TabsTrigger>
               ))}
             </TabsList>
 
-            <div className="flex flex-1 flex-col justify-between mt-4">
+            <div className="mt-4 flex flex-1 flex-col justify-between gap-6">
               <div className="flex max-w-xl flex-col gap-3">
                 <p className="leading-relaxed font-light text-muted-foreground">
                   {activeFeature.body}

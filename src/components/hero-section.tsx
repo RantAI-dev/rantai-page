@@ -36,8 +36,11 @@ export function HeroSection() {
 
       <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col items-start justify-center">
         <motion.div {...fadeInLeft} transition={{ ...transition, delay: 0.8 }}>
-          <Badge variant="outline" className="mb-4">
-            <div className="size-2 rounded-full border border-accent-foreground" />
+          <Badge
+            variant="outline"
+            className="mb-4 max-w-full gap-1 px-2 sm:gap-2 sm:px-2.5"
+          >
+            <div className="size-1.5 shrink-0 rounded-full border border-accent-foreground sm:size-2" />
             <ShinyText
               text="INDONESIA'S ENTERPRISE AI COMPANY"
               speed={3}
@@ -49,9 +52,9 @@ export function HeroSection() {
               yoyo={false}
               pauseOnHover={false}
               disabled={false}
-              className="font-mono text-sm tracking-wide text-muted-foreground"
+              className="font-mono text-[10px] tracking-[0.08em] text-muted-foreground sm:text-sm sm:tracking-wide"
             />
-            <div className="size-2 rounded-full border border-accent-foreground" />
+            <div className="size-1.5 shrink-0 rounded-full border border-accent-foreground sm:size-2" />
           </Badge>
         </motion.div>
 
@@ -81,15 +84,19 @@ export function HeroSection() {
           environments.
         </motion.p>
         <motion.div
-          className="mt-32 flex items-center justify-center gap-4"
+          className="mt-8 flex w-full flex-col items-stretch gap-3 min-[360px]:mt-32 min-[360px]:w-auto min-[360px]:flex-row min-[360px]:items-center min-[360px]:justify-center min-[360px]:gap-4"
           {...fadeInUp}
           transition={{ ...transition, delay: 0.48 }}
         >
-          <Button className="h-11 px-8 font-mono" asChild>
-            <Link href="/get-started">GET STARTED</Link>
+          <Button className="h-11 w-full px-6 font-mono min-[360px]:w-auto min-[360px]:px-8" asChild>
+            <Link href="/products">GET STARTED</Link>
           </Button>
-          <Button className="h-11 px-8 font-mono" variant="outline" asChild>
-            <Link href="/book-demo">BOOK A DEMO</Link>
+          <Button
+            className="h-11 w-full px-6 font-mono min-[360px]:w-auto min-[360px]:px-8"
+            variant="outline"
+            asChild
+          >
+            <Link href="#contact">BOOK A DEMO</Link>
           </Button>
         </motion.div>
       </div>

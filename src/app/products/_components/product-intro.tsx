@@ -51,7 +51,7 @@ function AnimatedActionBadge() {
         >
           <Badge
             className={cn(
-              "h-10 rounded-full pl-4! pr-5 text-2xl font-normal [&>svg]:size-6!",
+              "h-8 rounded-full pl-3! pr-4 text-xl font-normal [&>svg]:size-5! sm:h-10 sm:pl-4! sm:pr-5 sm:text-2xl sm:[&>svg]:size-6!",
               activeBadge.className,
             )}
           >
@@ -66,11 +66,11 @@ function AnimatedActionBadge() {
 
 export function ProductIntro() {
   return (
-    <OutlineSection className="p-16 flex flex-col items-center gap-4 text-3xl leading-tight tracking-tight sm:text-4xl">
-      <div className="flex items-center gap-3">
-        Explore our agents <BotIcon className="size-10" />
+    <OutlineSection className="flex flex-col items-center gap-3 p-8 text-center text-2xl leading-tight tracking-tight sm:gap-4 sm:p-16 sm:text-3xl md:text-4xl">
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        Explore our agents <BotIcon className="size-8 sm:size-10" />
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
         <span>to help organizations</span>
         <AnimatedActionBadge />
         <span>applications.</span>

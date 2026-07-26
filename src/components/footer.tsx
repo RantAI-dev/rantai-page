@@ -17,7 +17,10 @@ export function Footer() {
   }
 
   return (
-    <footer className="relative overflow-hidden bg-background px-4 py-16 sm:px-8 lg:px-12 lg:py-24">
+    <footer
+      id="contact"
+      className="relative scroll-mt-16 overflow-hidden bg-background px-4 py-16 sm:px-8 lg:px-12 lg:py-24"
+    >
       {/* ColorBends Background */}
       <div className="absolute inset-0 z-0 h-full w-full">
         <ColorBends

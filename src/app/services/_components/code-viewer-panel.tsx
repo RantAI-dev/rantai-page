@@ -72,14 +72,16 @@ export function SoftwareViewerPanel({ data }: { data: TabContentSoftware }) {
           return (
             <div
               key={row.category}
-              className="group flex items-center justify-between rounded-[8px] border bg-muted px-4 py-4 transition-all hover:border-foreground"
+              className="group flex min-w-0 items-center justify-between gap-3 rounded-[8px] border bg-muted px-3 py-4 transition-all hover:border-foreground sm:px-4"
             >
-              <div className="flex items-center gap-2">
-                <Icon className="size-5" style={{ color: row.iconColor }} />
-                <span className="text-base font-medium">{row.category}</span>
+              <div className="flex min-w-0 items-center gap-2">
+                <Icon className="size-5 shrink-0" style={{ color: row.iconColor }} />
+                <span className="truncate text-sm font-medium sm:text-base">
+                  {row.category}
+                </span>
               </div>
-              <div className="flex items-center gap-2 opacity-50 group-hover:opacity-100">
-                <span className="font-light text-muted-foreground">
+              <div className="flex shrink-0 items-center gap-2 opacity-50 group-hover:opacity-100">
+                <span className="text-sm font-light text-muted-foreground sm:text-base">
                   {row.tech}
                 </span>
                 <Image
@@ -107,7 +109,7 @@ export function AiViewerPanel({ data }: { data: TabContentAI }) {
         transition={{ duration: 0.35 }}
         className="flex flex-col gap-4"
       >
-        <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-x-1 rounded-[4px] border p-2 lg:p-4">
+        <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-x-1 overflow-x-auto rounded-[4px] border p-2 lg:p-4">
           {/* Row 1 */}
           <PipelineBox step={data.pipelineRow1[0]} />
           <HArrow />
@@ -130,7 +132,7 @@ export function AiViewerPanel({ data }: { data: TabContentAI }) {
           <PipelineBox step={data.pipelineRow2[2]} />
         </div>
 
-        <div className="flex gap-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
           {data.stats.map((stat) => (
             <div
               key={stat.label}
@@ -150,13 +152,13 @@ export function AiViewerPanel({ data }: { data: TabContentAI }) {
 
 function CodeViewerShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="h-[380px] flex-1 rounded-tl-[24px] border-t-8 border-l-8 border-foreground bg-muted">
-      <div className="flex items-center gap-2 p-6">
+    <div className="min-h-[380px] flex-1 overflow-hidden rounded-tl-[24px] border-t-8 border-l-8 border-foreground bg-muted">
+      <div className="flex items-center gap-2 p-4 sm:p-6">
         <span className="size-4 rounded-full bg-[#ff5f57]" />
         <span className="size-4 rounded-full bg-[#ffbc2e]" />
         <span className="size-4 rounded-full bg-[#28c840]" />
       </div>
-      <div className="px-6 pb-6">{children}</div>
+      <div className="px-3 pb-5 sm:px-6 sm:pb-6">{children}</div>
     </div>
   )
 }

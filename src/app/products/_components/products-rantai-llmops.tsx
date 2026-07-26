@@ -27,7 +27,7 @@ export function ProductsRantAILLMOps({ className }: { className?: string }) {
         </div>
 
         <Link
-          href="/#contact"
+          href="#contact"
           className="group mt-auto flex items-center justify-between text-base font-light text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
         >
           Notify me when available

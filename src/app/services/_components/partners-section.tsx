@@ -17,8 +17,8 @@ export function PartnersSection({ partners }: { partners: PartnerItem[] }) {
     <MotionInView>
       <OutlineSection className="flex flex-col">
         {/* Partners logo row */}
-        <div className="grid h-75 grid-cols-2 lg:grid-cols-4">
-          <div className="flex items-center border-r border-b p-8">
+        <div className="grid grid-cols-1 lg:h-75 lg:grid-cols-4">
+          <div className="flex min-h-40 items-center border-b p-8 lg:min-h-0 lg:border-r">
             <h3 className="text-2xl font-normal lg:text-4xl">
               OUR
               <br />
@@ -29,8 +29,8 @@ export function PartnersSection({ partners }: { partners: PartnerItem[] }) {
             <button
               key={partner.id}
               onClick={() => setSelectedPartner(partner)}
-              className={`group relative flex items-center justify-center border-b p-8 transition-colors lg:p-16 ${
-                i < partners.length - 1 ? "border-r" : ""
+              className={`group relative flex min-h-40 items-center justify-center border-b p-8 transition-colors lg:min-h-0 lg:p-16 ${
+                i < partners.length - 1 ? "lg:border-r" : ""
               } ${selectedPartner.id === partner.id ? "bg-foreground/10" : "hover:bg-foreground/5"}`}
             >
               <div
@@ -44,7 +44,7 @@ export function PartnersSection({ partners }: { partners: PartnerItem[] }) {
                   src={partner.logo}
                   alt={partner.name}
                   fill
-                  sizes="(min-width: 1024px) 25vw, 50vw"
+                  sizes="(min-width: 1024px) 25vw, 100vw"
                   className="object-contain brightness-0 invert"
                 />
               </div>
@@ -64,9 +64,9 @@ export function PartnersSection({ partners }: { partners: PartnerItem[] }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="relative flex items-center justify-center overflow-hidden lg:aspect-auto lg:min-h-100"
+              className="relative flex min-h-56 items-center justify-center overflow-hidden sm:min-h-75 lg:aspect-auto lg:min-h-100"
             >
-              <div className="relative w-full sm:h-75 lg:h-full">
+              <div className="relative h-56 w-full sm:h-75 lg:h-full">
                 <Image
                   src={selectedPartner.showcase.image}
                   alt={selectedPartner.showcase.name}
@@ -77,7 +77,7 @@ export function PartnersSection({ partners }: { partners: PartnerItem[] }) {
               </div>
             </motion.div>
           </AnimatePresence>
-          <div className="flex flex-col justify-between p-6 lg:p-8">
+          <div className="flex flex-col justify-between gap-6 p-6 lg:p-8">
             <AnimatePresence mode="wait">
               <motion.div
                 key={selectedPartner.id + "-text"}
