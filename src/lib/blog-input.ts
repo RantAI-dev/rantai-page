@@ -24,6 +24,9 @@ export type NormalizedBlogInput = {
   scheduledFor: Date | null;
 };
 
+export const BLOG_TITLE_MAX_LENGTH = 120;
+export const BLOG_SLUG_MAX_LENGTH = 120;
+
 // Slug is intentionally omitted: it is generated server-side from the title
 // (see generateUniqueSlug) so it is always present and unique, never user input.
 const REQUIRED_FIELDS = ["title", "content", "excerpt", "tag"] as const;
@@ -67,12 +70,16 @@ export function scheduleWasInvalid(body: BlogInputBody): boolean {
 }
 
 export function normalizeSlug(value: string) {
-  return value
+  const normalized = value
     .trim()
     .toLowerCase()
     .replace(/\r\n?/g, "\n")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+
+  return normalized
+    .slice(0, BLOG_SLUG_MAX_LENGTH)
+    .replace(/-+$/g, "");
 }
 
 export function normalizeBlogInput(body: BlogInputBody): NormalizedBlogInput {
@@ -94,6 +101,10 @@ export function getBlogInputError(input: NormalizedBlogInput) {
 
   if (missingFields.length > 0) {
     return "Missing required fields";
+  }
+
+  if (input.title.length > BLOG_TITLE_MAX_LENGTH) {
+    return `Title must be ${BLOG_TITLE_MAX_LENGTH} characters or fewer`;
   }
 
   return null;

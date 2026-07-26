@@ -10,11 +10,15 @@ import {
   normalizeBlogInput,
   scheduleWasInvalid,
 } from "@/lib/blog-input";
+import { generateUniqueSlug } from "@/lib/blog-slug";
 import { eq } from "drizzle-orm";
 
-function revalidateBlogPages() {
+function revalidateBlogPages(...slugs: string[]) {
   revalidatePath("/blog");
   revalidatePath("/blog/[slug]", "page");
+  for (const slug of slugs) {
+    revalidatePath(`/blog/${slug}`);
+  }
 }
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -59,18 +63,30 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "Invalid schedule date" }, { status: 400 });
     }
 
-    // Slug is generated once at creation and kept stable on edit so existing
-    // URLs and inbound links never break, even when the title changes.
-    const { slug, ...updatable } = input;
-    void slug;
+    const [existingPost] = await db
+      .select({ title: blogPosts.title, slug: blogPosts.slug })
+      .from(blogPosts)
+      .where(eq(blogPosts.id, id));
+
+    if (!existingPost) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    // Keep the current URL for metadata-only edits, but derive a new unique
+    // slug when the title changes. The old URL intentionally becomes a 404.
+    const nextSlug =
+      input.title === existingPost.title
+        ? existingPost.slug
+        : await generateUniqueSlug(input.title, id);
+    const { slug: _ignoredSlug, ...updatable } = input;
+    void _ignoredSlug;
     const [post] = await db
       .update(blogPosts)
-      .set({ ...updatable, updatedAt: new Date() })
+      .set({ ...updatable, slug: nextSlug, updatedAt: new Date() })
       .where(eq(blogPosts.id, id))
       .returning();
 
-    if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    revalidateBlogPages();
+    revalidateBlogPages(existingPost.slug, post.slug);
     return NextResponse.json(post);
   } catch (err) {
     const { message, status } = getDatabaseErrorResponse(err);

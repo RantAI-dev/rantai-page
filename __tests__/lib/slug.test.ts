@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  BLOG_TITLE_MAX_LENGTH,
   getBlogInputError,
   isPublishedOnlyBlogUpdate,
   normalizeBlogInput,
@@ -38,6 +39,14 @@ describe("normalizeSlug", () => {
 
   it("normalizes Windows CRLF input", () => {
     expect(normalizeSlug("Rust Mutex\r\nConcurrency")).toBe("rust-mutex-concurrency");
+  });
+
+  it("limits generated slugs without leaving a trailing separator", () => {
+    const title = `${"a".repeat(119)} long title`;
+    const slug = normalizeSlug(title);
+
+    expect(slug).toHaveLength(119);
+    expect(slug).not.toMatch(/-$/);
   });
 });
 
@@ -114,6 +123,19 @@ describe("scheduleWasInvalid", () => {
     });
 
     expect(getBlogInputError(input)).toBe("Missing required fields");
+  });
+
+  it("rejects titles longer than the configured limit", () => {
+    const input = normalizeBlogInput({
+      title: "a".repeat(BLOG_TITLE_MAX_LENGTH + 1),
+      content: "C",
+      excerpt: "E",
+      tag: "Tag",
+    });
+
+    expect(getBlogInputError(input)).toBe(
+      `Title must be ${BLOG_TITLE_MAX_LENGTH} characters or fewer`,
+    );
   });
 });
 

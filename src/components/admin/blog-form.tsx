@@ -21,7 +21,7 @@ import { ImageUpload } from "@/components/admin/image-upload";
 import { DateTimePicker } from "@/components/admin/datetime-picker";
 import { AuthorSelect, type TeamAuthor } from "@/components/admin/author-select";
 import { TagSelect, type TagOption } from "@/components/admin/tag-select";
-import { normalizeBlogInput } from "@/lib/blog-input";
+import { BLOG_TITLE_MAX_LENGTH, normalizeBlogInput } from "@/lib/blog-input";
 import type { BlogPost } from "@/lib/db/schema";
 
 // Soft target for SEO meta descriptions; we warn past this, never block.
@@ -165,13 +165,22 @@ export function BlogForm({
             <ImageUpload label="Thumbnail" value={thumbnail} onChange={setThumbnail} folder="thumbnails" showGenerator />
 
             <div className="space-y-2">
-              <Label htmlFor="title">Title *</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="title">Title *</Label>
+                <span className="text-xs text-muted-foreground">
+                  {title.length}/{BLOG_TITLE_MAX_LENGTH}
+                </span>
+              </div>
               <Input
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                maxLength={BLOG_TITLE_MAX_LENGTH}
                 required
               />
+              <p className="text-xs text-muted-foreground">
+                Updating the title also updates the public blog URL.
+              </p>
             </div>
 
             <div className="space-y-2">
