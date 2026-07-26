@@ -5,9 +5,9 @@ import { blogPosts, books, teamMembers, thumbnailDesigns } from "@/lib/db/schema
 import { UPLOAD_FOLDERS } from "@/lib/upload";
 
 // GC only sweeps folders whose lifecycle is fully owned by the app's upload
-// system (and thus the DB). Anything outside these prefixes — e.g. videos/ and
-// other assets uploaded manually and referenced from source code, not the DB —
-// is never touched, since the DB scan can't see those references.
+// system (and thus the DB). Anything outside these prefixes — e.g. assets
+// uploaded manually to the Blob store and referenced from source code, not the
+// DB — is never touched, since the DB scan can't see those references.
 const MANAGED_PREFIXES = UPLOAD_FOLDERS.map((folder) => `${folder}/`);
 
 function isManaged(pathname: string): boolean {
