@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { BlogPostView } from "@/components/blog-post-view";
 import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
+import { getBlogPostingDate } from "@/lib/blog-date";
 import type { BlogPost } from "@/lib/blog";
 
 function mapPostToPreview(post: typeof blogPosts.$inferSelect): BlogPost {
@@ -11,7 +12,7 @@ function mapPostToPreview(post: typeof blogPosts.$inferSelect): BlogPost {
     id: post.id,
     slug: post.slug,
     title: post.title,
-    date: post.createdAt.toISOString().split("T")[0],
+    date: (getBlogPostingDate(post) ?? post.createdAt).toISOString(),
     tag: post.tag,
     excerpt: post.excerpt,
     author: post.author ?? undefined,
@@ -26,10 +27,7 @@ export default async function AdminBlogPreviewPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [post] = await db
-    .select()
-    .from(blogPosts)
-    .where(eq(blogPosts.slug, slug));
+  const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
 
   if (!post) notFound();
 

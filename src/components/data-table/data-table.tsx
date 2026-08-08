@@ -38,6 +38,7 @@ import { cn } from "@/lib/utils";
 interface DataTableProps<TData> extends React.ComponentProps<"div"> {
   table: TanstackTable<TData>;
   actionBar?: React.ReactNode;
+  emptyState?: React.ReactNode;
   onRowClick?: (row: TData) => void;
   /**
    * Enables row drag-and-drop reordering. Called with the row ids in their new
@@ -46,10 +47,7 @@ interface DataTableProps<TData> extends React.ComponentProps<"div"> {
   onReorder?: (orderedIds: string[]) => void;
 }
 
-type SortableHandle = Pick<
-  ReturnType<typeof useSortable>,
-  "attributes" | "listeners"
->;
+type SortableHandle = Pick<ReturnType<typeof useSortable>, "attributes" | "listeners">;
 
 const RowDragContext = React.createContext<SortableHandle | null>(null);
 
@@ -93,18 +91,11 @@ export function RowDragHandle() {
   );
 }
 
-function handleRowClick<TData>(
-  onRowClick: ((row: TData) => void) | undefined,
-  original: TData,
-) {
+function handleRowClick<TData>(onRowClick: ((row: TData) => void) | undefined, original: TData) {
   return (event: React.MouseEvent<HTMLTableRowElement>) => {
     if (!onRowClick) return;
     const target = event.target as HTMLElement;
-    if (
-      target.closest(
-        'button, a, input, [role="menuitem"], [role="checkbox"], [role="option"]',
-      )
-    )
+    if (target.closest('button, a, input, [role="menuitem"], [role="checkbox"], [role="option"]'))
       return;
     onRowClick(original);
   };
@@ -114,6 +105,7 @@ function renderCells<TData>(row: Row<TData>) {
   return row.getVisibleCells().map((cell) => (
     <TableCell
       key={cell.id}
+      className={cell.column.columnDef.meta?.className}
       style={{
         ...getColumnPinningStyle({ column: cell.column, withBorder: true }),
       }}
@@ -130,8 +122,9 @@ function SortableRow<TData>({
   row: Row<TData>;
   onRowClick?: (row: TData) => void;
 }) {
-  const { attributes, listeners, transform, transition, setNodeRef, isDragging } =
-    useSortable({ id: row.id });
+  const { attributes, listeners, transform, transition, setNodeRef, isDragging } = useSortable({
+    id: row.id,
+  });
 
   return (
     <RowDragContext.Provider value={{ attributes, listeners }}>
@@ -155,6 +148,7 @@ function SortableRow<TData>({
 export function DataTable<TData>({
   table,
   actionBar,
+  emptyState,
   onRowClick,
   onReorder,
   children,
@@ -166,7 +160,9 @@ export function DataTable<TData>({
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 5 },
+    }),
     useSensor(KeyboardSensor),
   );
 
@@ -191,6 +187,7 @@ export function DataTable<TData>({
                 <TableHead
                   key={header.id}
                   colSpan={header.colSpan}
+                  className={header.column.columnDef.meta?.className}
                   style={{
                     ...getColumnPinningStyle({
                       column: header.column,
@@ -200,10 +197,7 @@ export function DataTable<TData>({
                 >
                   {header.isPlaceholder
                     ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                    : flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
             </TableRow>
@@ -218,10 +212,7 @@ export function DataTable<TData>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={cn(
-                    "hover:bg-muted/50",
-                    onRowClick && "cursor-pointer",
-                  )}
+                  className={cn("hover:bg-muted/50", onRowClick && "cursor-pointer")}
                   onClick={handleRowClick(onRowClick, row.original)}
                 >
                   {renderCells(row)}
@@ -230,11 +221,8 @@ export function DataTable<TData>({
             )
           ) : (
             <TableRow>
-              <TableCell
-                colSpan={table.getAllColumns().length}
-                className="h-24 text-center"
-              >
-                No results.
+              <TableCell colSpan={table.getVisibleLeafColumns().length} className="p-0 text-center">
+                {emptyState ?? "No results."}
               </TableCell>
             </TableRow>
           )}
@@ -244,10 +232,7 @@ export function DataTable<TData>({
   );
 
   return (
-    <div
-      className={cn("flex w-full flex-col gap-2.5 overflow-auto", className)}
-      {...props}
-    >
+    <div className={cn("flex w-full flex-col gap-2.5 overflow-auto", className)} {...props}>
       {children}
       {reorderEnabled ? (
         <DndContext
@@ -264,10 +249,8 @@ export function DataTable<TData>({
         tableElement
       )}
       <div className="flex flex-col gap-2.5">
-        <DataTablePagination table={table} />
-        {actionBar &&
-          table.getFilteredSelectedRowModel().rows.length > 0 &&
-          actionBar}
+        {rows.length > 0 ? <DataTablePagination table={table} /> : null}
+        {actionBar && table.getFilteredSelectedRowModel().rows.length > 0 && actionBar}
       </div>
     </div>
   );

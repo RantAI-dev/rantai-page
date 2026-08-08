@@ -1,8 +1,8 @@
-import { db } from "@/lib/db";
-import { blogPosts } from "@/lib/db/schema";
-import { and, eq, isNotNull, lte } from "drizzle-orm";
+import { db } from "@/lib/db"
+import { blogPosts } from "@/lib/db/schema"
+import { and, eq, isNotNull, lte, sql } from "drizzle-orm"
 
-export type PublishedScheduledPost = { id: string; slug: string; title: string };
+export type PublishedScheduledPost = { id: string; slug: string; title: string }
 
 // Publishes every post whose scheduled time has arrived. Idempotent: only posts
 // that are still unpublished and have a due `scheduledFor` are touched, so it is
@@ -12,19 +12,28 @@ export type PublishedScheduledPost = { id: string; slug: string; title: string }
 // this exists so the persisted `published` flag and the statically-cached blog
 // pages reflect reality once a scheduled time passes.
 export async function publishDueScheduledPosts(
-  now = new Date(),
+  now = new Date()
 ): Promise<PublishedScheduledPost[]> {
   const published = await db
     .update(blogPosts)
-    .set({ published: true, updatedAt: now })
+    .set({
+      published: true,
+      // Use the intended go-live time even when the cron runs late.
+      publishedAt: sql`${blogPosts.scheduledFor}`,
+      updatedAt: now,
+    })
     .where(
       and(
         eq(blogPosts.published, false),
         isNotNull(blogPosts.scheduledFor),
-        lte(blogPosts.scheduledFor, now),
-      ),
+        lte(blogPosts.scheduledFor, now)
+      )
     )
-    .returning({ id: blogPosts.id, slug: blogPosts.slug, title: blogPosts.title });
+    .returning({
+      id: blogPosts.id,
+      slug: blogPosts.slug,
+      title: blogPosts.title,
+    })
 
-  return published;
+  return published
 }

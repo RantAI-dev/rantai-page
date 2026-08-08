@@ -1,6 +1,14 @@
-import { pgTable, text, boolean, integer, jsonb, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  boolean,
+  integer,
+  jsonb,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core"
 
-import type { ThumbnailDesignConfig } from "@/lib/thumbnail-design";
+import type { ThumbnailDesignConfig } from "@/lib/thumbnail-design"
 
 export const blogPosts = pgTable("blog_posts", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -12,10 +20,11 @@ export const blogPosts = pgTable("blog_posts", {
   author: text("author"),
   thumbnail: text("thumbnail"),
   published: boolean("published").notNull().default(true),
+  publishedAt: timestamp("published_at"),
   scheduledFor: timestamp("scheduled_for"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+})
 
 export const books = pgTable("books", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -27,7 +36,7 @@ export const books = pgTable("books", {
   orderIndex: integer("order_index").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+})
 
 export const teamMembers = pgTable("team_members", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -40,7 +49,7 @@ export const teamMembers = pgTable("team_members", {
   orderIndex: integer("order_index").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+})
 
 export const tags = pgTable("tags", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -52,7 +61,7 @@ export const tags = pgTable("tags", {
   orderIndex: integer("order_index").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+})
 
 export const thumbnailDesigns = pgTable("thumbnail_designs", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -61,15 +70,15 @@ export const thumbnailDesigns = pgTable("thumbnail_designs", {
   design: jsonb("design").$type<ThumbnailDesignConfig>().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+})
 
-export type BlogPost = typeof blogPosts.$inferSelect;
-export type NewBlogPost = typeof blogPosts.$inferInsert;
-export type Book = typeof books.$inferSelect;
-export type NewBook = typeof books.$inferInsert;
-export type TeamMember = typeof teamMembers.$inferSelect;
-export type NewTeamMember = typeof teamMembers.$inferInsert;
-export type Tag = typeof tags.$inferSelect;
-export type NewTag = typeof tags.$inferInsert;
-export type ThumbnailDesign = typeof thumbnailDesigns.$inferSelect;
-export type NewThumbnailDesign = typeof thumbnailDesigns.$inferInsert;
+export type BlogPost = typeof blogPosts.$inferSelect
+export type NewBlogPost = typeof blogPosts.$inferInsert
+export type Book = typeof books.$inferSelect
+export type NewBook = typeof books.$inferInsert
+export type TeamMember = typeof teamMembers.$inferSelect
+export type NewTeamMember = typeof teamMembers.$inferInsert
+export type Tag = typeof tags.$inferSelect
+export type NewTag = typeof tags.$inferInsert
+export type ThumbnailDesign = typeof thumbnailDesigns.$inferSelect
+export type NewThumbnailDesign = typeof thumbnailDesigns.$inferInsert

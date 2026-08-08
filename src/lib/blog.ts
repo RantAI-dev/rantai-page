@@ -1,68 +1,80 @@
-import { db } from "@/lib/db";
-import { blogPosts } from "@/lib/db/schema";
-import { and, desc, eq, ilike, lt, lte, or, type SQL } from "drizzle-orm";
+import { db } from "@/lib/db"
+import { blogPosts } from "@/lib/db/schema"
+import { getBlogPostingDate } from "@/lib/blog-date"
+import { and, desc, eq, ilike, lt, lte, or, sql, type SQL } from "drizzle-orm"
+
+const postingDateExpression = sql<Date>`coalesce(
+  ${blogPosts.publishedAt},
+  ${blogPosts.scheduledFor},
+  ${blogPosts.createdAt}
+)`
 
 // A post is publicly visible ("live") when it has been published, OR when it was
 // scheduled for a time that has now passed. The scheduled half makes visibility
 // self-healing: a post appears at its scheduled time even if the publish cron
 // (see blog-publish.ts) hasn't yet flipped its `published` flag.
 function livePostCondition(now = new Date()): SQL {
-  return or(eq(blogPosts.published, true), lte(blogPosts.scheduledFor, now))!;
+  return or(eq(blogPosts.published, true), lte(blogPosts.scheduledFor, now))!
 }
 
-function isPostLive(p: typeof blogPosts.$inferSelect, now = new Date()): boolean {
-  return p.published || (p.scheduledFor != null && p.scheduledFor <= now);
+function isPostLive(
+  p: typeof blogPosts.$inferSelect,
+  now = new Date()
+): boolean {
+  return p.published || (p.scheduledFor != null && p.scheduledFor <= now)
 }
 
 export interface BlogPost {
-  id: string;
-  slug: string;
-  title: string;
-  date: string;
-  tag: string;
-  excerpt: string;
-  author?: string;
-  thumbnail?: string;
-  contentHtml?: string;
+  id: string
+  slug: string
+  title: string
+  date: string
+  tag: string
+  excerpt: string
+  author?: string
+  thumbnail?: string
+  contentHtml?: string
 }
 
-export type PostListItem = Omit<BlogPost, "contentHtml">;
+export type PostListItem = Omit<BlogPost, "contentHtml">
 
 export interface PostsPage {
-  posts: PostListItem[];
+  posts: PostListItem[]
   // Opaque cursor for the next page, or null when there are no more posts.
-  nextCursor: string | null;
+  nextCursor: string | null
 }
 
 // Default number of posts fetched per page / "Load more" click.
-export const POSTS_PER_PAGE = 12;
+export const POSTS_PER_PAGE = 12
 
 function toListItem(p: typeof blogPosts.$inferSelect): PostListItem {
   return {
     id: p.id,
     slug: p.slug,
     title: p.title,
-    date: p.createdAt.toISOString().split("T")[0],
+    date: getBlogPostingDate(p)!.toISOString(),
     tag: p.tag,
     excerpt: p.excerpt,
     author: p.author ?? undefined,
     thumbnail: p.thumbnail ?? undefined,
-  };
+  }
 }
 
-// Cursor packs (createdAt, id) so paging stays stable even when new posts are
-// inserted between requests. `id` is the tiebreaker for posts sharing a timestamp.
-function encodeCursor(createdAt: Date, id: string): string {
-  return `${createdAt.toISOString()}__${id}`;
+// Cursor packs (posting date, id) so paging stays stable even when new posts are
+// published between requests. `id` is the tiebreaker for matching timestamps.
+function encodeCursor(postingDate: Date, id: string): string {
+  return `${postingDate.toISOString()}__${id}`
 }
 
-function decodeCursor(cursor: string): { createdAt: Date; id: string } | null {
-  const idx = cursor.lastIndexOf("__");
-  if (idx === -1) return null;
-  const createdAt = new Date(cursor.slice(0, idx));
-  const id = cursor.slice(idx + 2);
-  if (Number.isNaN(createdAt.getTime()) || !id) return null;
-  return { createdAt, id };
+function decodeCursor(
+  cursor: string
+): { postingDate: Date; id: string } | null {
+  const idx = cursor.lastIndexOf("__")
+  if (idx === -1) return null
+  const postingDate = new Date(cursor.slice(0, idx))
+  const id = cursor.slice(idx + 2)
+  if (Number.isNaN(postingDate.getTime()) || !id) return null
+  return { postingDate, id }
 }
 
 export async function getPosts({
@@ -70,33 +82,37 @@ export async function getPosts({
   query,
   limit = POSTS_PER_PAGE,
 }: {
-  cursor?: string;
-  query?: string;
-  limit?: number;
+  cursor?: string
+  query?: string
+  limit?: number
 } = {}): Promise<PostsPage> {
-  const conditions = [livePostCondition()];
+  const conditions = [livePostCondition()]
 
-  const decoded = cursor ? decodeCursor(cursor) : null;
+  const decoded = cursor ? decodeCursor(cursor) : null
   if (decoded) {
-    // Keyset pagination: rows strictly "after" the cursor in (createdAt desc, id desc) order.
+    // Keyset pagination: rows strictly after the cursor in
+    // (posting date desc, id desc) order.
     conditions.push(
       or(
-        lt(blogPosts.createdAt, decoded.createdAt),
-        and(eq(blogPosts.createdAt, decoded.createdAt), lt(blogPosts.id, decoded.id)),
-      )!,
-    );
+        lt(postingDateExpression, decoded.postingDate),
+        and(
+          eq(postingDateExpression, decoded.postingDate),
+          lt(blogPosts.id, decoded.id)
+        )
+      )!
+    )
   }
 
-  const q = query?.trim();
+  const q = query?.trim()
   if (q) {
-    const term = `%${q}%`;
+    const term = `%${q}%`
     conditions.push(
       or(
         ilike(blogPosts.title, term),
         ilike(blogPosts.excerpt, term),
-        ilike(blogPosts.tag, term),
-      )!,
-    );
+        ilike(blogPosts.tag, term)
+      )!
+    )
   }
 
   // Fetch one extra row to detect whether a further page exists.
@@ -104,37 +120,48 @@ export async function getPosts({
     .select()
     .from(blogPosts)
     .where(and(...conditions))
-    .orderBy(desc(blogPosts.createdAt), desc(blogPosts.id))
-    .limit(limit + 1);
+    .orderBy(desc(postingDateExpression), desc(blogPosts.id))
+    .limit(limit + 1)
 
-  const hasMore = rows.length > limit;
-  const page = hasMore ? rows.slice(0, limit) : rows;
-  const last = page[page.length - 1];
+  const hasMore = rows.length > limit
+  const page = hasMore ? rows.slice(0, limit) : rows
+  const last = page[page.length - 1]
 
   return {
     posts: page.map(toListItem),
-    nextCursor: hasMore && last ? encodeCursor(last.createdAt, last.id) : null,
-  };
+    nextCursor:
+      hasMore && last
+        ? encodeCursor(getBlogPostingDate(last) ?? last.createdAt, last.id)
+        : null,
+  }
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
-  if (!post || !isPostLive(post)) return null;
+  const [post] = await db
+    .select()
+    .from(blogPosts)
+    .where(eq(blogPosts.slug, slug))
+  if (!post || !isPostLive(post)) return null
 
   return {
     id: post.id,
     slug: post.slug,
     title: post.title,
-    date: post.createdAt.toISOString().split("T")[0],
+    date: getBlogPostingDate(post)!.toISOString(),
     tag: post.tag,
     excerpt: post.excerpt,
     author: post.author ?? undefined,
     thumbnail: post.thumbnail ?? undefined,
     contentHtml: post.content,
-  };
+  }
 }
 
-export async function getAllPostSlugs(): Promise<{ params: { slug: string } }[]> {
-  const posts = await db.select({ slug: blogPosts.slug }).from(blogPosts).where(livePostCondition());
-  return posts.map((p) => ({ params: { slug: p.slug } }));
+export async function getAllPostSlugs(): Promise<
+  { params: { slug: string } }[]
+> {
+  const posts = await db
+    .select({ slug: blogPosts.slug })
+    .from(blogPosts)
+    .where(livePostCondition())
+  return posts.map((p) => ({ params: { slug: p.slug } }))
 }
