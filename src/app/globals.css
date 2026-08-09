@@ -41,6 +41,12 @@
   --color-background: var(--background);
   --color-brand-1: var(--brand-1);
   --color-brand-2: var(--brand-2);
+  --color-feature-teal: var(--feature-teal);
+  --color-feature-green: var(--feature-green);
+  --color-feature-copper: var(--feature-copper);
+  --color-feature-purple: var(--feature-purple);
+  --color-feature-red: var(--feature-red);
+  --color-feature-blue: var(--feature-blue);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -51,6 +57,7 @@
 }
 
 :root {
+  --font-mono: var(--font-sans);
   --background: oklch(1 0 0);
   --foreground: oklch(0.148 0.004 228.8);
   --card: oklch(1 0 0);
@@ -85,6 +92,12 @@
   --sidebar-ring: oklch(0.723 0.014 214.4);
   --brand-1: #5cb6f9;
   --brand-2: #050a30;
+  --feature-teal: #388ca1;
+  --feature-green: #32836a;
+  --feature-copper: #bb7851;
+  --feature-purple: #574399;
+  --feature-red: #bb5153;
+  --feature-blue: #517fbb;
 }
 
 .dark {

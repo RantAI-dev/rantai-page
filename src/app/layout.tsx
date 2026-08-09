@@ -1,22 +1,17 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
+import type { Metadata } from "next"
+import { Geist } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 
-import "./globals.css";
-import { META_THEME_COLORS, siteConfig } from "@/lib/config";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
-import { cn } from "@/lib/utils";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import "./globals.css"
+import { META_THEME_COLORS, siteConfig } from "@/lib/config"
+import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
+import { cn } from "@/lib/utils"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -56,23 +51,18 @@ export const metadata: Metadata = {
       "application/rss+xml": `${siteConfig.url}/rss.xml`,
     },
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(
-        "antialiased",
-        fontMono.variable,
-        "font-sans",
-        geist.variable,
-      )}
+      className={cn("antialiased", "font-sans", geist.variable)}
     >
       <head>
         <meta name="theme-color" content={META_THEME_COLORS.dark} />
@@ -81,9 +71,7 @@ export default function RootLayout({
       <body>
         <NuqsAdapter>
           <ThemeProvider>
-            <TooltipProvider>
-              {children}
-            </TooltipProvider>
+            <TooltipProvider>{children}</TooltipProvider>
           </ThemeProvider>
         </NuqsAdapter>
         <Toaster />
@@ -91,5 +79,5 @@ export default function RootLayout({
         <SpeedInsights />
       </body>
     </html>
-  );
+  )
 }

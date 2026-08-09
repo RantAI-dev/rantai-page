@@ -1,7 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import {
+	AnimatePresence,
+	motion,
+	useInView,
+	useReducedMotion,
+} from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -43,22 +48,34 @@ const team = [
 ];
 
 export function TeamSection() {
+	const sectionRef = useRef<HTMLElement>(null);
 	const [activeIndex, setActiveIndex] = useState(0);
+	const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+	const reduceMotion = useReducedMotion();
 
-	// Auto-advance every 5 seconds
 	useEffect(() => {
+		if (!isInView || reduceMotion) return;
+
 		const timer = setTimeout(() => {
 			setActiveIndex((prev) => (prev + 1) % team.length);
 		}, 5000);
 		return () => clearTimeout(timer);
-	}, [activeIndex]);
+	}, [activeIndex, isInView, reduceMotion]);
 
 	return (
-		<section className="bg-background border-border border-t border-b relative overflow-hidden px-4 md:px-8 py-24 sm:py-32">
+		<section
+			ref={sectionRef}
+			className="bg-background border-border border-t border-b relative overflow-hidden px-4 md:px-8 py-24 sm:py-32"
+		>
 			<div className="mx-auto max-w-7xl">
 				<div className="flex flex-col lg:flex-row gap-16 lg:gap-8 justify-between">
 					{/* Left side text items */}
-					<div className="lg:w-1/3 flex flex-col justify-between">
+					<motion.div
+						initial={reduceMotion ? false : { opacity: 0, x: -28 }}
+						animate={isInView ? { opacity: 1, x: 0 } : undefined}
+						transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+						className="lg:w-1/3 flex flex-col justify-between"
+					>
 						<div>
 							<h2 className="text-white text-4xl sm:text-5xl font-medium tracking-tight mb-4 leading-tight">
 								Meet the Founding Team
@@ -79,9 +96,10 @@ export function TeamSection() {
 								team={team}
 								activeIndex={activeIndex}
 								setActiveIndex={setActiveIndex}
+								reduceMotion={Boolean(reduceMotion)}
 							/>
 						</div>
-					</div>
+					</motion.div>
 
 					{/* Right side Images */}
 					<div className="lg:w-[60%] h-100 lg:h-125 flex gap-1 sm:gap-2">
@@ -91,10 +109,29 @@ export function TeamSection() {
 								layout
 								onClick={() => setActiveIndex(i)}
 								className="relative cursor-pointer overflow-hidden rounded-sm"
-								initial={false}
-								animate={{ flex: activeIndex === i ? 5 : 1 }}
-								whileHover={{ flex: activeIndex === i ? 5 : 1.5 }}
-								transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+								initial={reduceMotion ? false : { opacity: 0, y: 30 }}
+								animate={{
+									flex: activeIndex === i ? 5 : 1,
+									opacity: isInView ? 1 : 0,
+									y: isInView ? 0 : 30,
+								}}
+								whileHover={
+									reduceMotion
+										? undefined
+										: { flex: activeIndex === i ? 5 : 1.5 }
+								}
+								transition={{
+									flex: { duration: 0.7, ease: [0.32, 0.72, 0, 1] },
+									opacity: {
+										duration: 0.55,
+										delay: reduceMotion ? 0 : 0.12 + i * 0.07,
+									},
+									y: {
+										duration: 0.65,
+										delay: reduceMotion ? 0 : 0.12 + i * 0.07,
+										ease: [0.22, 1, 0.36, 1],
+									},
+								}}
 							>
 								{/* Black & White Image - Default */}
 								<div className="absolute inset-0">
@@ -132,6 +169,7 @@ export function TeamSection() {
 							team={team}
 							activeIndex={activeIndex}
 							setActiveIndex={setActiveIndex}
+							reduceMotion={Boolean(reduceMotion)}
 						/>
 					</div>
 				</div>
@@ -151,10 +189,12 @@ function TeamInfo({
 	team,
 	activeIndex,
 	setActiveIndex,
+	reduceMotion,
 }: {
 	readonly team: TeamMember[];
 	readonly activeIndex: number;
 	readonly setActiveIndex: (i: number) => void;
+	readonly reduceMotion: boolean;
 }) {
 	return (
 		<div>
@@ -171,9 +211,12 @@ function TeamInfo({
 						{activeIndex === i && (
 							<motion.div
 								className="h-full bg-white origin-left"
-								initial={{ scaleX: 0 }}
+								initial={reduceMotion ? false : { scaleX: 0 }}
 								animate={{ scaleX: 1 }}
-								transition={{ duration: 5, ease: "linear" }}
+								transition={{
+									duration: reduceMotion ? 0 : 5,
+									ease: "linear",
+								}}
 								key={`progress-${i}`}
 							/>
 						)}
@@ -186,10 +229,13 @@ function TeamInfo({
 				<AnimatePresence mode="wait">
 					<motion.div
 						key={activeIndex}
-						initial={{ opacity: 0, y: 15 }}
+						initial={reduceMotion ? false : { opacity: 0, y: 15 }}
 						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: -15 }}
-						transition={{ duration: 0.4, ease: "backOut" }}
+						exit={reduceMotion ? undefined : { opacity: 0, y: -15 }}
+						transition={{
+							duration: reduceMotion ? 0 : 0.4,
+							ease: "backOut",
+						}}
 					>
 						<h3 className="text-white text-2xl sm:text-3xl font-medium tracking-tight">
 							{team[activeIndex].name}

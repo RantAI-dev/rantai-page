@@ -1,327 +1,697 @@
 "use client"
 
-import { useScroll, useTransform, motion } from "motion/react"
-import { useRef } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { useEffect, useRef, useState } from "react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import {
-  ShieldCheckIcon,
-  MapPinIcon,
-  BookOpenIcon,
-  LayoutTemplateIcon,
+  ArrowUpRightIcon,
+  BlocksIcon,
+  BracesIcon,
+  CheckIcon,
+  GaugeIcon,
   LayersIcon,
-  LockIcon,
+  MapPinIcon,
+  NetworkIcon,
+  ScanSearchIcon,
+  ShieldCheckIcon,
+  WaypointsIcon,
 } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
+
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { cn } from "@/lib/utils"
 
-// ─── Section label dots ───────────────────────────────────────────────────────
-function SectionHeader({
-  activeIndex,
-  total,
-  label,
-}: {
-  readonly activeIndex: number
-  readonly total: number
-  readonly label: string
-}) {
-  return (
-    <div className="mb-8 flex items-center gap-2">
-      {Array.from({ length: total }).map((_, i) => (
-        <div
-          key={i}
-          className={`size-3.5 shrink-0 rounded-full border border-white ${
-            i <= activeIndex ? "bg-white" : ""
-          }`}
-        />
-      ))}
-      <p className="ml-2 font-mono text-xl font-light tracking-wide text-white">
-        {label}
-      </p>
-    </div>
-  )
-}
+const missions = [
+  {
+    index: "01",
+    title: "Productize real workflows",
+    description:
+      "Build AI systems around operational problems, not showcase demos or isolated experiments.",
+  },
+  {
+    index: "02",
+    title: "Keep teams in control",
+    description:
+      "Make advanced AI usable without hiding governance, human oversight, or system behavior.",
+  },
+  {
+    index: "03",
+    title: "Prove outcomes in production",
+    description:
+      "Take organizations from strategy to deployed systems with observable, measurable results.",
+  },
+  {
+    index: "04",
+    title: "Grow local capability",
+    description:
+      "Develop Indonesian AI and software talent through hands-on engineering and education.",
+  },
+] as const
 
-function StackCard({
-  children,
-  i,
-}: {
-  readonly children: React.ReactNode
-  readonly i: number
-}) {
-  const ref = useRef(null)
+const operatingSteps = [
+  {
+    icon: ScanSearchIcon,
+    label: "Understand",
+    value: "Operational context",
+    surface: "border-feature-teal/40 bg-feature-teal/15",
+    accent: "text-feature-teal",
+    glow: "bg-feature-teal/20",
+  },
+  {
+    icon: LayersIcon,
+    label: "Engineer",
+    value: "Production systems",
+    surface: "border-feature-purple/40 bg-feature-purple/15",
+    accent: "text-feature-purple",
+    glow: "bg-feature-purple/20",
+  },
+  {
+    icon: GaugeIcon,
+    label: "Operate",
+    value: "Measurable outcomes",
+    surface: "border-feature-copper/40 bg-feature-copper/15",
+    accent: "text-feature-copper",
+    glow: "bg-feature-copper/20",
+  },
+] as const
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "start start"],
-  })
+const platforms = [
+  {
+    value: "agents",
+    name: "RantAI Agents",
+    category: "Enterprise AI agent platform",
+    headline:
+      "Turn organizational knowledge into agents that can do real work.",
+    description:
+      "Build knowledge-driven applications with RAG pipelines, reusable skills, multi-channel deployment, and human-in-the-loop workflows in one operational platform.",
+    capabilities: [
+      "Knowledge base and RAG",
+      "Agent builder and reusable skills",
+      "Multi-channel deployment",
+      "Human review and control",
+    ],
+    image: "/products/rantai-agents-chat.png",
+    imageAlt: "RantAI Agents chat and artifact workspace",
+    visual: {
+      backdrop: "from-feature-purple/35 via-muted/90 to-background",
+      glow: "bg-feature-purple/35",
+      frame: "border-feature-purple/30",
+    },
+    href: "https://agents.rantai.dev/",
+    cta: "Open RantAI Agents",
+  },
+  {
+    value: "claw",
+    name: "RantAIClaw",
+    category: "Production multi-agent runtime",
+    headline: "Run autonomous agents on infrastructure you control.",
+    description:
+      "Deploy, control, and extend autonomous agents through a fast Rust runtime with terminal and web interfaces built for self-hosted operations.",
+    capabilities: [
+      "100% Rust runtime",
+      "Terminal and web control",
+      "Reusable agent skills",
+      "Self-hosted operations",
+    ],
+    image: "/products/rantai-claw-console.png",
+    imageAlt: "RantAIClaw web console",
+    visual: {
+      backdrop: "from-feature-teal/35 via-muted/90 to-background",
+      glow: "bg-brand-1/30",
+      frame: "border-brand-1/30",
+    },
+    href: "https://claw.rantai.dev/",
+    cta: "Open RantAIClaw",
+  },
+  {
+    value: "llmops",
+    name: "RantAI LLMOps",
+    category: "Sovereign model operations",
+    headline: "Operate the model lifecycle from one sovereign control plane.",
+    description:
+      "Manage model registry, fine-tuning, orchestration, evaluation, and playground workflows without surrendering control of your AI stack.",
+    capabilities: [
+      "Model registry and routing",
+      "Fine-tuning workflows",
+      "Evaluation and comparison",
+      "Provider-independent orchestration",
+    ],
+    image: "/products/analytics-screenshot.png",
+    imageAlt: "RantAI LLMOps analytics interface",
+    visual: {
+      backdrop: "from-feature-blue/35 via-muted/90 to-background",
+      glow: "bg-feature-blue/35",
+      frame: "border-feature-blue/30",
+    },
+    href: "#contact",
+    cta: "Request product updates",
+  },
+] as const
 
-  const y = useTransform(scrollYProgress, [0, 1], [i * 1500, 0])
+const differentiators = [
+  {
+    icon: BlocksIcon,
+    tone: "border-feature-teal bg-feature-teal text-white",
+    title: "Products, not just services",
+    description:
+      "A reusable platform roadmap creates continuity beyond any single implementation project.",
+  },
+  {
+    icon: NetworkIcon,
+    tone: "border-feature-green bg-feature-green text-white",
+    title: "No model lock-in",
+    description:
+      "Support for 100+ LLMs lets teams change providers without rebuilding the operational layer.",
+  },
+  {
+    icon: MapPinIcon,
+    tone: "border-feature-copper bg-feature-copper text-white",
+    title: "Local operating context",
+    description:
+      "Architecture and delivery shaped by Indonesian enterprise, government, and regulatory realities.",
+  },
+  {
+    icon: ShieldCheckIcon,
+    tone: "border-feature-purple bg-feature-purple text-white",
+    title: "Production by design",
+    description:
+      "Security, observability, reliability, and human control are system requirements—not later additions.",
+  },
+  {
+    icon: WaypointsIcon,
+    tone: "border-feature-red bg-feature-red text-white",
+    title: "One accountable lifecycle",
+    description:
+      "Strategy, experience design, engineering, deployment, monitoring, and support from one team.",
+  },
+  {
+    icon: BracesIcon,
+    tone: "border-feature-blue bg-feature-blue text-white",
+    title: "Open foundations",
+    description:
+      "Auditable, portable systems built on open standards instead of opaque proprietary dependencies.",
+  },
+] as const
 
-  const scale = useTransform(scrollYProgress, [0, 1], [1.5, 1])
-  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0, 1, 1])
-  const blur = useTransform(
-    scrollYProgress,
-    [0, 1],
-    ["blur(10px)", "blur(0px)"]
-  )
+const revealViewport = { once: true, amount: 0.2 } as const
 
-  return (
-    <div
-      ref={ref}
-      className="sticky top-0"
-      style={{ zIndex: i, paddingTop: `${100 + i * 40}px`, marginBottom: 0 }}
-    >
-      <motion.div
-        style={{ y, scale, opacity, filter: blur }}
-        className="relative w-full rounded-[16px] border border-border bg-card p-6 shadow-2xl md:p-10"
-      >
-        {children}
-      </motion.div>
-    </div>
-  )
-}
+type Platform = (typeof platforms)[number]
 
-// ─── Static card config ───────────────────────────────────────────────────────
-const STICKY_CARDS = [
-  { label: "VISION & MISSION", content: <VisionMissionContent /> },
-  { label: "OUR PLATFORMS", content: <OurPlatformsContent /> },
-  { label: "WHY RANTAI", content: <WhyRantaiContent /> },
-]
-
-// ─── Main Component ───────────────────────────────────────────────────────────
 export function StickyScrollSections() {
+  const reduceMotion = Boolean(useReducedMotion())
+
   return (
-    <div className="mx-auto overflow-x-clip px-4 py-20 md:px-8">
-      {/* Extra bottom spacer so the last card's overlap clears properly */}
-      <div className="relative mx-auto max-w-7xl">
-        {STICKY_CARDS.map((card, i) => (
-          <StackCard key={card.label} i={i}>
-            <SectionHeader
-              activeIndex={i}
-              total={STICKY_CARDS.length}
-              label={card.label}
-            />
-            {card.content}
-          </StackCard>
-        ))}
-      </div>
+    <div className="border-y border-border bg-background">
+      <VisionMissionSection reduceMotion={reduceMotion} />
+      <PlatformsSection reduceMotion={reduceMotion} />
+      <WhyRantaiSection reduceMotion={reduceMotion} />
     </div>
   )
 }
 
-// ─── Content blocks ───────────────────────────────────────────────────────────
-
-function VisionMissionContent() {
+function SectionLabel({
+  index,
+  children,
+}: {
+  index: string
+  children: string
+}) {
   return (
-    <div className="flex w-full flex-col gap-8 md:flex-row">
-      <div className="flex flex-1 flex-col gap-8">
-        <div>
-          <h2 className="mb-2 text-3xl font-normal text-white md:text-4xl">
-            Vision
+    <div className="flex items-center gap-3 font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
+      <span>{index}</span>
+      <Separator className="!w-10" />
+      <span>{children}</span>
+    </div>
+  )
+}
+
+function VisionMissionSection({ reduceMotion }: { reduceMotion: boolean }) {
+  return (
+    <section className="px-5 py-24 sm:px-8 sm:py-32 lg:px-10">
+      <div className="mx-auto max-w-7xl">
+        <SectionLabel index="01">Vision &amp; mission</SectionLabel>
+
+        <div className="mt-10 grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={revealViewport}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <p className="font-mono text-xs tracking-[0.16em] text-muted-foreground uppercase">
+              Our vision
+            </p>
+            <h2 className="mt-5 max-w-4xl text-4xl leading-[0.98] font-medium tracking-[-0.05em] text-foreground sm:text-6xl lg:text-7xl">
+              Operational intelligence, built for the real world.
+            </h2>
+            <p className="mt-8 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              To be Indonesia&apos;s leading AI products company—enabling
+              government and enterprise to operate intelligently through
+              production-grade AI platforms.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={revealViewport}
+            transition={{
+              duration: 0.65,
+              delay: reduceMotion ? 0 : 0.1,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="relative overflow-hidden rounded-xl border border-border bg-card shadow-2xl shadow-black/20"
+          >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,var(--feature-purple),transparent_34%),radial-gradient(circle_at_100%_100%,var(--feature-teal),transparent_40%)] opacity-15" />
+            <motion.div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-foreground/5 to-transparent"
+              animate={reduceMotion ? undefined : { x: ["-120%", "420%"] }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                repeatDelay: 2.5,
+                ease: "linear",
+              }}
+            />
+            <div className="relative flex items-center justify-between border-b border-border px-5 py-4 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+              <span>Operating thesis</span>
+              <Badge variant="outline">RantAI / 2026</Badge>
+            </div>
+            <div className="relative flex flex-col gap-0 px-5 py-3">
+              {operatingSteps.map((step, index) => (
+                <motion.div
+                  key={step.label}
+                  initial={reduceMotion ? false : { opacity: 0, x: 18 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={revealViewport}
+                  transition={{
+                    duration: 0.5,
+                    delay: reduceMotion ? 0 : 0.18 + index * 0.12,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className="group relative grid grid-cols-[2.5rem_1fr] items-center gap-3 overflow-hidden border-b border-border py-5 last:border-b-0"
+                >
+                  <div
+                    className={cn(
+                      "pointer-events-none absolute inset-y-2 -left-12 w-24 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100",
+                      step.glow
+                    )}
+                  />
+                  <motion.div
+                    whileHover={
+                      reduceMotion ? undefined : { scale: 1.08, rotate: -4 }
+                    }
+                    className={cn(
+                      "relative flex size-9 items-center justify-center rounded-md border shadow-lg shadow-black/20",
+                      step.surface
+                    )}
+                  >
+                    <step.icon className={cn("size-4", step.accent)} />
+                  </motion.div>
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {step.label}
+                      </p>
+                      <p className="mt-1 font-mono text-[10px] tracking-[0.1em] text-muted-foreground uppercase">
+                        {step.value}
+                      </p>
+                    </div>
+                    <span
+                      className={cn(
+                        "font-mono text-[10px] font-medium",
+                        step.accent
+                      )}
+                    >
+                      0{index + 1}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="mt-20">
+          <p className="font-mono text-xs tracking-[0.16em] text-muted-foreground uppercase">
+            Our mission
+          </p>
+          <div className="mt-5 grid border-t border-l border-border sm:grid-cols-2 lg:grid-cols-4">
+            {missions.map((mission) => (
+              <motion.article
+                key={mission.index}
+                initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={revealViewport}
+                transition={{
+                  duration: 0.55,
+                  delay: reduceMotion ? 0 : Number(mission.index) * 0.06,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="flex min-h-72 flex-col border-r border-b border-border p-6 sm:p-7"
+              >
+                <span className="font-mono text-xs text-muted-foreground">
+                  {mission.index}
+                </span>
+                <h3 className="mt-auto text-xl font-medium tracking-tight text-foreground">
+                  {mission.title}
+                </h3>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                  {mission.description}
+                </p>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function PlatformsSection({ reduceMotion }: { reduceMotion: boolean }) {
+  const storyRef = useRef<HTMLDivElement>(null)
+  const activeIndexRef = useRef(0)
+  const frameRef = useRef<number | null>(null)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const activePlatform = platforms[activeIndex]
+
+  useEffect(() => {
+    function updateActivePlatform() {
+      frameRef.current = null
+
+      const story = storyRef.current
+      if (!story) return
+
+      const storyTop = window.scrollY + story.getBoundingClientRect().top
+      const scrollableDistance = Math.max(
+        1,
+        story.offsetHeight - window.innerHeight
+      )
+      const progress = Math.min(
+        0.9999,
+        Math.max(0, (window.scrollY - storyTop) / scrollableDistance)
+      )
+      const nextIndex = Math.floor(progress * platforms.length)
+
+      if (activeIndexRef.current === nextIndex) return
+
+      activeIndexRef.current = nextIndex
+      setActiveIndex(nextIndex)
+    }
+
+    function scheduleUpdate() {
+      if (frameRef.current !== null) return
+      frameRef.current = window.requestAnimationFrame(updateActivePlatform)
+    }
+
+    updateActivePlatform()
+    window.addEventListener("scroll", scheduleUpdate, { passive: true })
+    window.addEventListener("resize", scheduleUpdate)
+
+    return () => {
+      window.removeEventListener("scroll", scheduleUpdate)
+      window.removeEventListener("resize", scheduleUpdate)
+
+      if (frameRef.current !== null) {
+        window.cancelAnimationFrame(frameRef.current)
+      }
+    }
+  }, [])
+
+  function handlePlatformChange(value: string) {
+    const nextIndex = platforms.findIndex(
+      (platform) => platform.value === value
+    )
+    const story = storyRef.current
+
+    if (nextIndex < 0 || !story) return
+
+    activeIndexRef.current = nextIndex
+    setActiveIndex(nextIndex)
+
+    const storyTop = window.scrollY + story.getBoundingClientRect().top
+    const scrollableDistance = Math.max(
+      0,
+      story.offsetHeight - window.innerHeight
+    )
+    const chapterPosition = (nextIndex + 0.5) / platforms.length
+
+    window.scrollTo({
+      top: storyTop + scrollableDistance * chapterPosition,
+      behavior: reduceMotion ? "auto" : "smooth",
+    })
+  }
+
+  return (
+    <section className="border-t border-border bg-background px-5 pt-24 sm:px-8 sm:pt-32 lg:px-10">
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={revealViewport}
+        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        className="mx-auto max-w-7xl"
+      >
+        <SectionLabel index="02">Our platforms</SectionLabel>
+        <div className="mt-10 flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+          <h2 className="max-w-4xl text-4xl leading-[0.98] font-medium tracking-[-0.05em] text-foreground sm:text-6xl lg:text-7xl">
+            Three platforms.
+            <br />
+            One intelligence layer.
           </h2>
-          <p className="font-mono text-muted-foreground">
-            To be Indonesia&apos;s leading AI products company — enabling
-            government and enterprise to operate intelligently through
-            production-grade AI platforms.
+          <p className="max-w-md text-base leading-relaxed text-muted-foreground">
+            A connected product stack for knowledge, agent execution, and model
+            operations—designed to move AI from experimentation into daily work.
           </p>
         </div>
-        <Separator />
-        <div>
-          <h2 className="mb-2 text-3xl font-normal text-white md:text-4xl">
-            Mission
-          </h2>
-          <ul className="ml-6 list-disc space-y-4 font-mono text-muted-foreground">
-            <li>
-              Build AI products that are production-ready, not just demos —
-              solving real business and government operational challenges.
-            </li>
-            <li>
-              Democratize access to AI capabilities through platforms that
-              don&apos;t require deep technical expertise to use.
-            </li>
-            <li>
-              Provide engineering services that help organizations go from AI
-              strategy to deployed, measurable outcomes.
-            </li>
-            <li>
-              Develop local AI talent through hands-on education in AI
-              engineering and software development.
-            </li>
-          </ul>
-        </div>
-      </div>
-      <Separator orientation="vertical" />
-      <div className="relative hidden min-h-100 w-full shrink-0 overflow-hidden rounded-[8px] md:block md:w-100">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-luminosity" />
-      </div>
-    </div>
-  )
-}
+      </motion.div>
 
-function OurPlatformsContent() {
-  return (
-    <div className="w-full">
-      <h2 className="mb-10 text-3xl leading-tight font-normal text-white md:text-4xl">
-        Three platforms.
-        <br />
-        One intelligence layer.
-      </h2>
-      <div className="flex flex-col gap-0">
-        {/* Agents */}
-        <div className="flex flex-col items-stretch gap-8 rounded-xl p-6 transition-colors hover:bg-white/4 md:flex-row">
-          <div className="flex flex-1 flex-col gap-4">
-            <div className="mb-2 flex items-center gap-3">
-              <div className="size-3 rounded-full bg-[#bb7851]" />
-              <span className="font-mono text-xl font-light text-white/80">
-                01
-              </span>
-            </div>
-            <div>
-              <h3 className="text-3xl font-normal text-white">RantAI Agents</h3>
-              <p className="font-mono text-sm font-light text-muted-foreground">
-                Enterprise AI Platforms
-              </p>
-            </div>
-            <p className="leading-relaxed font-light text-white/80">
-              Enterprise-grade AI agent platform for building knowledge-driven
-              applications — with RAG pipelines, multi-channel deployment, and
-              human-in-the-loop workflows. Think of it as hiring an always-on
-              expert employee who reads your entire document library and never
-              forgets.
-            </p>
-          </div>
-          <div className="relative hidden w-full shrink-0 overflow-hidden rounded-lg border border-white/10 bg-white/5 md:block md:w-125">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-luminosity" />
-          </div>
-        </div>
-        <Separator />
-        {/* LLMOps and Lake */}
-        <div className="flex flex-col items-stretch gap-0 md:flex-row">
-          <div className="flex flex-1 flex-col gap-4 rounded-xl p-6 transition-colors hover:bg-white/4">
-            <div className="mb-2 flex items-center gap-3">
-              <div className="size-3 rounded-full bg-[#0d63d0]" />
-              <span className="font-mono text-xl font-light text-white/80">
-                02
-              </span>
-              <Badge className="bg-sky-100 text-sky-800">IN PROGRESS</Badge>
-            </div>
-            <div>
-              <h3 className="text-3xl font-normal text-white">
-                RantAI LLMOps
-              </h3>
-              <p className="font-mono text-sm font-light text-muted-foreground">
-                LLM Operations Platform
-              </p>
-            </div>
-            <p className="leading-relaxed font-light text-white/80">
-              A sovereign control center for the full model lifecycle: registry,
-              fine-tuning, orchestration, evaluation, and playground workflows
-              in one enterprise-ready platform.
-            </p>
-          </div>
-          <Separator orientation="vertical" />
-          <div className="flex flex-1 flex-col gap-4 rounded-xl p-6 transition-colors hover:bg-white/4">
-            <div className="mb-2 flex items-center gap-3">
-              <div className="size-3 rounded-full bg-[#80cb87]" />
-              <span className="font-mono text-xl font-light text-white/80">
-                03
-              </span>
-              <Badge className="bg-[#dbf0dd] text-[#255a2a]">IN PROGRESS</Badge>
-            </div>
-            <div>
-              <h3 className="text-3xl font-normal text-white">
-                RantAI Lake
-              </h3>
-              <p className="font-mono text-sm font-light text-muted-foreground">
-                AI-Native Data Lakehouse
-              </p>
-            </div>
-            <p className="leading-relaxed font-light text-white/80">
-              A sovereign lakehouse that turns raw data into BI-ready insight
-              through medallion zones, visual pipelines, governance, and
-              plain-English query.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function WhyRantaiContent() {
-  const items = [
-    {
-      title: "Products, not just services",
-      desc: "We build and own our platforms, guaranteeing long-term roadmap continuity independent of any single vendor or engagement.",
-      color: "bg-[#388ca1]",
-      icon: LayoutTemplateIcon,
-    },
-    {
-      title: "No vendor lock-in",
-      desc: "Support for 100+ LLMs means you can switch model providers without rebuilding anything. Your stack stays yours.",
-      color: "bg-[#32836a]",
-      icon: ShieldCheckIcon,
-    },
-    {
-      title: "Local expertise",
-      desc: "Deep understanding of Indonesian government regulations and compliance requirements — built into the architecture from day one.",
-      color: "bg-[#bb7851]",
-      icon: MapPinIcon,
-    },
-    {
-      title: "Production-grade, always",
-      desc: "Deployed in real production environments across government and enterprise. Built for scale, security, and operational reliability.",
-      color: "bg-[#574399]",
-      icon: LayersIcon,
-    },
-    {
-      title: "End-to-end capability",
-      desc: "One partner for the full lifecycle — from AI strategy and architecture design to deployment, monitoring, and ongoing support.",
-      color: "bg-[#bb5153]",
-      icon: LockIcon,
-    },
-    {
-      title: "Open standards",
-      desc: "Built on open-source foundations for full auditability. No black boxes, no proprietary traps, no hidden dependencies.",
-      color: "bg-[#517fbb]",
-      icon: BookOpenIcon,
-    },
-  ]
-
-  return (
-    <div className="w-full">
-      <div className="mb-10 flex flex-col items-end justify-between gap-8 md:flex-row">
-        <h2 className="text-3xl leading-tight font-normal text-white md:text-4xl">
-          Built different.
-          <br />
-          Deployed for real.
-        </h2>
-        <p className="max-w-125 font-mono text-sm font-light text-muted-foreground md:text-base">
-          Most AI vendors sell potential. We ship production systems — and we
-          have the receipts to prove it.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3">
-        {items.map((item, i) => (
-          <div
-            key={item.title}
-            className={`group border-border p-8 transition-colors hover:bg-white/3 ${
-              i % 3 < 2 ? "border-r" : ""
-            } ${i < 3 ? "border-b" : ""}`}
+      <div
+        ref={storyRef}
+        className="relative mx-auto mt-12 h-[260svh] max-w-7xl"
+      >
+        <div className="sticky top-16 flex h-[calc(100svh-4rem)] items-center py-5 sm:py-8">
+          <Tabs
+            value={activePlatform.value}
+            onValueChange={handlePlatformChange}
+            className="w-full gap-0"
           >
+            <TabsList variant="line" className="grid h-auto w-full grid-cols-3">
+              {platforms.map((platform) => (
+                <TabsTrigger
+                  key={platform.value}
+                  value={platform.value}
+                  className="h-auto min-w-0 py-4 after:hidden"
+                >
+                  <span className="truncate">{platform.name}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activePlatform.value}
+                initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduceMotion ? undefined : { opacity: 0, y: -14 }}
+                transition={{ duration: reduceMotion ? 0 : 0.42 }}
+              >
+                <TabsContent
+                  value={activePlatform.value}
+                  forceMount
+                  className="mt-6"
+                >
+                  <PlatformPanel
+                    platform={activePlatform}
+                    reduceMotion={reduceMotion}
+                  />
+                </TabsContent>
+              </motion.div>
+            </AnimatePresence>
+          </Tabs>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function PlatformPanel({
+  platform,
+  reduceMotion,
+}: {
+  platform: Platform
+  reduceMotion: boolean
+}) {
+  return (
+    <div className="grid overflow-hidden rounded-xl border border-border bg-background lg:grid-cols-[0.88fr_1.12fr]">
+      <div className="flex flex-col p-6 sm:p-8 lg:min-h-125 lg:p-9">
+        <p className="font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase">
+          {platform.category}
+        </p>
+
+        <h3 className="mt-8 text-3xl leading-tight font-medium tracking-[-0.03em] text-foreground sm:text-4xl lg:mt-10">
+          {platform.headline}
+        </h3>
+        <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:mt-5">
+          {platform.description}
+        </p>
+
+        <div className="mt-6 grid gap-2.5 sm:grid-cols-2 lg:mt-8 lg:gap-3">
+          {platform.capabilities.map((capability) => (
             <div
-              className={`${item.color} mb-6 flex size-12 items-center justify-center rounded-lg shadow-lg shadow-black/20`}
+              key={capability}
+              className="flex items-center gap-2 font-mono text-xs text-muted-foreground"
             >
-              <item.icon className="size-6 text-white" />
+              <CheckIcon className="size-3.5 text-foreground" />
+              {capability}
             </div>
-            <h3 className="mb-2 text-2xl font-normal text-white">
-              {item.title}
-            </h3>
-            <p className="font-mono text-sm leading-relaxed text-muted-foreground">
-              {item.desc}
-            </p>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        <Button asChild variant="outline" className="mt-9 w-fit lg:mt-auto">
+          <Link
+            href={platform.href}
+            {...(platform.href.startsWith("http")
+              ? { target: "_blank", rel: "noreferrer" }
+              : {})}
+          >
+            {platform.cta}
+            <ArrowUpRightIcon data-icon="inline-end" />
+          </Link>
+        </Button>
+      </div>
+
+      <div
+        className={cn(
+          "relative min-h-40 overflow-hidden border-t border-border bg-gradient-to-br sm:min-h-72 lg:min-h-125 lg:border-t-0 lg:border-l",
+          platform.visual.backdrop
+        )}
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:32px_32px] opacity-40" />
+        <motion.div
+          aria-hidden
+          className={cn(
+            "absolute -top-20 -right-16 size-72 rounded-full blur-3xl",
+            platform.visual.glow
+          )}
+          animate={
+            reduceMotion
+              ? undefined
+              : {
+                  x: [0, -18, 0],
+                  y: [0, 14, 0],
+                  scale: [1, 1.08, 1],
+                }
+          }
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className={cn(
+            "absolute inset-4 overflow-hidden rounded-lg border bg-background/65 shadow-2xl shadow-black/50 sm:inset-7 lg:inset-8",
+            platform.visual.frame
+          )}
+          animate={reduceMotion ? undefined : { y: [0, -5, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Image
+            src={platform.image}
+            alt={platform.imageAlt}
+            fill
+            loading="eager"
+            unoptimized
+            className="object-contain object-center p-2 sm:p-3"
+            sizes="(max-width: 1024px) 100vw, 55vw"
+          />
+        </motion.div>
       </div>
     </div>
+  )
+}
+
+function WhyRantaiSection({ reduceMotion }: { reduceMotion: boolean }) {
+  return (
+    <section className="border-t border-border px-5 py-24 sm:px-8 sm:py-32 lg:px-10">
+      <div className="mx-auto max-w-7xl">
+        <SectionLabel index="03">Why RantAI</SectionLabel>
+        <div className="mt-10 grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+          <motion.h2
+            initial={reduceMotion ? false : { opacity: 0, y: 26 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={revealViewport}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-4xl text-4xl leading-[0.98] font-medium tracking-[-0.05em] text-foreground sm:text-6xl lg:text-7xl"
+          >
+            Own the stack.
+            <br />
+            Move faster.
+          </motion.h2>
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 26 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={revealViewport}
+            transition={{
+              duration: 0.65,
+              delay: reduceMotion ? 0 : 0.1,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="lg:pb-2"
+          >
+            <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
+              RantAI combines product continuity, open infrastructure, and local
+              delivery experience so organizations can operate AI without giving
+              up control of their stack.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-2">
+              <Badge variant="outline">100+ LLM models</Badge>
+              <Badge variant="outline">Open standards</Badge>
+              <Badge variant="outline">Indonesia-based team</Badge>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="mt-16 grid border-t border-l border-border sm:grid-cols-2 lg:grid-cols-3">
+          {differentiators.map((item, index) => (
+            <motion.article
+              key={item.title}
+              initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={revealViewport}
+              whileHover={reduceMotion ? undefined : { y: -6 }}
+              transition={{
+                duration: 0.5,
+                delay: reduceMotion ? 0 : index * 0.055,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="group flex min-h-80 flex-col border-r border-b border-border p-6 transition-colors hover:bg-card sm:p-8"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div
+                  className={cn(
+                    "flex size-11 items-center justify-center rounded-md border shadow-lg shadow-black/20 transition-transform duration-300 group-hover:scale-110",
+                    item.tone
+                  )}
+                >
+                  <item.icon className="size-5" />
+                </div>
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  0{index + 1}
+                </span>
+              </div>
+              <div className="mt-auto">
+                <h3 className="text-xl font-medium tracking-tight text-foreground">
+                  {item.title}
+                </h3>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                  {item.description}
+                </p>
+              </div>
+            </motion.article>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { MotionInView } from "./motion-in-view";
 import type { PostListItem } from "@/lib/blog";
 
@@ -31,6 +31,8 @@ export const BlogSectionContent = React.memo(function BlogSectionContent({
 }: {
 	posts: PostListItem[];
 }) {
+	const reduceMotion = useReducedMotion();
+
 	return (
 		<section className="px-6 py-24 sm:px-8 lg:px-12 lg:py-32">
 			<div className="mx-auto max-w-7xl">
@@ -56,8 +58,8 @@ export const BlogSectionContent = React.memo(function BlogSectionContent({
 
 				{/* Cards Section */}
 				<motion.div
-					variants={containerVariants}
-					initial="hidden"
+					variants={reduceMotion ? undefined : containerVariants}
+					initial={reduceMotion ? false : "hidden"}
 					whileInView="show"
 					viewport={{ once: true, margin: "0px 0px -100px 0px" }}
 					className="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-3 divide-y divide-border md:divide-y-0 md:divide-x"
@@ -73,7 +75,8 @@ export const BlogSectionContent = React.memo(function BlogSectionContent({
 						return (
 							<motion.div
 								key={item.slug}
-								variants={itemVariants}
+								variants={reduceMotion ? undefined : itemVariants}
+								whileHover={reduceMotion ? undefined : { y: -6 }}
 								className={`flex flex-col py-8 ${paddingClasses}`}
 							>
 								<Link
