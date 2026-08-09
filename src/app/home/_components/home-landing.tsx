@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
+import { ArrowUpRight } from "lucide-react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { useEffect, useState } from "react"
 import type { CSSProperties } from "react"
@@ -39,6 +40,7 @@ const productLinks = [
   {
     href: "https://agents.rantai.dev/",
     label: "RantAI Agents",
+    role: "Build knowledge-driven agents",
     darkLogo: "/logo/RantAI Agents Dark.svg",
     tagline: "Deploy AI agents that handle real work, not just demos.",
     video: "/videos/rantai-agents/rag-prompt.mp4",
@@ -46,6 +48,7 @@ const productLinks = [
   {
     href: "https://claw.rantai.dev/",
     label: "RantAIClaw",
+    role: "Run autonomous agents",
     darkLogo: "/logo/RantAIClaw Dark.svg",
     tagline:
       "A production multi-agent runtime in 100% Rust — run, control, and extend autonomous agents your way.",
@@ -85,7 +88,7 @@ const homeThemeVars = {
   "--home-partner-gradient":
     "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.86) 48%, #000000 100%)",
   "--home-scrim":
-    "radial-gradient(ellipse at 50% 48%, rgba(3,7,18,0.7) 0%, rgba(3,7,18,0.5) 36%, transparent 66%), linear-gradient(115deg, rgba(0,0,0,0.54) 0%, rgba(0,0,0,0.62) 48%, rgba(0,0,0,0.86) 100%)",
+    "radial-gradient(ellipse at 50% 48%, rgba(3,7,18,0.78) 0%, rgba(3,7,18,0.58) 38%, rgba(3,7,18,0.18) 70%, transparent 82%), linear-gradient(115deg, rgba(0,0,0,0.54) 0%, rgba(0,0,0,0.62) 48%, rgba(0,0,0,0.86) 100%)",
 } as CSSProperties
 
 function usePrefersReducedMotion() {
@@ -199,62 +202,81 @@ function ProductLinks({
 }>) {
   return (
     <motion.div
-      className={cn(!revealed && "pointer-events-none")}
+      className={cn("w-full max-w-3xl", !revealed && "pointer-events-none")}
       initial={reducedMotion ? false : { opacity: 0, y: 14 }}
       animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
       transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
     >
-      <div className="flex flex-wrap items-center justify-center gap-1 text-lg text-foreground">
-        <span>Explore</span>
+      <div className="mb-3 flex items-center gap-3 px-1 text-xs font-medium tracking-[0.18em] text-foreground/80 uppercase">
+        <span>Explore the stack</span>
+        <span aria-hidden="true" className="h-px flex-1 bg-foreground/25" />
+      </div>
+
+      <div className="grid overflow-hidden border-y border-foreground/25 bg-black/35 text-left shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-md sm:grid-cols-2">
         {productLinks.map((product, index) => (
-          <span key={product.href} className="flex items-center gap-1">
-            <HoverCard
-              openDelay={80}
-              closeDelay={80}
-              onOpenChange={(open) => onHover(open ? index : null)}
-            >
-              <HoverCardTrigger asChild>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="ghost"
-                  className={cn(
-                    "text-lg font-medium hover:bg-foreground/10 hover:underline",
-                    hoveredIndex !== null &&
-                      hoveredIndex !== index &&
-                      "opacity-40"
-                  )}
-                >
-                  <Link href={product.href}>
-                    <Image
-                      src={product.darkLogo}
-                      alt=""
-                      width={80}
-                      height={80}
-                      className="h-5 w-auto"
+          <HoverCard
+            key={product.href}
+            openDelay={80}
+            closeDelay={80}
+            onOpenChange={(open) => onHover(open ? index : null)}
+          >
+            <HoverCardTrigger asChild>
+              <Button
+                asChild
+                variant="ghost"
+                className={cn(
+                  "group relative h-auto w-full justify-start rounded-none px-5 py-4 text-left transition-[background-color,opacity] duration-300 hover:bg-foreground/[0.08] sm:px-6 sm:py-5",
+                  index > 0 &&
+                    "border-t border-foreground/25 sm:border-t-0 sm:border-l",
+                  hoveredIndex !== null &&
+                    hoveredIndex !== index &&
+                    "opacity-55"
+                )}
+              >
+                <Link href={product.href}>
+                  <span className="absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-brand-1 transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100" />
+                  <span className="flex w-full items-center gap-4">
+                    <span className="flex size-11 shrink-0 items-center justify-center border border-foreground/25 bg-black/35 transition-colors duration-300 group-hover:border-brand-1/70 group-hover:bg-brand-1/15">
+                      <Image
+                        src={product.darkLogo}
+                        alt=""
+                        width={80}
+                        height={80}
+                        className="h-5 w-auto"
+                      />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-base font-semibold text-foreground">
+                        {product.label}
+                      </span>
+                      <span className="mt-0.5 block truncate text-sm font-normal text-foreground/75">
+                        {product.role}
+                      </span>
+                    </span>
+                    <ArrowUpRight
+                      aria-hidden="true"
+                      className="size-4 shrink-0 text-foreground/60 transition-[color,transform] duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-1"
                     />
-                    <span>{product.label}</span>
-                  </Link>
-                </Button>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-md p-1">
-                <div className="relative aspect-video w-full overflow-hidden rounded-md">
-                  <Skeleton className="absolute inset-0 rounded-md" />
-                  <video
-                    src={product.video}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="none"
-                    aria-label={`${product.label} demo`}
-                    className="relative h-full w-full rounded-md object-cover"
-                  />
-                </div>
-              </HoverCardContent>
-            </HoverCard>
-            {index < productLinks.length - 1 && <span>and</span>}
-          </span>
+                  </span>
+                </Link>
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-md p-1">
+              <div className="relative aspect-video w-full overflow-hidden rounded-md">
+                <Skeleton className="absolute inset-0 rounded-md" />
+                <video
+                  src={product.video}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="none"
+                  aria-label={`${product.label} demo`}
+                  className="relative h-full w-full rounded-md object-cover"
+                />
+              </div>
+            </HoverCardContent>
+          </HoverCard>
         ))}
       </div>
     </motion.div>
@@ -280,8 +302,10 @@ function PartnerStrip({
       animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
       transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1], delay: 1.5 }}
     >
-      <div className="flex w-full items-center">
-        <span className="shrink-0 px-8">Trusted Partners</span>
+      <div className="flex w-full items-center border-t border-foreground/20 bg-black/30 py-3 backdrop-blur-sm sm:py-4">
+        <span className="shrink-0 px-5 text-xs font-medium tracking-[0.14em] text-foreground/75 uppercase sm:px-8">
+          Trusted Partners
+        </span>
         <LogoLoop
           className="min-w-0 flex-1"
           logos={partnerLogoItems}
@@ -318,6 +342,7 @@ function HomeBackground({
       />
 
       <div className="absolute inset-0 bg-(--home-scrim)" />
+      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/70 via-black/35 to-transparent" />
     </motion.div>
   )
 }
@@ -375,12 +400,27 @@ export function HomeLanding() {
       <HomeBackground reducedMotion={Boolean(reducedMotion)} />
       <Navbar />
 
-      <main className="relative z-10 flex min-h-dvh items-center justify-center px-5 pt-20 pb-[118px] sm:px-8 sm:pb-[132px] lg:px-10">
-        <section className="mx-auto flex w-full max-w-4xl flex-col items-center gap-12 text-center">
-          <div className="flex w-full flex-col items-center gap-2">
+      <main className="relative z-10 flex min-h-dvh items-center justify-center px-5 pt-20 pb-[140px] sm:px-8 sm:pb-[154px] lg:px-10">
+        <section className="mx-auto flex w-full max-w-6xl -translate-y-[1.5vh] flex-col items-center gap-9 text-center sm:gap-10">
+          <div className="flex w-full flex-col items-center gap-3">
+            <motion.div
+              className="flex items-center gap-3 text-xs font-medium tracking-[0.2em] text-foreground/80 uppercase"
+              initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.25,
+              }}
+            >
+              <span aria-hidden="true" className="h-px w-8 bg-brand-1/80" />
+              <span>RantAI / Production AI Systems</span>
+              <span aria-hidden="true" className="h-px w-8 bg-brand-1/80" />
+            </motion.div>
+
             <motion.h1
               layout="position"
-              className="w-full text-4xl leading-none tracking-tighter text-balance sm:text-5xl lg:text-6xl"
+              className="w-full max-w-6xl text-[clamp(2.75rem,6.35vw,6rem)] leading-[0.94] tracking-[-0.055em] text-balance"
               initial={
                 reducedMotion ? false : { opacity: 0, y: 18, scale: 0.98 }
               }
@@ -467,7 +507,7 @@ export function HomeLanding() {
 
             {contentMounted && (
               <motion.p
-                className="flex min-h-14 max-w-2xl items-center justify-center text-lg text-foreground/85"
+                className="flex min-h-12 max-w-2xl items-center justify-center text-base leading-relaxed text-foreground/90 sm:text-lg"
                 initial={reducedMotion ? false : { opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
