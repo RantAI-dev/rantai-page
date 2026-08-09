@@ -50,7 +50,7 @@ export function BlogTable({ data, pageCount, tags }: BlogTableProps) {
     initialState: {
       sorting: [{ id: "scheduledFor", desc: true }],
       columnPinning: { right: ["actions"] },
-      columnVisibility: { createdAt: false, thumbnail: false },
+      columnVisibility: { createdAt: false, updatedAt: false },
       pagination: { pageIndex: 0, pageSize: 10 },
     },
     getRowId: (row) => row.id,

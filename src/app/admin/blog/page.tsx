@@ -33,6 +33,7 @@ const sortableColumns = {
   title: blogPosts.title,
   tag: blogPosts.tag,
   createdAt: blogPosts.createdAt,
+  updatedAt: blogPosts.updatedAt,
   scheduledFor: sql`coalesce(
     ${blogPosts.publishedAt},
     ${blogPosts.scheduledFor},

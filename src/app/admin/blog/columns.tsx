@@ -47,15 +47,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { BlogStatusBadge } from "@/components/admin/blog-status-badge";
 
-const adminDateFormatter = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: false,
-});
-
 const adminDayFormatter = new Intl.DateTimeFormat("en-GB", {
   day: "2-digit",
   month: "short",
@@ -68,8 +59,14 @@ const adminTimeFormatter = new Intl.DateTimeFormat("en-GB", {
   hour12: false,
 });
 
-function formatAdminDate(value: Date | string): string {
-  return adminDateFormatter.format(new Date(value));
+function AdminDateTime({ value }: { value: Date | string }) {
+  const date = new Date(value);
+
+  return (
+    <span className="whitespace-nowrap text-xs text-muted-foreground">
+      {adminDayFormatter.format(date)}, {adminTimeFormatter.format(date)}
+    </span>
+  );
 }
 
 export type AdminBlogPost = BlogPost & {
@@ -245,10 +242,10 @@ export function getBlogColumns(tagOptions: Option[]): ColumnDef<AdminBlogPost>[]
           </div>
         );
       },
-      meta: { label: "Thumbnail", className: "max-lg:hidden" },
-      size: 72,
+      meta: { label: "Thumbnail", className: "w-[88px] max-lg:hidden" },
+      size: 88,
       enableSorting: false,
-      enableHiding: false,
+      enableHiding: true,
     },
     {
       id: "title",
@@ -262,8 +259,8 @@ export function getBlogColumns(tagOptions: Option[]): ColumnDef<AdminBlogPost>[]
           {getValue<string>()}
         </Link>
       ),
-      meta: { label: "Title", className: "max-md:!w-[160px]" },
-      size: 400,
+      meta: { label: "Title", className: "w-[280px] max-md:!w-[160px]" },
+      size: 280,
       enableSorting: true,
       enableHiding: false,
     },
@@ -276,7 +273,7 @@ export function getBlogColumns(tagOptions: Option[]): ColumnDef<AdminBlogPost>[]
         label: "Tag",
         variant: "multiSelect",
         options: tagOptions,
-        className: "max-lg:hidden",
+        className: "w-[100px] max-lg:hidden",
       },
       size: 120,
       enableSorting: true,
@@ -285,14 +282,19 @@ export function getBlogColumns(tagOptions: Option[]): ColumnDef<AdminBlogPost>[]
     {
       id: "createdAt",
       accessorKey: "createdAt",
-      header: ({ column }) => <DataTableColumnHeader column={column} label="Created" />,
-      cell: ({ getValue }) => (
-        <span className="whitespace-nowrap text-muted-foreground">
-          {formatAdminDate(getValue<Date>())}
-        </span>
-      ),
-      meta: { label: "Created", className: "max-xl:hidden" },
-      size: 170,
+      header: ({ column }) => <DataTableColumnHeader column={column} label="Created date" />,
+      cell: ({ getValue }) => <AdminDateTime value={getValue<Date>()} />,
+      meta: { label: "Created date", className: "w-[130px] max-xl:hidden" },
+      size: 130,
+      enableSorting: true,
+    },
+    {
+      id: "updatedAt",
+      accessorKey: "updatedAt",
+      header: ({ column }) => <DataTableColumnHeader column={column} label="Last modified" />,
+      cell: ({ getValue }) => <AdminDateTime value={getValue<Date>()} />,
+      meta: { label: "Last modified", className: "w-[130px] max-xl:hidden" },
+      size: 130,
       enableSorting: true,
     },
     {
@@ -300,15 +302,19 @@ export function getBlogColumns(tagOptions: Option[]): ColumnDef<AdminBlogPost>[]
       accessorFn: (post) => getBlogPostingDate(post),
       header: ({ column }) => <DataTableColumnHeader column={column} label="Posting date" />,
       cell: ({ getValue, row }) => (
-        <span className="whitespace-nowrap text-muted-foreground">
-          {getValue<Date | null>() ? formatAdminDate(getValue<Date>()) : "Not published"}
+        <span>
+          {getValue<Date | null>() ? (
+            <AdminDateTime value={getValue<Date>()} />
+          ) : (
+            <span className="text-muted-foreground">Not published</span>
+          )}
           {row.original.publicationStatus === "scheduled" ? (
-            <span className="mt-0.5 block text-xs">Scheduled</span>
+            <span className="mt-0.5 block text-xs text-muted-foreground">Scheduled</span>
           ) : null}
         </span>
       ),
-      meta: { label: "Posting date", className: "max-md:hidden" },
-      size: 170,
+      meta: { label: "Posting date", className: "w-[130px] max-md:hidden" },
+      size: 130,
       enableSorting: true,
     },
     {
@@ -326,7 +332,7 @@ export function getBlogColumns(tagOptions: Option[]): ColumnDef<AdminBlogPost>[]
         label: "Status",
         variant: "multiSelect",
         options: STATUS_OPTIONS,
-        className: "max-md:hidden",
+        className: "w-[100px] max-md:hidden",
       },
       size: 100,
       enableSorting: false,
