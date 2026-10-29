@@ -11,6 +11,7 @@ import { Footer } from "@/components/footer"
 import { MotionInView } from "@/components/motion-in-view"
 import { OutlineSection } from "@/components/outline-section"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { siteConfig } from "@/lib/config"
 import {
   SoftwareViewerPanel,
   AiViewerPanel,
@@ -178,6 +179,64 @@ export default function ServicesPage() {
             </Tabs>
           </OutlineSection>
         </MotionInView>
+
+        <section
+          id="forward-deployed-engineering"
+          aria-labelledby="fde-heading"
+          className="scroll-mt-20"
+        >
+          <OutlineSection className="grid gap-8 p-6 sm:p-8 lg:grid-cols-2 lg:gap-12 lg:py-16">
+            <div>
+              <p className="font-mono text-sm tracking-wider text-muted-foreground uppercase">
+                Build with our engineers
+              </p>
+              <h2
+                id="fde-heading"
+                className="mt-3 text-3xl font-normal tracking-tight lg:text-4xl"
+              >
+                Forward Deployed Engineering
+              </h2>
+              <p className="mt-4 text-base leading-relaxed font-light text-muted-foreground">
+                RantAI engineers work alongside your team to build and install AI
+                solutions in your environment. We start with your workflows and
+                requirements, then work with you on implementation.
+              </p>
+              <Link
+                href={`mailto:${siteConfig.links.email}?subject=Forward%20Deployed%20Engineering`}
+                className="group mt-6 inline-flex items-center gap-4 border bg-foreground px-4 py-4 text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+              >
+                <span className="font-mono text-sm font-medium tracking-wider uppercase">
+                  Discuss your project
+                </span>
+                <ArrowRightIcon
+                  aria-hidden="true"
+                  className="size-5 transition-transform group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none"
+                />
+              </Link>
+            </div>
+            <div className="flex flex-col justify-center gap-6">
+              <div>
+                <h3 className="text-lg font-medium">
+                  Your use case, built together
+                </h3>
+                <p className="mt-2 text-base leading-relaxed font-light text-muted-foreground">
+                  Work directly with our engineers to turn an AI use case into a
+                  solution for your team, from defining the problem to building
+                  and installing it.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-medium">Start with your environment</h3>
+                <p className="mt-2 text-base leading-relaxed font-light text-muted-foreground">
+                  Share your infrastructure, data access, and operational
+                  requirements so we can discuss the implementation scope. If
+                  you are evaluating on-premise AI or work in a regulated
+                  organization, bring those requirements into the conversation.
+                </p>
+              </div>
+            </div>
+          </OutlineSection>
+        </section>
 
         {/* ── 4. Our Partners ──────────────────────────────────────── */}
         <PartnersSection partners={partners} />

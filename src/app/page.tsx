@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { HomeLanding } from "@/app/home/_components/home-landing"
 import { BlogSection } from "@/components/blog-section"
 import { Footer } from "@/components/footer"
+import { ForwardDeployedEngineeringSummary } from "@/components/forward-deployed-engineering-summary"
 import { StatsSection } from "@/components/stats-section"
 import { StickyScrollSections } from "@/components/sticky-scroll-sections"
 import { TeamSection } from "@/components/team-section"
@@ -23,6 +24,7 @@ export default function Page() {
         <HomeLanding />
         <StatsSection />
         <StickyScrollSections />
+        <ForwardDeployedEngineeringSummary />
         <TeamSection />
         <BlogSection />
       </main>
