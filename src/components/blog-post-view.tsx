@@ -69,7 +69,7 @@ export function BlogPostView({
             )}
 
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-y border-border py-4">
-              <p className="font-label text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+              <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
                 {date}
                 <span aria-hidden="true" className="mx-2">·</span>
                 {mins} min read

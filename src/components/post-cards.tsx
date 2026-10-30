@@ -18,7 +18,7 @@ function TagLabel({ tag, className }: Readonly<{ tag: string; className?: string
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-label text-[10px] tracking-[0.16em] uppercase backdrop-blur-md",
+        "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium tracking-[0.08em] uppercase backdrop-blur-md",
         className
       )}
     >
@@ -65,7 +65,7 @@ export function FeaturedPostCard({
             {post.excerpt}
           </p>
         )}
-        <p className="mt-4 font-label text-[11px] tracking-[0.12em] text-white/50 uppercase">
+        <p className="mt-4 text-xs font-medium tracking-[0.08em] text-white/50 uppercase">
           {formatDate(post.date)}
         </p>
       </div>
@@ -105,7 +105,7 @@ export function PostCard({
           {post.excerpt}
         </p>
       )}
-      <p className="mt-auto px-1 pt-4 font-label text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
+      <p className="mt-auto px-1 pt-4 text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
         {formatDate(post.date)}
       </p>
     </Link>

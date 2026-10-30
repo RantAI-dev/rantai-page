@@ -107,7 +107,7 @@ export function BlogMain({ initialPosts, initialCursor, tagColors }: Props) {
         </div>
 
         {/* `+` denotes more pages available beyond what's loaded. */}
-        <p className="font-label text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
+        <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
           {(() => {
             const more = cursor ? "+" : ""
             const noun = posts.length === 1 ? "" : "s"

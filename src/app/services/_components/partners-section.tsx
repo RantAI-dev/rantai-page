@@ -39,7 +39,7 @@ export function PartnersSection({ partners }: { partners: PartnerItem[] }) {
                   className="h-24 w-auto object-contain brightness-0"
                 />
               </div>
-              <p className="mt-6 font-label text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
+              <p className="mt-6 text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
                 {partner.name}
               </p>
               <h3 className="mt-2 text-xl font-medium tracking-[-0.02em]">

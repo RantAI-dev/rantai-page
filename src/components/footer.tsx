@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { Eyebrow } from "@/components/eyebrow"
+import { SplitReveal } from "@/components/split-reveal"
 import { PillLink } from "@/components/pill-link"
 import { siteConfig } from "@/lib/config"
 
@@ -71,9 +72,10 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
           <div className="flex flex-col gap-10 border-b border-white/10 pb-16 lg:flex-row lg:items-end lg:justify-between lg:pb-20">
             <div className="max-w-2xl">
               <Eyebrow className="text-white/60">Contact</Eyebrow>
-              <h2 className="mt-5 text-[clamp(2.25rem,4.6vw,4rem)] leading-[1.02] font-medium tracking-[-0.04em] text-balance">
-                {cta.title}
-              </h2>
+              <SplitReveal
+                text={cta.title}
+                className="mt-5 text-[clamp(2.25rem,4.6vw,4rem)] leading-[1.02] font-medium tracking-[-0.04em] text-balance"
+              />
               <p className="mt-5 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
                 {cta.description}
               </p>
@@ -96,7 +98,7 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
           >
             {columns.map((column) => (
               <div key={column.title}>
-                <p className="font-label text-[11px] tracking-[0.18em] text-white/40 uppercase">
+                <p className="text-xs font-medium tracking-[0.08em] text-white/40 uppercase">
                   {column.title}
                 </p>
                 <ul className="mt-4 space-y-3">
@@ -120,13 +122,16 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
         </div>
 
         <div className="mx-auto max-w-[1440px] px-6 pb-8 sm:px-10 lg:px-14">
-          <p
-            aria-hidden="true"
-            className="text-[clamp(3rem,10.5vw,10.5rem)] leading-[0.9] font-medium tracking-[-0.055em] text-white select-none"
-          >
-            AI systems for real&#8209;world operations.
-          </p>
-          <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 font-label text-[11px] tracking-[0.12em] text-white/40 uppercase sm:flex-row sm:items-center sm:justify-between">
+          <div aria-hidden="true">
+            <SplitReveal
+              as="p"
+              by="char"
+              text={"AI systems for real\u2011world operations."}
+              stagger={0.025}
+              className="text-[clamp(3rem,10.5vw,10.5rem)] leading-[0.9] font-medium tracking-[-0.055em] text-white select-none"
+            />
+          </div>
+          <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs font-medium tracking-[0.08em] text-white/40 uppercase sm:flex-row sm:items-center sm:justify-between">
             <span suppressHydrationWarning>
               © {new Date().getFullYear()} RantAI. All rights reserved.
             </span>

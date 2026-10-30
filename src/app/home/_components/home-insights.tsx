@@ -1,4 +1,5 @@
 import { Eyebrow } from "@/components/eyebrow"
+import { SplitReveal } from "@/components/split-reveal"
 import { MotionInView } from "@/components/motion-in-view"
 import { PillLink } from "@/components/pill-link"
 import { FeaturedPostCard, PostCard } from "@/components/post-cards"
@@ -19,12 +20,11 @@ export async function HomeInsights() {
       <MotionInView className="flex flex-col gap-6 border-t border-border pt-16 sm:flex-row sm:items-end sm:justify-between lg:pt-24">
         <div>
           <Eyebrow className="text-muted-foreground">Insights</Eyebrow>
-          <h2
+          <SplitReveal
             id="insights-heading"
+            text="The latest from RantAI."
             className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em]"
-          >
-            The latest from RantAI.
-          </h2>
+          />
         </div>
         <PillLink href="/blog" variant="outline">
           View all insights

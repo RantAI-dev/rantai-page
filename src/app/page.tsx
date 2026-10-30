@@ -2,11 +2,13 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
+import { CapabilityMarquee } from "@/app/home/_components/capability-marquee"
 import { HomeHero } from "@/app/home/_components/home-hero"
 import { HomeInsights } from "@/app/home/_components/home-insights"
-import { HomeIntro } from "@/app/home/_components/home-intro"
+import { HomeProblem } from "@/app/home/_components/home-problem"
+import { HomeProcess } from "@/app/home/_components/home-process"
+import { HomeSolution } from "@/app/home/_components/home-solution"
 import { ProductShowcase } from "@/components/product-showcase"
-import { ServicesOverview } from "@/components/services-overview"
 import { SiteShell } from "@/components/site-shell"
 
 export const metadata: Metadata = {
@@ -24,7 +26,7 @@ function Announcement() {
       href="/services#forward-deployed-engineering"
       className="group flex items-center justify-center gap-2 bg-background px-4 pt-2.5 pb-1 text-center text-[13px] text-foreground/70 transition-colors hover:text-foreground"
     >
-      <span className="rounded-full bg-foreground px-2 py-0.5 font-label text-[10px] tracking-[0.14em] text-background uppercase">
+      <span className="rounded-full bg-foreground px-2 py-0.5 text-[11px] font-medium tracking-[0.08em] text-background uppercase">
         New
       </span>
       <span>
@@ -45,9 +47,11 @@ export default function Page() {
   return (
     <SiteShell announcement={<Announcement />}>
       <HomeHero />
-      <HomeIntro />
+      <HomeProblem />
+      <HomeSolution />
       <ProductShowcase />
-      <ServicesOverview />
+      <CapabilityMarquee />
+      <HomeProcess />
       <HomeInsights />
     </SiteShell>
   )
