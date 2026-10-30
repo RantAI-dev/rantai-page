@@ -72,7 +72,7 @@ export function OurTeamGrid({ members }: { readonly members: TeamMember[] }) {
                     <p className="truncate text-lg font-medium tracking-[-0.015em] text-foreground">
                       {member.name}
                     </p>
-                    <p className="mt-1 truncate font-label text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
+                    <p className="mt-1 truncate text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
                       {member.role}
                     </p>
                   </div>

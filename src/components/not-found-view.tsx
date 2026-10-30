@@ -12,7 +12,7 @@ export function NotFoundView({
   return (
     <SiteShell>
       <section className="mx-auto flex min-h-[60dvh] max-w-3xl flex-col items-center justify-center px-5 py-24 text-center">
-        <p className="font-label text-sm tracking-[0.2em] text-muted-foreground">
+        <p className="text-sm font-medium tracking-[0.08em] text-muted-foreground">
           404
         </p>
         <h1 className="mt-5 text-[clamp(2.5rem,6vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-balance">

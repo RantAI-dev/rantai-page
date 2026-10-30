@@ -75,7 +75,7 @@ export default function ServicesPage() {
           </MotionInView>
           <MotionInView className="grid content-center gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10">
             <div className="bg-black p-7 sm:p-8">
-              <p className="font-label text-[11px] tracking-[0.16em] text-white/45 uppercase">
+              <p className="text-xs font-medium tracking-[0.08em] text-white/45 uppercase">
                 01
               </p>
               <h3 className="mt-4 text-xl font-medium tracking-[-0.02em]">
@@ -88,7 +88,7 @@ export default function ServicesPage() {
               </p>
             </div>
             <div className="bg-black p-7 sm:p-8">
-              <p className="font-label text-[11px] tracking-[0.16em] text-white/45 uppercase">
+              <p className="text-xs font-medium tracking-[0.08em] text-white/45 uppercase">
                 02
               </p>
               <h3 className="mt-4 text-xl font-medium tracking-[-0.02em]">

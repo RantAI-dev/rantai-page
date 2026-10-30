@@ -17,7 +17,7 @@ export function DarkPanel({
     <section className={cn("px-3 sm:px-4", className)} {...rest}>
       <div
         className={cn(
-          "dark overflow-hidden rounded-[28px] bg-black text-white",
+          "dark overflow-clip rounded-[28px] bg-black text-white",
           innerClassName
         )}
       >

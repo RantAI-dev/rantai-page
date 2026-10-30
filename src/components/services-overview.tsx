@@ -3,6 +3,7 @@ import { ArrowRight, Check } from "lucide-react"
 
 import { aiEngineering, softwareEngineering } from "@/app/services/data"
 import { Eyebrow } from "@/components/eyebrow"
+import { SplitReveal } from "@/components/split-reveal"
 import { MotionInView } from "@/components/motion-in-view"
 
 const practices = [
@@ -19,12 +20,11 @@ export function ServicesOverview() {
     >
       <MotionInView className="max-w-3xl">
         <Eyebrow className="text-neutral-500">Engineering services</Eyebrow>
-        <h2
+        <SplitReveal
           id="services-heading"
+          text="Products when they fit. Engineers when you need more."
           className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-balance text-neutral-950"
-        >
-          Products when they fit. Engineers when you need more.
-        </h2>
+        />
       </MotionInView>
 
       <MotionInView className="mt-14 grid gap-3 lg:grid-cols-[1.25fr_1fr_1fr]">
@@ -37,7 +37,7 @@ export function ServicesOverview() {
             className="absolute -top-24 -right-24 size-72 rounded-full bg-brand-1/30 blur-[90px] transition-opacity duration-500 group-hover:opacity-70"
           />
           <div className="relative flex items-center justify-between">
-            <span className="rounded-full bg-brand-1 px-2.5 py-1 font-label text-[10px] font-medium tracking-[0.16em] text-neutral-950 uppercase">
+            <span className="rounded-full bg-brand-1 px-2.5 py-1 text-[11px] font-medium tracking-[0.08em] text-neutral-950 uppercase">
               New
             </span>
             <ArrowRight
@@ -68,7 +68,7 @@ export function ServicesOverview() {
             className="group flex flex-col justify-between rounded-2xl bg-neutral-100 p-7 transition-colors hover:bg-neutral-200/70 sm:p-8"
           >
             <div className="flex items-center justify-between">
-              <span className="font-label text-[11px] tracking-[0.16em] text-neutral-500 uppercase">
+              <span className="text-xs font-medium tracking-[0.08em] text-neutral-500 uppercase">
                 {practice.label}
               </span>
               <ArrowRight
