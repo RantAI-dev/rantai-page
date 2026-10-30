@@ -4,16 +4,10 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { MenuIcon } from "lucide-react"
-import { motion, useReducedMotion } from "motion/react"
 import { useEffect, useState } from "react"
 
+import { PillLink } from "@/components/pill-link"
 import { Button } from "@/components/ui/button"
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from "@/components/ui/navigation-menu"
 import {
   Sheet,
   SheetClose,
@@ -30,85 +24,80 @@ const navItems = [
   { href: "/products", label: "Products" },
   { href: "/services", label: "Services" },
   { href: "/academy", label: "Academy" },
-  { href: "/blog", label: "Blog" },
-  { href: "/our-team", label: "Teams" },
+  { href: "/blog", label: "Insights" },
+  { href: "/our-team", label: "Company" },
 ] as const
 
 export function Navbar() {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
-  const reducedMotion = Boolean(useReducedMotion())
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10)
+    const handleScroll = () => setScrolled(window.scrollY > 8)
     handleScroll()
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   return (
-    <motion.header
-      initial={reducedMotion ? false : { opacity: 0, y: -16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+    <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300",
+        "sticky inset-x-0 top-0 z-50 border-b transition-[background-color,border-color] duration-300",
         scrolled
-          ? "border-border/70 bg-background/80 backdrop-blur-xl"
-          : "border-transparent bg-transparent"
+          ? "border-border bg-background/85 backdrop-blur-xl"
+          : "border-transparent bg-background"
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 sm:px-8 lg:px-10">
-        <div className="flex min-w-0 items-center gap-7">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-6 px-5 sm:px-8">
+        <div className="flex min-w-0 items-center gap-10">
           <Link
             href="/"
-            className="shrink-0 transition-opacity hover:opacity-75"
             aria-label="RantAI home"
+            className="flex shrink-0 items-center gap-2.5 text-foreground transition-opacity hover:opacity-75"
           >
             <Image
               src="/rant-ai.png"
-              alt="RantAI"
+              alt=""
               width={36}
               height={36}
-              className="size-8"
+              className="size-7"
               priority
             />
+            <span className="text-[19px] font-semibold tracking-[-0.03em]">
+              RantAI
+            </span>
           </Link>
 
-          <NavigationMenu viewport={false} className="hidden md:flex">
-            <NavigationMenuList className="gap-2">
+          <nav aria-label="Main navigation" className="hidden md:block">
+            <ul className="flex items-center gap-1">
               {navItems.map((item) => {
                 const active =
                   pathname === item.href || pathname.startsWith(`${item.href}/`)
 
                 return (
-                  <NavigationMenuItem key={item.href}>
-                    <NavigationMenuLink
-                      asChild
-                      active={active}
-                      className="text-foreground hover:bg-background/30 data-[active=true]:bg-background/40"
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      aria-current={active ? "page" : undefined}
+                      className="rounded-full px-3.5 py-2 text-sm text-foreground/70 transition-colors hover:bg-muted hover:text-foreground aria-[current=page]:bg-muted aria-[current=page]:text-foreground"
                     >
-                      <Link
-                        href={item.href}
-                        aria-current={active ? "page" : undefined}
-                      >
-                        {item.label}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
+                      {item.label}
+                    </Link>
+                  </li>
                 )
               })}
-            </NavigationMenuList>
-          </NavigationMenu>
+            </ul>
+          </nav>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            asChild
-            className="bg-foreground text-background hover:bg-foreground/90"
+          <PillLink
+            href={`mailto:${siteConfig.links.email}`}
+            icon="external"
+            className="h-9 px-4"
           >
-            <Link href={`mailto:${siteConfig.links.email}`}>Contact Us</Link>
-          </Button>
+            Contact us
+          </PillLink>
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -147,6 +136,6 @@ export function Navbar() {
           </Sheet>
         </div>
       </div>
-    </motion.header>
+    </header>
   )
 }

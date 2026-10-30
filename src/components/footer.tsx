@@ -1,75 +1,138 @@
-"use client"
+import Link from "next/link"
 
-import dynamic from "next/dynamic"
-import { ArrowUp } from "lucide-react"
+import { Eyebrow } from "@/components/eyebrow"
+import { PillLink } from "@/components/pill-link"
+import { siteConfig } from "@/lib/config"
 
-import { MotionInView } from "./motion-in-view"
-import { ContactCard } from "@/components/contact-card"
+const columns = [
+  {
+    title: "Products",
+    links: [
+      { label: "RantAI Agents", href: "https://agents.rantai.dev/", external: true },
+      { label: "RantAIClaw", href: "https://claw.rantai.dev/", external: true },
+      { label: "RantAI LLMOps", href: "/products" },
+      { label: "RantAI Lake", href: "/products" },
+    ],
+  },
+  {
+    title: "Services",
+    links: [
+      {
+        label: "Forward Deployed Engineering",
+        href: "/services#forward-deployed-engineering",
+      },
+      { label: "Software Engineering", href: "/services" },
+      { label: "AI Engineering", href: "/services" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "Team", href: "/our-team" },
+      { label: "Academy", href: "/academy" },
+      { label: "Insights", href: "/blog" },
+    ],
+  },
+  {
+    title: "Connect",
+    links: [
+      { label: siteConfig.links.email, href: `mailto:${siteConfig.links.email}` },
+      { label: "LinkedIn", href: siteConfig.links.linkedin, external: true },
+      { label: "GitHub", href: siteConfig.links.github, external: true },
+    ],
+  },
+] as const
 
-const ColorBends = dynamic(() => import("@/components/ColorBends"), {
-  ssr: false,
-  loading: () => <div className="absolute inset-0 bg-background" />,
-})
+export type FooterCta = {
+  title: string
+  description: string
+  label: string
+  subject?: string
+  showServicesLink?: boolean
+}
 
-export function Footer() {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+const defaultCta: FooterCta = {
+  title: "Let's put AI to work in your operations.",
+  description:
+    "Tell us about the workflow you want to change. Our team will reply with how we would approach it.",
+  label: "Talk to our team",
+  showServicesLink: true,
+}
+
+export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
+  const mailto = `mailto:${siteConfig.links.email}${
+    cta.subject ? `?subject=${encodeURIComponent(cta.subject)}` : ""
+  }`
 
   return (
-    <footer
-      id="contact"
-      className="relative scroll-mt-16 overflow-hidden bg-background px-4 py-16 sm:px-8 lg:px-12 lg:py-24"
-    >
-      {/* ColorBends Background */}
-      <div className="absolute inset-0 z-0 h-full w-full">
-        <ColorBends
-          colors={["#055794", "#5EB6FA"]}
-          rotation={40}
-          speed={0.4}
-          scale={1}
-          frequency={1}
-          warpStrength={1}
-          noise={1}
-          transparent
-          autoRotate={0}
-        />
-        {/* Gradient fade at the top for smooth transition from previous section */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[30vh] bg-linear-to-b from-background to-transparent" />
-      </div>
-
-      <div className="relative mx-auto max-w-7xl">
-        {/* Contact Us Card */}
-        <MotionInView className="mb-20">
-          <ContactCard />
-        </MotionInView>
-
-        {/* Footer Logo & Copyright */}
-        <MotionInView>
-          <div className="mt-12 flex flex-col items-end justify-between gap-8 md:flex-row md:gap-0">
-            <div>
-              <h1 className="mb-2 text-6xl leading-none tracking-tighter text-white md:text-8xl lg:text-[140px]">
-                RantAI
-              </h1>
-              <div
-                className="font-mono text-xs text-muted-foreground"
-                suppressHydrationWarning
-              >
-                {"© " +
-                  new Date().getFullYear() +
-                  " RantAI. Enterprise AI Products & Engineering."}
-              </div>
+    <footer id="contact" className="scroll-mt-20 px-3 pb-3 sm:px-4 sm:pb-4">
+      <div className="dark overflow-hidden rounded-[28px] bg-black text-white">
+        <div className="mx-auto max-w-[1440px] px-6 pt-20 sm:px-10 lg:px-14 lg:pt-28">
+          <div className="flex flex-col gap-10 border-b border-white/10 pb-16 lg:flex-row lg:items-end lg:justify-between lg:pb-20">
+            <div className="max-w-2xl">
+              <Eyebrow className="text-white/60">Contact</Eyebrow>
+              <h2 className="mt-5 text-[clamp(2.25rem,4.6vw,4rem)] leading-[1.02] font-medium tracking-[-0.04em] text-balance">
+                {cta.title}
+              </h2>
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
+                {cta.description}
+              </p>
             </div>
-
-            <button
-              onClick={scrollToTop}
-              aria-label="Scroll to top"
-              className="group flex h-16 w-16 items-center justify-center border border-border transition-all duration-300 hover:border-white hover:bg-white/5 focus:outline-none active:scale-95 md:h-20 md:w-20"
-            >
-              <ArrowUp className="h-6 w-6 text-white/40 transition-colors duration-300 group-hover:text-white" />
-            </button>
+            <div className="flex flex-wrap gap-3">
+              <PillLink href={mailto} size="lg" icon="external">
+                {cta.label}
+              </PillLink>
+              {cta.showServicesLink && (
+                <PillLink href="/services" size="lg" variant="outline">
+                  Explore services
+                </PillLink>
+              )}
+            </div>
           </div>
-        </MotionInView>
+
+          <nav
+            aria-label="Footer"
+            className="grid grid-cols-2 gap-x-6 gap-y-10 py-14 md:grid-cols-4"
+          >
+            {columns.map((column) => (
+              <div key={column.title}>
+                <p className="font-label text-[11px] tracking-[0.18em] text-white/40 uppercase">
+                  {column.title}
+                </p>
+                <ul className="mt-4 space-y-3">
+                  {column.links.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        {...("external" in link && link.external
+                          ? { target: "_blank", rel: "noopener noreferrer" }
+                          : {})}
+                        className="text-sm break-words text-white/80 transition-colors hover:text-white"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        </div>
+
+        <div className="mx-auto max-w-[1440px] px-6 pb-8 sm:px-10 lg:px-14">
+          <p
+            aria-hidden="true"
+            className="text-[clamp(3rem,10.5vw,10.5rem)] leading-[0.9] font-medium tracking-[-0.055em] text-white select-none"
+          >
+            AI systems for real&#8209;world operations.
+          </p>
+          <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 font-label text-[11px] tracking-[0.12em] text-white/40 uppercase sm:flex-row sm:items-center sm:justify-between">
+            <span suppressHydrationWarning>
+              © {new Date().getFullYear()} RantAI. All rights reserved.
+            </span>
+            <span>Enterprise AI products &amp; engineering</span>
+          </div>
+        </div>
       </div>
     </footer>
   )

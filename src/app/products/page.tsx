@@ -1,45 +1,48 @@
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
+import type { Metadata } from "next"
 
-import { ProductIntro } from "./_components/product-intro"
-import { ProductsHero } from "./_components/products-hero"
-import { ProductsRantAIAgents } from "./_components/products-rantai-agents"
-import { ProductsRantAIClaw } from "./_components/products-rantai-claw"
-import { ProductsRantAILake } from "./_components/products-rantai-lake"
-import { ProductsRantAILLMOps } from "./_components/products-rantai-llmops"
-import { ProductsCta } from "./_components/products-cta"
-import { MotionInView } from "@/components/motion-in-view"
-import { OutlineSection } from "@/components/outline-section"
+import { siteConfig } from "@/lib/config"
+import { PageHero } from "@/components/page-hero"
+import { PillLink } from "@/components/pill-link"
+import { ProductShowcase } from "@/components/product-showcase"
+import { ServicesOverview } from "@/components/services-overview"
+import { SiteShell } from "@/components/site-shell"
+
+export const metadata: Metadata = {
+  title: "Products",
+  description:
+    "RantAI Agents and RantAIClaw: AI agents and an agent runtime built for enterprise operations.",
+}
 
 export default function ProductsPage() {
   return (
-    <div>
-      <Navbar />
-
-      <main className="pt-16">
-        {/* ── Hero ─────────────────────────────────────────────────── */}
-        <ProductsHero />
-
-        {/* ── Intro ────────────────────────────────────────────────── */}
-        <ProductIntro />
-
-        {/* ── Live products ────────────────────────────────────────── */}
-        <ProductsRantAIAgents />
-        <ProductsRantAIClaw />
-
-        {/* ── Upcoming ─────────────────────────────────────────────── */}
-        <MotionInView>
-          <OutlineSection className="flex flex-col sm:flex-row">
-            <ProductsRantAILLMOps />
-            <ProductsRantAILake className="border-t border-border sm:border-t-0 sm:border-l" />
-          </OutlineSection>
-        </MotionInView>
-
-        {/* ── CTA ──────────────────────────────────────────────────── */}
-        <ProductsCta />
-      </main>
-
-      <Footer />
-    </div>
+    <SiteShell
+      cta={{
+        title: "Start building with RantAI today.",
+        description:
+          "Deploy your first AI product in under two weeks — no long procurement cycles required.",
+        label: "Request a demo",
+        subject: "RantAI product demo",
+        showServicesLink: true,
+      }}
+    >
+      <PageHero
+        eyebrow="Products"
+        title="AI products built for real operations."
+        description="Built for the enterprise. Deployed in days, not months."
+      >
+        <PillLink
+          href={`mailto:${siteConfig.links.email}?subject=${encodeURIComponent("RantAI product demo")}`}
+          size="lg"
+          icon="external"
+        >
+          Request a demo
+        </PillLink>
+        <PillLink href="#rantai-agents" size="lg" variant="outline">
+          See the products
+        </PillLink>
+      </PageHero>
+      <ProductShowcase showIntro={false} showAllProductsLink={false} />
+      <ServicesOverview />
+    </SiteShell>
   )
 }
