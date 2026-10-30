@@ -21,15 +21,17 @@ export function OurTeamGrid({ members }: { readonly members: TeamMember[] }) {
   return (
     <div>
       {/* Filter tabs */}
-      <div className="mb-10 flex flex-wrap justify-center gap-2">
+      <div className="mb-10 flex flex-wrap gap-2">
         {categories.map((cat) => (
           <button
             key={cat}
+            type="button"
+            aria-pressed={activeTab === cat}
             onClick={() => setActiveTab(cat)}
-            className={`border px-5 py-2 text-sm transition-colors duration-200 ${
+            className={`h-10 rounded-full border px-5 text-sm transition-colors duration-200 ${
               activeTab === cat
                 ? "border-foreground bg-foreground text-background"
-                : "border-border text-muted-foreground hover:border-foreground/50 hover:text-foreground"
+                : "border-border text-muted-foreground hover:border-foreground/40 hover:text-foreground"
             }`}
           >
             {cat}
@@ -43,14 +45,13 @@ export function OurTeamGrid({ members }: { readonly members: TeamMember[] }) {
           No members in this category yet.
         </p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((member) => (
             <div
               key={member.id}
-              className="group relative overflow-hidden border border-border transition-all duration-300 hover:border-foreground/50"
+              className="group flex flex-col rounded-2xl bg-muted p-3"
             >
-              {/* Photo */}
-              <div className="group relative aspect-3/4 w-full overflow-hidden bg-muted">
+              <div className="relative aspect-3/4 w-full overflow-hidden rounded-xl bg-neutral-200">
                 {member.imageUrl ? (
                   <Image
                     src={member.imageUrl}
@@ -66,14 +67,12 @@ export function OurTeamGrid({ members }: { readonly members: TeamMember[] }) {
                 )}
               </div>
 
-              {/* Info */}
-              <div className="absolute bottom-0 w-full p-2">
-                <div className="flex w-full items-end justify-between gap-2 border bg-card p-4 group-hover:shadow-2xl">
+              <div className="flex w-full items-end justify-between gap-2 px-2 pt-4 pb-2">
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-foreground">
+                    <p className="truncate text-lg font-medium tracking-[-0.015em] text-foreground">
                       {member.name}
                     </p>
-                    <p className="truncate font-mono text-xs text-muted-foreground">
+                    <p className="mt-1 truncate font-label text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
                       {member.role}
                     </p>
                   </div>
@@ -83,6 +82,7 @@ export function OurTeamGrid({ members }: { readonly members: TeamMember[] }) {
                         href={member.github}
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label={`${member.name} on GitHub`}
                         className="text-muted-foreground transition-colors hover:text-foreground"
                       >
                         <GithubIcon size={16} />
@@ -93,13 +93,13 @@ export function OurTeamGrid({ members }: { readonly members: TeamMember[] }) {
                         href={member.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label={`${member.name} on LinkedIn`}
                         className="text-muted-foreground transition-colors hover:text-foreground"
                       >
                         <LinkedInIcon size={16} />
                       </Link>
                     )}
                   </div>
-                </div>
               </div>
             </div>
           ))}

@@ -1,15 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
-
-import { ArrowRightIcon, CircleCheckBig } from "lucide-react"
+import { CircleCheckBig } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
+import { DarkPanel } from "@/components/dark-panel"
+import { Eyebrow } from "@/components/eyebrow"
 import { MotionInView } from "@/components/motion-in-view"
-import { OutlineSection } from "@/components/outline-section"
+import { PageHero } from "@/components/page-hero"
+import { PillLink } from "@/components/pill-link"
+import { SiteShell } from "@/components/site-shell"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { siteConfig } from "@/lib/config"
 import {
@@ -20,261 +20,171 @@ import { PartnersSection } from "./_components/partners-section"
 import { WhyRantAISection } from "./_components/why-rantai-section"
 import { softwareEngineering, aiEngineering, partners, whyRantAI } from "./data"
 
-/* ────────────────────────────────────────────────────────────────────────────
-   SVG grid pattern for CTA background
-   ──────────────────────────────────────────────────────────────────────────── */
-function GridPattern() {
-  const size = 32
-  return (
-    <svg
-      className="pointer-events-none absolute inset-0 h-full w-full opacity-10"
-      width="100%"
-      height="100%"
-    >
-      <defs>
-        <pattern
-          id="grid"
-          width={size}
-          height={size}
-          patternUnits="userSpaceOnUse"
-        >
-          <path
-            d={`M ${size} 0 L 0 0 0 ${size}`}
-            fill="none"
-            stroke="white"
-            strokeWidth="0.5"
-          />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#grid)" />
-    </svg>
-  )
-}
+const fdeMailto = `mailto:${siteConfig.links.email}?subject=${encodeURIComponent("Forward Deployed Engineering")}`
 
-/* ════════════════════════════════════════════════════════════════════════════
-   PAGE
-   ════════════════════════════════════════════════════════════════════════════ */
 export default function ServicesPage() {
   const [activeTab, setActiveTab] = useState<"software" | "ai">("software")
   const currentTab =
     activeTab === "software" ? softwareEngineering : aiEngineering
 
   return (
-    <div>
-      <Navbar />
+    <SiteShell
+      cta={{
+        title: "Stop paying for slow, fragile software.",
+        description:
+          "Get a free technical audit. We'll identify the biggest risk in your stack — no commitment required.",
+        label: "Get my free audit",
+        subject: "Free technical audit",
+      }}
+    >
+      <PageHero
+        eyebrow="Services"
+        title="Ship better software, faster."
+        description="Software and AI engineering focused on outcomes you can measure, from architecture to production."
+      >
+        <PillLink href="#forward-deployed-engineering" size="lg">
+          Forward Deployed Engineering
+        </PillLink>
+        <PillLink href="#what-we-do" size="lg" variant="outline">
+          What we do
+        </PillLink>
+      </PageHero>
 
-      <main className="pt-16">
-        {/* ── 1. Hero ──────────────────────────────────────────────── */}
-        <MotionInView>
-          <section className="mx-auto flex w-full max-w-7xl flex-col items-start gap-8 px-6 py-16 sm:px-8 sm:py-20 md:flex-row md:items-end md:justify-between md:gap-12 lg:px-0 lg:py-24">
-            <motion.h1
-              className="text-6xl font-medium tracking-tight sm:text-8xl lg:text-9xl"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+      <DarkPanel
+        id="forward-deployed-engineering"
+        aria-labelledby="fde-heading"
+        className="scroll-mt-20"
+      >
+        <div className="mx-auto grid max-w-[1440px] gap-14 px-5 py-20 sm:px-10 lg:grid-cols-2 lg:gap-20 lg:px-14 lg:py-28">
+          <MotionInView>
+            <Eyebrow className="text-white/50">Build with our engineers</Eyebrow>
+            <h2
+              id="fde-heading"
+              className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-balance"
             >
-              Services.
-            </motion.h1>
-            <motion.p
-              className="max-w-sm text-left text-base leading-relaxed text-muted-foreground sm:text-lg md:text-right"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-            >
-              Ship better software.
-              <br />
-              Faster than your team can plan it.
-            </motion.p>
-          </section>
-        </MotionInView>
-
-        {/* ── 2. Title Bar ─────────────────────────────────────────── */}
-        <MotionInView>
-          <OutlineSection className="flex items-center justify-center px-6 py-16 sm:py-20 lg:py-24">
-            <h2 className="text-2xl tracking-tight italic sm:text-3xl lg:text-4xl">
-              Focused on outcomes you can measure.
+              Forward Deployed Engineering
             </h2>
-          </OutlineSection>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/65">
+              RantAI engineers work alongside your team to build and install AI
+              solutions in your environment. We start with your workflows and
+              requirements, then work with you on implementation.
+            </p>
+            <PillLink href={fdeMailto} size="lg" icon="external" className="mt-9">
+              Discuss your project
+            </PillLink>
+          </MotionInView>
+          <MotionInView className="grid content-center gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10">
+            <div className="bg-black p-7 sm:p-8">
+              <p className="font-label text-[11px] tracking-[0.16em] text-white/45 uppercase">
+                01
+              </p>
+              <h3 className="mt-4 text-xl font-medium tracking-[-0.02em]">
+                Your use case, built together
+              </h3>
+              <p className="mt-3 text-[15px] leading-relaxed text-white/60">
+                Work directly with our engineers to turn an AI use case into a
+                solution for your team, from defining the problem to building
+                and installing it.
+              </p>
+            </div>
+            <div className="bg-black p-7 sm:p-8">
+              <p className="font-label text-[11px] tracking-[0.16em] text-white/45 uppercase">
+                02
+              </p>
+              <h3 className="mt-4 text-xl font-medium tracking-[-0.02em]">
+                Start with your environment
+              </h3>
+              <p className="mt-3 text-[15px] leading-relaxed text-white/60">
+                Share your infrastructure, data access, and operational
+                requirements so we can discuss the implementation scope. If you
+                are evaluating on-premise AI or work in a regulated
+                organization, bring those requirements into the conversation.
+              </p>
+            </div>
+          </MotionInView>
+        </div>
+      </DarkPanel>
+
+      <section
+        id="what-we-do"
+        aria-labelledby="what-we-do-heading"
+        className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-24 sm:px-10 lg:px-14 lg:py-32"
+      >
+        <MotionInView className="max-w-3xl">
+          <Eyebrow className="text-muted-foreground">What we do</Eyebrow>
+          <h2
+            id="what-we-do-heading"
+            className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-balance"
+          >
+            Two practices, one engineering team.
+          </h2>
         </MotionInView>
 
-        {/* ── 3. What We Do ────────────────────────────────────────── */}
-        <MotionInView>
-          <OutlineSection className="flex flex-col lg:flex-row">
-            {/* Left panel — dynamic content based on active tab */}
-            <div className="flex min-w-0 flex-1 flex-col justify-center p-6 sm:p-8">
-              <AnimatePresence mode="wait">
-                <motion.h3
-                  key={currentTab.title}
-                  className="text-2xl font-normal lg:text-4xl"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {currentTab.title}
-                </motion.h3>
-              </AnimatePresence>
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={currentTab.description}
-                  className="mt-2 text-base leading-snug font-light text-muted-foreground"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3, delay: 0.05 }}
-                >
-                  {currentTab.description}
-                </motion.p>
-              </AnimatePresence>
-
-              <AnimatePresence mode="wait">
-                <motion.ul
-                  key={activeTab + "-features"}
-                  className="mt-6 flex flex-col gap-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3, delay: 0.1 }}
-                >
-                  {currentTab.features.map((feat, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <CircleCheckBig className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
-                      <span className="text-sm leading-relaxed font-light text-muted-foreground sm:text-base">
-                        {feat}
-                      </span>
-                    </li>
-                  ))}
-                </motion.ul>
-              </AnimatePresence>
-            </div>
-
-            {/* Right panel — tabs + content viewer */}
-            <Tabs
-              className="w-full min-w-0 gap-4 lg:w-1/2 lg:max-w-1/2 lg:min-w-1/2"
-              value={activeTab}
-              onValueChange={(v) => setActiveTab(v as "software" | "ai")}
-            >
-              <div className="px-4 pt-8 sm:pt-12 lg:pt-16">
-                <TabsList className="grid h-auto w-full grid-cols-2">
-                  <TabsTrigger
-                    value="software"
-                    className="min-w-0 px-2 text-xs whitespace-normal sm:text-sm"
-                  >
-                    Software Engineering
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="ai"
-                    className="min-w-0 px-2 text-xs whitespace-normal sm:text-sm"
-                  >
-                    AI Engineering
-                  </TabsTrigger>
-                </TabsList>
-              </div>
-              <TabsContent value="software">
-                <SoftwareViewerPanel data={softwareEngineering} />
-              </TabsContent>
-              <TabsContent value="ai">
-                <AiViewerPanel data={aiEngineering} />
-              </TabsContent>
-            </Tabs>
-          </OutlineSection>
-        </MotionInView>
-
-        <section
-          id="forward-deployed-engineering"
-          aria-labelledby="fde-heading"
-          className="scroll-mt-20"
-        >
-          <OutlineSection className="grid gap-8 p-6 sm:p-8 lg:grid-cols-2 lg:gap-12 lg:py-16">
-            <div>
-              <p className="font-mono text-sm tracking-wider text-muted-foreground uppercase">
-                Build with our engineers
-              </p>
-              <h2
-                id="fde-heading"
-                className="mt-3 text-3xl font-normal tracking-tight lg:text-4xl"
+        <MotionInView className="mt-14">
+          <Tabs
+            value={activeTab}
+            onValueChange={(v) => setActiveTab(v as "software" | "ai")}
+            className="gap-0"
+          >
+            <TabsList className="h-auto w-full rounded-full bg-muted p-1 sm:w-fit">
+              <TabsTrigger
+                value="software"
+                className="h-10 flex-1 rounded-full px-5 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm sm:flex-none"
               >
-                Forward Deployed Engineering
-              </h2>
-              <p className="mt-4 text-base leading-relaxed font-light text-muted-foreground">
-                RantAI engineers work alongside your team to build and install AI
-                solutions in your environment. We start with your workflows and
-                requirements, then work with you on implementation.
-              </p>
-              <Link
-                href={`mailto:${siteConfig.links.email}?subject=Forward%20Deployed%20Engineering`}
-                className="group mt-6 inline-flex items-center gap-4 border bg-foreground px-4 py-4 text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+                Software Engineering
+              </TabsTrigger>
+              <TabsTrigger
+                value="ai"
+                className="h-10 flex-1 rounded-full px-5 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm sm:flex-none"
               >
-                <span className="font-mono text-sm font-medium tracking-wider uppercase">
-                  Discuss your project
-                </span>
-                <ArrowRightIcon
-                  aria-hidden="true"
-                  className="size-5 transition-transform group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none"
-                />
-              </Link>
-            </div>
-            <div className="flex flex-col justify-center gap-6">
-              <div>
-                <h3 className="text-lg font-medium">
-                  Your use case, built together
-                </h3>
-                <p className="mt-2 text-base leading-relaxed font-light text-muted-foreground">
-                  Work directly with our engineers to turn an AI use case into a
-                  solution for your team, from defining the problem to building
-                  and installing it.
-                </p>
+                AI Engineering
+              </TabsTrigger>
+            </TabsList>
+
+            <div className="mt-8 grid gap-6 lg:grid-cols-2 lg:gap-12">
+              <div className="flex flex-col justify-center">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <h3 className="text-3xl font-medium tracking-[-0.03em] sm:text-4xl">
+                      {currentTab.title}
+                    </h3>
+                    <p className="mt-4 max-w-lg text-lg leading-relaxed text-muted-foreground">
+                      {currentTab.description}
+                    </p>
+                    <ul className="mt-8 space-y-3 border-t border-border pt-6">
+                      {currentTab.features.map((feat) => (
+                        <li key={feat} className="flex items-start gap-3">
+                          <CircleCheckBig className="mt-0.5 size-5 shrink-0 text-brand-1" />
+                          <span className="text-base leading-relaxed text-foreground/80">
+                            {feat}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                </AnimatePresence>
               </div>
               <div>
-                <h3 className="text-lg font-medium">Start with your environment</h3>
-                <p className="mt-2 text-base leading-relaxed font-light text-muted-foreground">
-                  Share your infrastructure, data access, and operational
-                  requirements so we can discuss the implementation scope. If
-                  you are evaluating on-premise AI or work in a regulated
-                  organization, bring those requirements into the conversation.
-                </p>
+                <TabsContent value="software">
+                  <SoftwareViewerPanel data={softwareEngineering} />
+                </TabsContent>
+                <TabsContent value="ai">
+                  <AiViewerPanel data={aiEngineering} />
+                </TabsContent>
               </div>
             </div>
-          </OutlineSection>
-        </section>
-
-        {/* ── 4. Our Partners ──────────────────────────────────────── */}
-        <PartnersSection partners={partners} />
-
-        {/* ── 5. Why RantAI ────────────────────────────────────────── */}
-        <WhyRantAISection items={whyRantAI} />
-
-        {/* ── 6. CTA ───────────────────────────────────────────────── */}
-        <MotionInView>
-          <OutlineSection>
-            <div className="relative flex items-center justify-center overflow-hidden px-6 py-24 lg:min-h-[500px] lg:py-0">
-              <GridPattern />
-              <div className="relative z-10 flex max-w-[892px] flex-col items-center gap-6 text-center">
-                <div className="flex flex-col gap-1">
-                  <h2 className="text-2xl font-medium tracking-tight text-white sm:text-3xl lg:text-[32px]">
-                    Stop paying for slow, fragile software.
-                  </h2>
-                  <p className="text-sm text-white/60 lg:text-base">
-                    Get a free technical audit. We&apos;ll identify the biggest
-                    risk in your stack — no commitment required.
-                  </p>
-                </div>
-                <Link
-                  href="#contact"
-                  className="group flex items-center justify-between border bg-foreground px-4 py-4 text-background transition-colors duration-300"
-                >
-                  <span className="font-mono font-medium tracking-wider uppercase">
-                    GET MY FREE AUDIT
-                  </span>
-                  <ArrowRightIcon className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
-                </Link>
-              </div>
-            </div>
-          </OutlineSection>
+          </Tabs>
         </MotionInView>
-      </main>
+      </section>
 
-      <Footer />
-    </div>
+      <PartnersSection partners={partners} />
+      <WhyRantAISection items={whyRantAI} />
+    </SiteShell>
   )
 }

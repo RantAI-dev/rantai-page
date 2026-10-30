@@ -1,9 +1,9 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { ArrowRightIcon, Loader2Icon, SearchIcon, XIcon } from "lucide-react"
+import { Loader2Icon, SearchIcon, XIcon } from "lucide-react"
+
+import { FeaturedPostCard, PostCard } from "@/components/post-cards"
 import type { PostListItem, PostsPage } from "@/lib/blog"
 import { gradientForColor } from "@/lib/tag-colors"
 
@@ -25,51 +25,6 @@ async function fetchPosts(params: { cursor?: string; q?: string }): Promise<Post
   const res = await fetch(`/api/blog?${search.toString()}`)
   if (!res.ok) throw new Error("Failed to load posts")
   return res.json()
-}
-
-function Thumbnail({
-  thumbnail,
-  tag,
-  gradient,
-  className = "",
-}: {
-  thumbnail?: string
-  tag: string
-  gradient: string
-  className?: string
-}) {
-  if (thumbnail) {
-    return (
-      <div className={`relative aspect-video overflow-hidden ${className}`}>
-        <Image
-          src={thumbnail}
-          alt=""
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-40" />
-      </div>
-    )
-  }
-
-  return (
-    <div
-      className={`aspect-video bg-gradient-to-br ${gradient} flex items-center justify-center ${className} transition-transform duration-700 ease-out group-hover:scale-[1.02]`}
-    >
-      <span className="font-mono text-[10px] tracking-[0.3em] text-white/20 uppercase select-none">
-        {tag}
-      </span>
-    </div>
-  )
-}
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  })
 }
 
 export function BlogMain({ initialPosts, initialCursor, tagColors }: Props) {
@@ -124,54 +79,57 @@ export function BlogMain({ initialPosts, initialCursor, tagColors }: Props) {
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Search bar */}
-      <div className="relative">
-        {searching ? (
-          <Loader2Icon className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-        ) : (
-          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        )}
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search articles..."
-          className="w-full rounded-md border border-border bg-muted/30 py-3 pl-11 pr-10 font-mono text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-foreground focus:outline-none"
-        />
-        {query && (
-          <button
-            onClick={() => setQuery("")}
-            aria-label="Clear search"
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <XIcon className="size-4" />
-          </button>
-        )}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:max-w-md">
+          {searching ? (
+            <Loader2Icon className="pointer-events-none absolute top-1/2 left-5 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+          ) : (
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-5 size-4 -translate-y-1/2 text-muted-foreground" />
+          )}
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search insights"
+            aria-label="Search insights"
+            className="h-12 w-full rounded-full border border-border bg-muted py-3 pr-11 pl-12 text-[15px] text-foreground transition-colors placeholder:text-muted-foreground focus:border-foreground/40 focus:bg-background focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+            >
+              <XIcon className="size-4" />
+            </button>
+          )}
+        </div>
+
+        {/* `+` denotes more pages available beyond what's loaded. */}
+        <p className="font-label text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
+          {(() => {
+            const more = cursor ? "+" : ""
+            const noun = posts.length === 1 ? "" : "s"
+            return isSearching
+              ? `${posts.length}${more} result${noun} for "${trimmedQuery}"`
+              : `${posts.length}${more} article${noun}`
+          })()}
+        </p>
       </div>
 
-      {/* Results count — `+` denotes more pages available beyond what's loaded. */}
-      <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
-        {(() => {
-          const more = cursor ? "+" : ""
-          const noun = posts.length === 1 ? "" : "s"
-          return isSearching
-            ? `${posts.length}${more} result${noun} for "${trimmedQuery}"`
-            : `${posts.length}${more} article${noun}`
-        })()}
-      </p>
-
-      {/* Empty state */}
       {!searching && posts.length === 0 ? (
-        <div className="py-16 text-center">
-          <p className="font-mono text-sm text-muted-foreground">
+        <div className="rounded-2xl bg-muted py-20 text-center">
+          <p className="text-lg text-muted-foreground">
             {isSearching
               ? `No articles found for “${trimmedQuery}”.`
               : "No articles published yet."}
           </p>
           {isSearching && (
             <button
+              type="button"
               onClick={() => setQuery("")}
-              className="mt-3 font-mono text-xs uppercase tracking-wider text-foreground underline underline-offset-4 transition-colors hover:text-primary"
+              className="mt-5 inline-flex h-11 items-center rounded-full border border-foreground/25 px-5 text-sm font-medium transition-colors hover:border-foreground/70"
             >
               Clear search
             </button>
@@ -179,114 +137,34 @@ export function BlogMain({ initialPosts, initialCursor, tagColors }: Props) {
         </div>
       ) : (
         <>
-          {/* Featured post — most recent */}
           {featured && (
-            <Link
-              href={`/blog/${featured.slug}`}
-              className="group mb-2 block border-b border-border pb-10"
-            >
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-10">
-                <Thumbnail
-                  thumbnail={featured.thumbnail}
-                  tag={featured.tag}
-                  gradient={gradientForColor(tagColors?.[featured.tag])}
-                  className="rounded-xl"
-                />
-
-                <div className="flex flex-col justify-center gap-4">
-                  <div className="flex items-center gap-3">
-                    <span className="rounded-full border border-border bg-muted/30 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {featured.tag}
-                    </span>
-                    <span className="font-mono text-xs text-muted-foreground">
-                      {formatDate(featured.date)}
-                    </span>
-                  </div>
-
-                  <h2 className="text-2xl font-medium leading-snug text-foreground transition-colors group-hover:text-primary sm:text-3xl">
-                    {featured.title}
-                  </h2>
-
-                  <p className="line-clamp-3 font-mono text-sm leading-relaxed text-muted-foreground">
-                    {featured.excerpt}
-                  </p>
-
-                  {featured.author && (
-                    <p className="font-mono text-xs text-muted-foreground">
-                      {featured.author}
-                    </p>
-                  )}
-
-                  <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-muted-foreground transition-colors group-hover:text-primary">
-                    Read article
-                    <ArrowRightIcon className="size-3 transition-transform duration-300 group-hover:translate-x-1" />
-                  </span>
-                </div>
-              </div>
-            </Link>
+            <FeaturedPostCard post={featured} showExcerpt className="min-h-[460px] lg:min-h-[520px]" />
           )}
 
-          {/* Remaining posts — 2-col grid */}
           {rest.length > 0 && (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {rest.map((post) => (
-                <Link
+                <PostCard
                   key={post.slug}
-                  href={`/blog/${post.slug}`}
-                  className="group flex flex-col gap-4 rounded-xl border border-transparent p-1 transition-colors hover:border-border hover:bg-muted/10"
-                >
-                  <Thumbnail
-                    thumbnail={post.thumbnail}
-                    tag={post.tag}
-                    gradient={gradientForColor(tagColors?.[post.tag])}
-                    className="rounded-lg"
-                  />
-
-                  <div className="flex flex-col gap-3 px-1 pb-2">
-                    <div className="flex items-center gap-3">
-                      <span className="rounded-full border border-border bg-muted/30 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                        {post.tag}
-                      </span>
-                      <span className="shrink-0 font-mono text-xs text-muted-foreground">
-                        {formatDate(post.date)}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base font-medium leading-snug text-foreground transition-colors group-hover:text-primary">
-                      {post.title}
-                    </h3>
-
-                    <p className="line-clamp-2 font-mono text-xs leading-relaxed text-muted-foreground">
-                      {post.excerpt}
-                    </p>
-
-                    {post.author && (
-                      <p className="font-mono text-xs text-muted-foreground">
-                        {post.author}
-                      </p>
-                    )}
-
-                    <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-muted-foreground transition-colors group-hover:text-primary">
-                      Read article
-                      <ArrowRightIcon className="size-3 transition-transform duration-300 group-hover:translate-x-1" />
-                    </span>
-                  </div>
-                </Link>
+                  post={post}
+                  showExcerpt
+                  fallbackGradient={gradientForColor(tagColors?.[post.tag])}
+                />
               ))}
             </div>
           )}
 
-          {/* Load more */}
           {cursor && (
             <div className="flex justify-center pt-4">
               <button
+                type="button"
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="inline-flex items-center gap-2 rounded-md border border-border bg-muted/30 px-6 py-3 font-mono text-xs uppercase tracking-wider text-foreground transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-foreground/25 px-7 text-[15px] font-medium text-foreground transition-colors hover:border-foreground/70 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loadingMore ? (
                   <>
-                    <Loader2Icon className="size-3.5 animate-spin" />
+                    <Loader2Icon className="size-4 animate-spin" />
                     Loading
                   </>
                 ) : (

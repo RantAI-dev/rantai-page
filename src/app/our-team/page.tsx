@@ -2,11 +2,9 @@ import { asc } from "drizzle-orm"
 
 import { db } from "@/lib/db"
 import { teamMembers } from "@/lib/db/schema"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { MotionInView } from "@/components/motion-in-view"
-import { OutlineSection } from "@/components/outline-section"
-import { OurTeamHero } from "./_components/hero"
+import { PageHero } from "@/components/page-hero"
+import { SiteShell } from "@/components/site-shell"
 import { OurTeamGrid } from "./_components/team-grid"
 
 export const metadata = {
@@ -21,22 +19,17 @@ export default async function OurTeamPage() {
     .orderBy(asc(teamMembers.orderIndex))
 
   return (
-    <div>
-      <Navbar />
-
-      <main className="pt-16">
-        {/* Hero */}
-        <OurTeamHero />
-
-        {/* Members grid */}
-        <MotionInView>
-          <OutlineSection className="p-8">
-            <OurTeamGrid members={members} />
-          </OutlineSection>
+    <SiteShell>
+      <PageHero
+        eyebrow="Company"
+        title="The people behind RantAI."
+        description="Engineers, researchers, and builders dedicated to advancing enterprise AI."
+      />
+      <section className="mx-auto max-w-[1440px] px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32">
+        <MotionInView className="border-t border-border pt-12">
+          <OurTeamGrid members={members} />
         </MotionInView>
-      </main>
-
-      <Footer />
-    </div>
+      </section>
+    </SiteShell>
   )
 }

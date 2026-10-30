@@ -1,112 +1,68 @@
-"use client"
-
-import { useState } from "react"
-import Link from "next/link"
 import Image from "next/image"
-import { ArrowRightIcon } from "lucide-react"
-import { motion, AnimatePresence } from "motion/react"
+import Link from "next/link"
+import { ArrowUpRight } from "lucide-react"
 
-import { OutlineSection } from "@/components/outline-section"
+import { Eyebrow } from "@/components/eyebrow"
 import { MotionInView } from "@/components/motion-in-view"
 import type { PartnerItem } from "../types"
 
 export function PartnersSection({ partners }: { partners: PartnerItem[] }) {
-  const [selectedPartner, setSelectedPartner] = useState(partners[0])
-
   return (
-    <MotionInView>
-      <OutlineSection className="flex flex-col">
-        {/* Partners logo row */}
-        <div className="grid grid-cols-1 lg:h-75 lg:grid-cols-4">
-          <div className="flex min-h-40 items-center border-b p-8 lg:min-h-0 lg:border-r">
-            <h3 className="text-2xl font-normal lg:text-4xl">
-              OUR
-              <br />
-              PARTNERS
-            </h3>
-          </div>
-          {partners.map((partner, i) => (
-            <button
+    <section
+      aria-labelledby="partners-heading"
+      className="mx-auto max-w-[1440px] px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
+    >
+      <MotionInView className="border-t border-border pt-16 lg:pt-24">
+        <Eyebrow className="text-muted-foreground">Partners</Eyebrow>
+        <h2
+          id="partners-heading"
+          className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em]"
+        >
+          Built with our partners.
+        </h2>
+      </MotionInView>
+
+      <MotionInView className="mt-14 grid gap-3 md:grid-cols-3">
+        {partners.map((partner) => {
+          const hasLink = partner.showcase.ctaHref !== "#"
+          return (
+            <article
               key={partner.id}
-              onClick={() => setSelectedPartner(partner)}
-              className={`group relative flex min-h-40 items-center justify-center border-b p-8 transition-colors lg:min-h-0 lg:p-16 ${
-                i < partners.length - 1 ? "lg:border-r" : ""
-              } ${selectedPartner.id === partner.id ? "bg-foreground/10" : "hover:bg-foreground/5"}`}
+              className="flex flex-col rounded-2xl bg-muted p-6 sm:p-7"
             >
-              <div
-                className={`relative h-full w-full transition-opacity ${
-                  selectedPartner.id === partner.id
-                    ? "opacity-100"
-                    : "opacity-40 group-hover:opacity-70"
-                }`}
-              >
+              <div className="relative flex h-40 items-center justify-center rounded-xl bg-background">
                 <Image
                   src={partner.logo}
                   alt={partner.name}
-                  fill
-                  sizes="(min-width: 1024px) 25vw, 100vw"
-                  className="object-contain brightness-0 invert"
+                  width={240}
+                  height={160}
+                  className="h-24 w-auto object-contain brightness-0"
                 />
               </div>
-              {selectedPartner.id === partner.id && (
-                <span className="absolute right-0 bottom-0 left-0 h-0.5 bg-foreground" />
+              <p className="mt-6 font-label text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
+                {partner.name}
+              </p>
+              <h3 className="mt-2 text-xl font-medium tracking-[-0.02em]">
+                {partner.showcase.name}
+              </h3>
+              <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+                {partner.showcase.tagline}
+              </p>
+              {hasLink && (
+                <Link
+                  href={partner.showcase.ctaHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group mt-6 inline-flex items-center gap-2 text-sm font-medium"
+                >
+                  Visit website
+                  <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </Link>
               )}
-            </button>
-          ))}
-        </div>
-
-        {/* Product showcase row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedPartner.id + "-image"}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="relative flex min-h-56 items-center justify-center overflow-hidden sm:min-h-75 lg:aspect-auto lg:min-h-100"
-            >
-              <div className="relative h-56 w-full sm:h-75 lg:h-full">
-                <Image
-                  src={selectedPartner.showcase.image}
-                  alt={selectedPartner.showcase.name}
-                  fill
-                  sizes="640px"
-                  className="object-contain p-8"
-                />
-              </div>
-            </motion.div>
-          </AnimatePresence>
-          <div className="flex flex-col justify-between gap-6 p-6 lg:p-8">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedPartner.id + "-text"}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.3 }}
-                className="flex flex-col gap-0"
-              >
-                <h4 className="text-2xl tracking-tight lg:text-4xl">
-                  {selectedPartner.showcase.name}
-                </h4>
-                <p className="font-mono text-base text-muted-foreground lg:text-lg">
-                  {selectedPartner.showcase.tagline}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-            <Link
-              href={selectedPartner.showcase.ctaHref}
-              className="group flex items-center justify-between border bg-foreground px-4 py-4 text-background transition-colors duration-300"
-            >
-              <span className="font-mono font-medium tracking-wider uppercase">
-                {selectedPartner.showcase.ctaLabel}
-              </span>
-              <ArrowRightIcon className="size-5 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
-          </div>
-        </div>
-      </OutlineSection>
-    </MotionInView>
+            </article>
+          )
+        })}
+      </MotionInView>
+    </section>
   )
 }
