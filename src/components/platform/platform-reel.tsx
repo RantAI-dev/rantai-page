@@ -14,6 +14,7 @@ import { ArrowUpRight } from "lucide-react"
 import { Eyebrow } from "@/components/eyebrow"
 import { smoothScrollTo } from "@/components/smooth-scroll"
 import { SplitReveal } from "@/components/split-reveal"
+import { ProductLogo, productIdFrom } from "@/components/product-logo"
 import { cn } from "@/lib/utils"
 
 import { demos } from "@/components/platform/demos"
@@ -145,11 +146,26 @@ function PanelText({
   d,
 }: Readonly<{ product: Product; d?: MotionValue<number> }>) {
   const name = product.name.replace("RantAI ", "").replace("RantAI", "")
+  const id = productIdFrom(product.name)
   return (
     <>
+      {id && (
+        <span className="mb-6 inline-flex items-center gap-2.5 rounded-full bg-white/[0.06] py-1.5 pr-4 pl-1.5 ring-1 ring-white/10">
+          <span className="grid size-8 place-items-center rounded-full bg-white">
+            <ProductLogo id={id} className="h-4" />
+          </span>
+          <span className="text-sm text-white/70">{product.name}</span>
+        </span>
+      )}
       <h3
         aria-label={name}
-        className="pb-[0.08em] text-[clamp(3rem,7vw,7.5rem)] leading-[0.86] font-medium tracking-[-0.06em] whitespace-nowrap"
+        className={cn(
+          "pb-[0.08em] leading-[0.86] font-medium tracking-[-0.06em] whitespace-nowrap",
+          // Longer names step down so they never reach the demo beside them.
+          name.length > 6
+            ? "text-[clamp(2.75rem,5vw,5.75rem)]"
+            : "text-[clamp(3rem,7vw,7.5rem)]"
+        )}
       >
         {d ? <FocusName name={name} d={d} /> : name}
       </h3>
