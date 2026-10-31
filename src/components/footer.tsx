@@ -25,8 +25,16 @@ const columns: { title: string; links: FooterLink[] }[] = [
         external: true,
       },
       { label: "RantAIClaw", href: "https://claw.rantai.dev/", external: true },
-      { label: "RantAI LLMOps", href: "/products#platform" },
-      { label: "RantAI Lake", href: "/products#platform" },
+      {
+        label: "RantAI LLMOps",
+        href: "https://llmops.rantai.dev/",
+        external: true,
+      },
+      {
+        label: "RantAI Lake",
+        href: "https://lakehouse.rantai.dev/",
+        external: true,
+      },
     ],
   },
   {

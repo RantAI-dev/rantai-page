@@ -1,0 +1,277 @@
+"use client"
+
+import { useEffect, useRef } from "react"
+
+// Hero background: a panorama ring of product screens seen from inside a
+// cylinder (centre card smallest, edges curving toward you), with the large
+// ASCII Earth rising in front of it.
+
+type Shot = {
+  src: string
+  /** How the screenshot is scaled/shifted inside its card (claw is cropped). */
+  size: number
+  x: number
+  y: number
+}
+
+const agents: Shot = {
+  src: "/products/rantai-agents-chat.png",
+  size: 1,
+  x: 0,
+  y: 0,
+}
+const claw: Shot = {
+  src: "/products/rantai-claw-console.png",
+  size: 1.1035,
+  x: -0.0517,
+  y: -0.0573,
+}
+const CARDS = 16
+const STRIPS = 14 // vertical slices per card, so each card bends with the ring
+const ASPECT = 0.62 // card height / width
+
+/* ----------------------------- ASCII Earth ----------------------------- */
+
+const ramp = " .,:;-=+*#%@"
+function hash(x: number, y: number, z: number) {
+  const s = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453
+  return s - Math.floor(s)
+}
+function noise3(x: number, y: number, z: number) {
+  const ix = Math.floor(x),
+    iy = Math.floor(y),
+    iz = Math.floor(z)
+  const fx = x - ix,
+    fy = y - iy,
+    fz = z - iz
+  const u = (v: number) => v * v * (3 - 2 * v)
+  const l = (a: number, b: number, t: number) => a + (b - a) * t
+  const c = (dx: number, dy: number, dz: number) =>
+    hash(ix + dx, iy + dy, iz + dz)
+  return l(
+    l(
+      l(c(0, 0, 0), c(1, 0, 0), u(fx)),
+      l(c(0, 1, 0), c(1, 1, 0), u(fx)),
+      u(fy)
+    ),
+    l(
+      l(c(0, 0, 1), c(1, 0, 1), u(fx)),
+      l(c(0, 1, 1), c(1, 1, 1), u(fx)),
+      u(fy)
+    ),
+    u(fz)
+  )
+}
+
+function drawEarth(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  t: number
+) {
+  ctx.clearRect(0, 0, w, h)
+  const radius = Math.max(w, h) * 0.75
+  const cx = w / 2
+  const cy = h + radius * 0.58
+  // Dark body behind the characters, so the ring is hidden by the planet.
+  // It fades out past the rim, letting the cards sink softly behind it
+  // instead of being cut by a hard edge.
+  const outer = radius * 1.1
+  const body = ctx.createRadialGradient(cx, cy, 0, cx, cy, outer)
+  body.addColorStop(0, "rgba(0,0,0,1)")
+  body.addColorStop(0.8 / 1.1, "rgba(0,0,0,1)")
+  body.addColorStop(0.95 / 1.1, "rgba(0,0,0,0.8)")
+  body.addColorStop(1, "rgba(0,0,0,0)")
+  ctx.fillStyle = body
+  ctx.fillRect(0, 0, w, h)
+  const cell = 12
+  const cw = cell * 0.62
+  ctx.font = `500 ${cell - 1}px ui-monospace, SFMono-Regular, Menlo, monospace`
+  ctx.textBaseline = "top"
+  const spin = t * 0.06
+  const buckets: number[][] = ramp.split("").map(() => [])
+  for (let y = 0; y < h; y += cell) {
+    for (let x = 0; x < w; x += cw) {
+      const nx = (x - cx) / radius
+      const ny = (y - cy) / radius
+      const d2 = nx * nx + ny * ny
+      if (d2 > 1) continue
+      const nz = Math.sqrt(1 - d2)
+      const rx = nx * Math.cos(spin) + nz * Math.sin(spin)
+      const rz = -nx * Math.sin(spin) + nz * Math.cos(spin)
+      const land =
+        noise3(rx * 3 + 10, ny * 3, rz * 3) * 0.65 +
+        noise3(rx * 7, ny * 7, rz * 7) * 0.35
+      const light = Math.max(0, nx * -0.35 + ny * -0.75 + nz * 0.55)
+      const rim = Math.pow(1 - nz, 3)
+      const v = Math.min(
+        0.999,
+        (land > 0.52 ? 0.55 + land * 0.5 : 0.12 + land * 0.15) *
+          (0.25 + light) +
+          rim * 0.9
+      )
+      const i = Math.floor(v * ramp.length)
+      if (i > 0) buckets[i].push(x, y)
+    }
+  }
+  buckets.forEach((cells, i) => {
+    ctx.fillStyle = `rgba(255,255,255,${0.08 + i * 0.06})`
+    for (let k = 0; k < cells.length; k += 2)
+      ctx.fillText(ramp[i], cells[k], cells[k + 1])
+  })
+}
+
+/* ------------------------------ Panorama ------------------------------ */
+
+export function HeroPanorama() {
+  const sceneRef = useRef<HTMLDivElement>(null)
+  const ringRef = useRef<HTMLDivElement>(null)
+  const earthRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const scene = sceneRef.current
+    const ring = ringRef.current
+    const canvas = earthRef.current
+    const ctx = canvas?.getContext("2d")
+    if (!scene || !ring || !canvas || !ctx) return
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const strips = [...ring.querySelectorAll<HTMLElement>("[data-strip]")]
+    let angles: number[] = []
+    let R = 1000
+    let dim = 1
+    let frame = 0
+    let lastEarth = 0
+    let visible = false
+    const start = performance.now()
+
+    const layout = () => {
+      const w = scene.clientWidth
+      const h = scene.clientHeight
+      // Camera sits at the ring's centre: perspective equals the radius.
+      // Size by height: the front card runs from near the top down to the
+      // buttons (about 68% of the hero).
+      // Phones: a shorter card so the headline keeps a calm background.
+      const narrow = w < 640
+      const cardH = h * (narrow ? 0.34 : 0.68)
+      const cardW = cardH / ASPECT
+      R = Math.max(cardW * 1.4, w * 0.75)
+      const gap = cardW * 0.07
+      // Fit a whole (even) number of cards around the ring so the last card
+      // never lands on top of the first; extra cards are hidden.
+      const fit = Math.max(
+        2,
+        Math.floor((Math.PI * 2 * R) / (cardW + gap) / 2) * 2
+      )
+      const used = Math.min(CARDS, fit)
+      const step = (Math.PI * 2) / used
+      const sliceW = cardW / STRIPS
+      const sliceA = sliceW / R
+      scene.style.perspective = `${R}px`
+      ring.style.top = `${h * (narrow ? 0.24 : 0.43)}px`
+      dim = narrow ? 0.55 : 1
+      angles = []
+      strips.forEach((el) => {
+        const card = Number(el.dataset.card)
+        const i = Number(el.dataset.strip)
+        el.dataset.off = card >= used ? "1" : ""
+        const shot = card % 2 ? claw : agents
+        const a = card * step + (i - STRIPS / 2 + 0.5) * sliceA
+        angles.push(a)
+        el.style.width = `${sliceW + 2}px`
+        el.style.height = `${cardH}px`
+        el.style.marginLeft = `${-sliceW / 2}px`
+        el.style.marginTop = `${-cardH / 2}px`
+        el.style.backgroundSize = `${cardW * shot.size}px auto`
+        el.style.backgroundPosition = `${cardW * shot.x - i * sliceW}px ${cardH * shot.y}px`
+        el.style.borderRadius =
+          i === 0 ? "14px 0 0 14px" : i === STRIPS - 1 ? "0 14px 14px 0" : "0"
+      })
+      lastEarth = 0
+    }
+
+    const render = (now: number) => {
+      const t = reduce ? 0 : (now - start) / 1000
+      const rot = -t * 0.035
+      ring.style.transform = `translateZ(${R}px) rotateY(${rot}rad)`
+      strips.forEach((el, k) => {
+        const a = angles[k]
+        // Angle from straight ahead, wrapped to [-π, π].
+        // The strip ends up turned by (ring rotation - its own angle).
+        let rel = (rot - a) % (Math.PI * 2)
+        if (rel > Math.PI) rel -= Math.PI * 2
+        if (rel < -Math.PI) rel += Math.PI * 2
+        const shown = Math.abs(rel) < 1.2 && !el.dataset.off
+        el.style.transform = `rotateY(${-a}rad) translateZ(${-R}px)`
+        el.style.visibility = shown ? "visible" : "hidden"
+        // Dim toward the sides so the centre stays calm.
+        el.style.filter = `grayscale(1) brightness(${((0.75 - Math.min(0.35, Math.abs(rel) * 0.5)) * dim).toFixed(3)})`
+      })
+      if (now - lastEarth > 50) {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2)
+        const w = canvas.clientWidth
+        const h = canvas.clientHeight
+        if (
+          canvas.width !== Math.round(w * dpr) ||
+          canvas.height !== Math.round(h * dpr)
+        ) {
+          canvas.width = Math.round(w * dpr)
+          canvas.height = Math.round(h * dpr)
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        drawEarth(ctx, w, h, t)
+        lastEarth = now
+      }
+      frame = visible && !reduce ? requestAnimationFrame(render) : 0
+    }
+
+    layout()
+    const ro = new ResizeObserver(() => {
+      layout()
+      if (!frame) frame = requestAnimationFrame(render)
+    })
+    ro.observe(scene)
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      if (visible && !frame) frame = requestAnimationFrame(render)
+    })
+    io.observe(scene)
+    frame = requestAnimationFrame(render)
+    return () => {
+      cancelAnimationFrame(frame)
+      ro.disconnect()
+      io.disconnect()
+    }
+  }, [])
+
+  return (
+    <div
+      ref={sceneRef}
+      aria-hidden="true"
+      className="absolute inset-0 -z-10 overflow-hidden"
+    >
+      <div
+        ref={ringRef}
+        className="absolute left-1/2 [transform-style:preserve-3d]"
+      >
+        {Array.from({ length: CARDS }, (_, card) =>
+          Array.from({ length: STRIPS }, (_, i) => (
+            <div
+              key={`${card}-${i}`}
+              data-card={card}
+              data-strip={i}
+              className="absolute top-0 left-0 bg-neutral-900 bg-no-repeat [backface-visibility:hidden]"
+              style={{
+                backgroundImage: `url(${card % 2 ? claw.src : agents.src})`,
+              }}
+            />
+          ))
+        )}
+      </div>
+      <canvas ref={earthRef} className="absolute inset-0 size-full" />
+      {/* Shade behind the headline and copy */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_44%_30%_at_50%_58%,rgb(0_0_0/0.85),transparent)]" />
+      <div className="absolute inset-x-0 top-0 h-[12%] bg-gradient-to-b from-black to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-[30%] bg-gradient-to-t from-black via-black/85 to-transparent" />
+    </div>
+  )
+}
