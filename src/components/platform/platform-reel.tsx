@@ -16,6 +16,7 @@ import { smoothScrollTo } from "@/components/smooth-scroll"
 import { SplitReveal } from "@/components/split-reveal"
 import { cn } from "@/lib/utils"
 
+import { demos } from "@/components/platform/demos"
 import { Media, products, type Product } from "@/components/platform/products"
 import { PanelScene } from "@/components/platform/scenes"
 
@@ -217,7 +218,14 @@ function ReelPanel({
             the rim shows it */}
         <div className="pointer-events-none absolute inset-0 rounded-3xl bg-[radial-gradient(260px_circle_at_var(--mx)_var(--my),rgb(255_255_255/0.85),transparent_70%)] opacity-(--glow,0) transition-opacity duration-500" />
         <div className="relative size-full overflow-hidden rounded-[23px] bg-neutral-950">
-          <Media product={product} />
+          {demos[product.id] ? (
+            (() => {
+              const Demo = demos[product.id]
+              return <Demo active={live} />
+            })()
+          ) : (
+            <Media product={product} />
+          )}
         </div>
       </motion.div>
     </section>
@@ -413,7 +421,14 @@ function StackedReel() {
           <section key={p.id} id={anchors[p.id]} className="scroll-mt-24">
             <PanelText product={p} />
             <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-2xl border border-white/12 bg-neutral-950">
-              <Media product={p} />
+              {demos[p.id] ? (
+                (() => {
+                  const Demo = demos[p.id]
+                  return <Demo />
+                })()
+              ) : (
+                <Media product={p} />
+              )}
             </div>
           </section>
         ))}
