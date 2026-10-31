@@ -26,7 +26,82 @@ const claw: Shot = {
   x: -0.0517,
   y: -0.0573,
 }
-const CARDS = 16
+const lake = (name: string): Shot => ({
+  src: `/products/lake-${name}.jpg`,
+  size: 1,
+  x: 0,
+  y: 0,
+})
+
+/** A card shows a screenshot (bent in strips) or a demo video (one panel). */
+type Item = { shot: Shot } | { video: string }
+const vid = (path: string): Item => ({ video: `/videos/${path}.mp4` })
+
+// The ring's order is shuffled on every visit (see `arrange`).
+const items: Item[] = [
+  { shot: agents },
+  { shot: lake("dashboard") },
+  vid("rantai-claw/claw-demo"),
+  vid("rantai-agents/rag-prompt"),
+  { shot: lake("home") },
+  { shot: claw },
+  vid("rantai-agents/prompt-artifact"),
+  { shot: lake("login") },
+  { shot: agents },
+  vid("rantai-agents/skills"),
+  { shot: claw },
+  { shot: lake("dashboard") },
+  vid("rantai-agents/file-upload"),
+  { shot: claw },
+  { shot: lake("home") },
+  vid("rantai-claw/claw-demo"),
+]
+const CARDS = items.length
+
+/** Which product a card belongs to, so neighbours can be kept apart. */
+const productOf = (item: Item) => {
+  const src = "shot" in item ? item.shot.src : item.video
+  return src.includes("lake")
+    ? "lake"
+    : src.includes("claw")
+      ? "claw"
+      : "agents"
+}
+
+/**
+ * A random order of the cards for the ring's first `used` slots, where no
+ * two neighbours (the last and first included, as it is a circle) show the
+ * same product. Returns each card's slot; slots from `used` on are hidden.
+ */
+function arrange(used: number): number[] {
+  const all = items.map((_, i) => i)
+  for (let attempt = 0; attempt < 200; attempt++) {
+    const left = [...all]
+    const order: number[] = []
+    while (order.length < CARDS) {
+      const prev = order.at(-1)
+      const inRing = order.length < used
+      const last = order.length === used - 1
+      const options = left.filter(
+        (c) =>
+          !inRing ||
+          ((prev === undefined ||
+            productOf(items[c]) !== productOf(items[prev])) &&
+            (!last || productOf(items[c]) !== productOf(items[order[0]])))
+      )
+      if (!options.length) break
+      const pick = options[Math.floor(Math.random() * options.length)]
+      order.push(pick)
+      left.splice(left.indexOf(pick), 1)
+    }
+    if (order.length === CARDS) {
+      const slot: number[] = []
+      order.forEach((card, i) => (slot[card] = i))
+      return slot
+    }
+  }
+  return all // fallback: the authored order
+}
 const STRIPS = 14 // vertical slices per card, so each card bends with the ring
 const ASPECT = 0.62 // card height / width
 
@@ -157,7 +232,11 @@ export function HeroPanorama() {
     const ctx = canvas?.getContext("2d")
     if (!scene || !ring || !canvas || !ctx) return
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    const strips = [...ring.querySelectorAll<HTMLElement>("[data-strip]")]
+    // Every piece on the ring: screenshot strips and video panels.
+    const strips = [...ring.querySelectorAll<HTMLElement>("[data-card]")]
+    let seeded = false
+    let slots: number[] = []
+    let slotsFor = -1
     let angles: number[] = []
     let centres: number[] = [] // each strip's card centre angle
     let R = 1000
@@ -205,14 +284,39 @@ export function HeroPanorama() {
       dim = narrow ? 0.55 : 1
       angles = []
       centres = []
+      // Start on a random card, so a returning visitor sees a different
+      // product first.
+      // A fresh random order per visit (and if the number of cards that fit
+      // changes on resize).
+      if (slotsFor !== used) {
+        slots = arrange(used)
+        slotsFor = used
+      }
+      if (!seeded) {
+        rot = Math.floor(Math.random() * used) * step
+        seeded = true
+      }
       strips.forEach((el) => {
         const card = Number(el.dataset.card)
+        const slot = slots[card]
+        el.dataset.off = slot >= used ? "1" : ""
+        const item = items[card]
+        if (!("shot" in item)) {
+          // A video panel: one flat card at the card's angle.
+          angles.push(slot * step)
+          centres.push(slot * step)
+          el.style.width = `${cardW}px`
+          el.style.height = `${cardH}px`
+          el.style.marginLeft = `${-cardW / 2}px`
+          el.style.marginTop = `${-cardH / 2}px`
+          el.style.borderRadius = "14px"
+          return
+        }
+        const shot = item.shot
         const i = Number(el.dataset.strip)
-        el.dataset.off = card >= used ? "1" : ""
-        const shot = card % 2 ? claw : agents
-        const a = card * step + (i - STRIPS / 2 + 0.5) * sliceA
+        const a = slot * step + (i - STRIPS / 2 + 0.5) * sliceA
         angles.push(a)
-        centres.push(card * step)
+        centres.push(slot * step)
         el.style.width = `${sliceW + 2}px`
         el.style.height = `${cardH}px`
         el.style.marginLeft = `${-sliceW / 2}px`
@@ -269,6 +373,13 @@ export function HeroPanorama() {
         if (cardRel > Math.PI) cardRel -= Math.PI * 2
         if (cardRel < -Math.PI) cardRel += Math.PI * 2
         el.style.filter = `grayscale(1) brightness(${((0.75 - Math.min(0.35, Math.abs(cardRel) * 0.5)) * dim).toFixed(3)})`
+        // Videos only play while their card is in view.
+        const video = el.firstElementChild
+        if (video instanceof HTMLVideoElement) {
+          const play = shown && !reduce
+          if (play && video.paused) video.play().catch(() => {})
+          else if (!play && !video.paused) video.pause()
+        }
       })
       if (now - lastEarth > (lampK > 0.01 ? 33 : 50)) {
         const dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -373,18 +484,33 @@ export function HeroPanorama() {
         ref={ringRef}
         className="absolute left-1/2 [transform-style:preserve-3d]"
       >
-        {Array.from({ length: CARDS }, (_, card) =>
-          Array.from({ length: STRIPS }, (_, i) => (
+        {items.map((item, card) =>
+          "shot" in item ? (
+            Array.from({ length: STRIPS }, (_, i) => (
+              <div
+                key={`${card}-${i}`}
+                data-card={card}
+                data-strip={i}
+                className="absolute top-0 left-0 bg-neutral-900 bg-no-repeat [backface-visibility:hidden]"
+                style={{ backgroundImage: `url(${item.shot.src})` }}
+              />
+            ))
+          ) : (
             <div
-              key={`${card}-${i}`}
+              key={card}
               data-card={card}
-              data-strip={i}
-              className="absolute top-0 left-0 bg-neutral-900 bg-no-repeat [backface-visibility:hidden]"
-              style={{
-                backgroundImage: `url(${card % 2 ? claw.src : agents.src})`,
-              }}
-            />
-          ))
+              className="absolute top-0 left-0 overflow-hidden bg-neutral-900 [backface-visibility:hidden]"
+            >
+              <video
+                src={item.video}
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="size-full object-cover object-top-left"
+              />
+            </div>
+          )
         )}
       </div>
       <canvas ref={earthRef} className="absolute inset-0 size-full" />
