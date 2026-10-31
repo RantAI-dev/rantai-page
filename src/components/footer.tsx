@@ -155,7 +155,7 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
 
       {/* Links sit straight on the page, with a faded wordmark below */}
       <div className="relative overflow-hidden px-6 pt-14 sm:px-10 lg:px-16 lg:pt-20">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-20">
+        <div className="grid gap-12 xl:grid-cols-[minmax(0,1fr)_auto] xl:gap-20">
           <Reveal className="max-w-sm">
             <Link
               href="/"
