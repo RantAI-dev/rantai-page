@@ -2,6 +2,7 @@ import { asc } from "drizzle-orm"
 
 import { db } from "@/lib/db"
 import { books as booksTable } from "@/lib/db/schema"
+import { BooksVisual } from "@/components/hero-visuals"
 import { MotionInView } from "@/components/motion-in-view"
 import { PageHero } from "@/components/page-hero"
 import { SiteShell } from "@/components/site-shell"
@@ -43,12 +44,18 @@ export default async function AcademyPage() {
       }}
     >
       <PageHero
+        tone="violet"
         eyebrow="Academy"
-        title="Learn to build with AI."
-        description="Books, classes, and resources built for scientists and engineers."
+        title={"Learn to build\nwith AI."}
+        description="Books, classes, and hands-on resources built for scientists and engineers."
+        visual={
+          <BooksVisual
+            books={books.map((b) => ({ cover: b.imageUrl, name: b.name }))}
+          />
+        }
       />
       <section className="mx-auto max-w-[1440px] px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32">
-        <MotionInView className="border-t border-border pt-12">
+        <MotionInView className="pt-16 lg:pt-20">
           <BookLibrary books={books} />
         </MotionInView>
       </section>

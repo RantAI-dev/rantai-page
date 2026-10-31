@@ -1,10 +1,13 @@
-export const categoryColors: Record<string, string> = {
-  Foundation: "bg-emerald-500/10 text-emerald-700 border-emerald-500/25",
-  Architecture: "bg-violet-500/10 text-violet-700 border-violet-500/25",
-  Algorithms: "bg-amber-500/10 text-amber-700 border-amber-500/25",
-  "AI/ML": "bg-sky-500/10 text-sky-700 border-sky-500/25",
-  Business: "bg-rose-500/10 text-rose-700 border-rose-500/25",
-  Data: "bg-teal-500/10 text-teal-700 border-teal-500/25",
-  Blockchain: "bg-orange-500/10 text-orange-700 border-orange-500/25",
-  Science: "bg-indigo-500/10 text-indigo-700 border-indigo-500/25",
+/** One colour per book category: a dot on the filters, a tag on the cards. */
+export const categoryTones: Record<string, { tone: string; text: string }> = {
+  Foundation: { tone: "#10b981", text: "#047857" },
+  Architecture: { tone: "#8b5cf6", text: "#6d28d9" },
+  Algorithms: { tone: "#f59e0b", text: "#b45309" },
+  "AI/ML": { tone: "#0ea5e9", text: "#0369a1" },
+  Business: { tone: "#f43f5e", text: "#be123c" },
+  Data: { tone: "#14b8a6", text: "#0f766e" },
+  Blockchain: { tone: "#f97316", text: "#c2410c" },
+  Science: { tone: "#6366f1", text: "#4338ca" },
 }
+
+export const fallbackTone = { tone: "#737373", text: "#525252" }

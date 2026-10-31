@@ -26,13 +26,19 @@ const anchors: Record<string, string> = {
   claw: "rantaiclaw",
 }
 
-function PlatformIntro() {
+type Intro = { eyebrow: string; title: string }
+const defaultIntro: Intro = {
+  eyebrow: "Platform",
+  title: "Products built to run in production.",
+}
+
+function PlatformIntro({ intro }: Readonly<{ intro: Intro }>) {
   return (
     <div className="mx-auto mb-14 max-w-3xl text-center">
-      <Eyebrow className="text-white/50">Platform</Eyebrow>
+      <Eyebrow className="text-white/50">{intro.eyebrow}</Eyebrow>
       <SplitReveal
         id="platform-heading"
-        text="Products built to run in production."
+        text={intro.title}
         className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-balance"
       />
     </div>
@@ -283,7 +289,7 @@ function holdCentre(i: number, n: number) {
   return (i * (HOLD + MOVE) + HOLD / 2) / total
 }
 
-function DesktopReel() {
+function DesktopReel({ intro }: Readonly<{ intro: Intro }>) {
   const ref = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const progress = useStickyProgress(ref)
@@ -338,7 +344,7 @@ function DesktopReel() {
   return (
     <div className="pt-20">
       <div className="px-14">
-        <PlatformIntro />
+        <PlatformIntro intro={intro} />
       </div>
       <div ref={ref} style={{ height: `${n * 170}svh` }} className="relative">
         {/* Anchors land in the middle of a product's hold */}
@@ -414,10 +420,10 @@ function DesktopReel() {
 }
 
 /** Phones, tablets and reduced motion get a plain vertical list. */
-function StackedReel() {
+function StackedReel({ intro }: Readonly<{ intro: Intro }>) {
   return (
     <div className="px-5 py-20 sm:px-10">
-      <PlatformIntro />
+      <PlatformIntro intro={intro} />
       <div className="space-y-16">
         {products.map((p) => (
           <section key={p.id} id={anchors[p.id]} className="scroll-mt-24">
@@ -443,8 +449,14 @@ function StackedReel() {
  * Homepage platform section: the four products on a horizontal reel driven
  * by vertical scroll (desktop), or stacked (phones, reduced motion).
  */
-export function PlatformReel() {
+export function PlatformReel({
+  intro = defaultIntro,
+}: Readonly<{ intro?: Intro }>) {
   const desktop = useIsDesktop()
   const reduce = useReducedMotion()
-  return desktop && !reduce ? <DesktopReel /> : <StackedReel />
+  return desktop && !reduce ? (
+    <DesktopReel intro={intro} />
+  ) : (
+    <StackedReel intro={intro} />
+  )
 }

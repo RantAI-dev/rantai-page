@@ -7,6 +7,9 @@
 
 @theme inline {
   --animate-marquee: marquee 60s linear infinite;
+  --animate-masonry-up: masonry-rise 34s linear infinite;
+  --animate-masonry-down: masonry-rise 40s linear infinite reverse;
+  --animate-masonry-slow: masonry-rise 46s linear infinite;
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -139,6 +142,15 @@
   to {
     visibility: hidden;
     opacity: 0;
+  }
+}
+
+@keyframes masonry-rise {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
   }
 }
 
