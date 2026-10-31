@@ -82,6 +82,9 @@ const timeline = (() => {
 
 const finaleIndex = tokens.length - 1
 const FINALE = timeline[finaleIndex].lit
+// Hover cards open only once the whole sentence has played: every word
+// lit, the highlight drawn and the last icons in.
+const HOVER_FROM = FINALE + UNIT * 2
 
 const sentence = tokens.map((token) => token.text).join(" ")
 
@@ -418,7 +421,8 @@ function Word({
   progress: MotionValue<number>
   reduce: boolean
   cardOpen: boolean
-  onHover: (index: number | null) => void
+  /** Left out until the sentence has finished playing. */
+  onHover?: (index: number | null) => void
 }>) {
   const { start, lit } = timeline[index]
   const opacity = useTransform(progress, [start, lit], [0.15, 1])
@@ -458,12 +462,13 @@ function Word({
           aria-hidden="true"
           style={{ opacity: reduce ? 1 : opacity }}
           className={cn(
+            token.card && onHover && "cursor-default",
             token.card &&
-              "cursor-default underline decoration-dotted decoration-[0.06em] underline-offset-[0.14em] transition-colors",
+              "underline decoration-dotted decoration-[0.06em] underline-offset-[0.14em] transition-colors",
             token.card &&
               (cardOpen ? "decoration-brand-1" : "decoration-neutral-300")
           )}
-          {...(token.card
+          {...(token.card && onHover
             ? {
                 onPointerEnter: () => onHover(index),
                 onPointerLeave: () => onHover(null),
@@ -539,6 +544,7 @@ export function HomeSolution() {
   const reduce = Boolean(useReducedMotion())
   const [autoCard, setAutoCard] = useState<number | null>(null)
   const [hoverCard, setHoverCard] = useState<number | null>(null)
+  const [settled, setSettled] = useState(false)
   const { scrollYProgress: scrollProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
@@ -556,11 +562,13 @@ export function HomeSolution() {
         value < timeline[index].holdEnd
     )
     setAutoCard(active === -1 ? null : active)
+    setSettled(value >= HOVER_FROM)
   })
 
   const linksOpacity = useTransform(scrollYProgress, [0.92, 0.98], [0, 1])
   const linksY = useTransform(scrollYProgress, [0.92, 0.98], [12, 0])
-  const openCard = hoverCard ?? (reduce ? null : autoCard)
+  const hoverable = reduce || settled
+  const openCard = (hoverable ? hoverCard : null) ?? (reduce ? null : autoCard)
 
   return (
     <section
@@ -585,7 +593,7 @@ export function HomeSolution() {
                   progress={scrollYProgress}
                   reduce={reduce}
                   cardOpen={openCard === index}
-                  onHover={setHoverCard}
+                  onHover={hoverable ? setHoverCard : undefined}
                 />
                 {index < tokens.length - 1 && " "}
               </span>
