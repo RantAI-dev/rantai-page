@@ -35,6 +35,11 @@ export default function ServicesPage() {
           "Get a free technical audit. We'll identify the biggest risk in your stack — no commitment required.",
         label: "Get my free audit",
         subject: "Free technical audit",
+        prompts: [
+          "Our app slows down whenever traffic spikes",
+          "Migrate a legacy system without downtime",
+          "Our releases keep breaking production",
+        ],
       }}
     >
       <PageHero
