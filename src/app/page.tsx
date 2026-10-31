@@ -8,7 +8,7 @@ import { HomeInsights } from "@/app/home/_components/home-insights"
 import { HomeProblem } from "@/app/home/_components/home-problem"
 import { HomeProcess } from "@/app/home/_components/home-process"
 import { HomeSolution } from "@/app/home/_components/home-solution"
-import { DarkPanel } from "@/components/dark-panel"
+import { ExpandingPanel } from "@/components/platform/expanding-panel"
 import { PlatformReel } from "@/components/platform/platform-reel"
 import { SiteShell } from "@/components/site-shell"
 
@@ -50,13 +50,13 @@ export default function Page() {
       <HomeHero />
       <HomeProblem />
       <HomeSolution />
-      <DarkPanel
+      <ExpandingPanel
         id="platform"
         aria-labelledby="platform-heading"
         className="scroll-mt-20"
       >
         <PlatformReel />
-      </DarkPanel>
+      </ExpandingPanel>
       <CapabilityMarquee />
       <HomeProcess />
       <HomeInsights />
