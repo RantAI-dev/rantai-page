@@ -11,6 +11,11 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
+import {
+  ProductLogo,
+  ProductTile,
+  type ProductId,
+} from "@/components/product-logo"
 import { cn } from "@/lib/utils"
 
 // Products hero visual: an asymmetric bento of the four products, with
@@ -38,7 +43,7 @@ const products: P[] = [
   },
   {
     id: "claw",
-    name: "RantAIClaw",
+    name: "RantAI Claw",
     icon: Terminal,
     tone: "#f97316",
     src: "/products/rantai-claw-console.png",
@@ -46,7 +51,7 @@ const products: P[] = [
   },
   {
     id: "lake",
-    name: "RantAI Lake",
+    name: "RantAI Lakehouse",
     icon: Database,
     tone: "#14b8a6",
     src: "/products/lake-dashboard.jpg",
@@ -78,15 +83,8 @@ function Screen({ p, video = true }: Readonly<{ p: P; video?: boolean }>) {
   )
 }
 
-function Badge({ p, className }: Readonly<{ p: P; className?: string }>) {
-  return (
-    <span
-      className="grid size-6 shrink-0 place-items-center rounded-md"
-      style={{ background: `${p.tone}1f`, color: p.tone }}
-    >
-      <p.icon className={cn("size-3.5", className)} />
-    </span>
-  )
+function Badge({ p }: Readonly<{ p: P }>) {
+  return <ProductTile id={p.id as ProductId} />
 }
 
 /* 6 · Bento, mixed sizes: one big live tile, a tall, a wide and a stat - */
@@ -114,9 +112,19 @@ function Tile({
       <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.03]">
         {children}
       </div>
-      <span className="absolute top-3 left-3 flex items-center gap-2 rounded-full bg-white/95 py-1 pr-3 pl-1 text-[12px] font-medium text-neutral-900 shadow-sm ring-1 ring-black/5">
+      {/* Just the logo; the name slides out on hover */}
+      <span
+        aria-label={p.name}
+        className="absolute top-3 left-3 flex items-center rounded-full bg-white/95 p-1 text-[12px] font-medium text-neutral-900 shadow-sm ring-1 ring-black/5"
+      >
         <Badge p={p} />
-        {p.name}
+        <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-300 ease-out group-hover:grid-cols-[1fr]">
+          <span className="overflow-hidden whitespace-nowrap">
+            <span className="block pr-2 pl-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-hover:delay-100">
+              {p.name}
+            </span>
+          </span>
+        </span>
       </span>
     </motion.div>
   )
@@ -184,7 +192,9 @@ function BentoMixed() {
           className="flex basis-[24%] flex-col justify-between bg-[#8b5cf6] p-4 text-white"
         >
           <span className="flex items-center gap-2 text-[12px] font-medium text-white/85">
-            <llmops.icon className="size-3.5" />
+            <span className="grid size-5 place-items-center rounded-md bg-white/15">
+              <ProductLogo id="llmops" variant="dark" className="h-3" />
+            </span>
             {llmops.name}
           </span>
           <span className="flex items-baseline gap-2">

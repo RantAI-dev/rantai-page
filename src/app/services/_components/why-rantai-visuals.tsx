@@ -11,6 +11,7 @@ import {
   Terminal,
 } from "lucide-react"
 
+import { ProductTile, productIdFrom } from "@/components/product-logo"
 import { cn } from "@/lib/utils"
 
 // One small product fragment per "Why RantAI" point, in the same card style
@@ -46,9 +47,9 @@ function Rise({
 function OwnProducts() {
   const items = [
     { icon: Bot, tone: "#3b82f6", name: "RantAI Agents", v: "v3.2" },
-    { icon: Terminal, tone: "#f97316", name: "RantAIClaw", v: "v1.8" },
+    { icon: Terminal, tone: "#f97316", name: "RantAI Claw", v: "v1.8" },
     { icon: BrainCircuit, tone: "#8b5cf6", name: "RantAI LLMOps", v: "v2.0" },
-    { icon: Database, tone: "#14b8a6", name: "RantAI Lake", v: "v1.4" },
+    { icon: Database, tone: "#14b8a6", name: "RantAI Lakehouse", v: "v1.4" },
   ]
   return (
     <Rise className={cn(card, "w-full max-w-sm p-5")}>
@@ -64,12 +65,11 @@ function OwnProducts() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.15 + i * 0.08 }}
           >
-            <span
-              className="grid size-8 place-items-center rounded-lg"
-              style={{ background: `${it.tone}1f`, color: it.tone }}
-            >
-              <it.icon className="size-4" />
-            </span>
+            <ProductTile
+              id={productIdFrom(it.name)!}
+              className="size-8 rounded-lg"
+              logoClassName="h-4"
+            />
             <span className="flex-1 font-medium">{it.name}</span>
             <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-500 tabular-nums">
               {it.v}

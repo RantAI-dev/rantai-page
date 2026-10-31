@@ -12,6 +12,7 @@ import { GithubIcon, LinkedInIcon } from "@/components/icons"
 import { FooterPrompt } from "@/components/footer-prompt"
 import { SplitReveal } from "@/components/split-reveal"
 import { siteConfig } from "@/lib/config"
+import { ProductLogo, productIdFrom } from "@/components/product-logo"
 
 type FooterLink = { label: string; href: string; external?: boolean }
 
@@ -24,14 +25,14 @@ const columns: { title: string; links: FooterLink[] }[] = [
         href: "https://agents.rantai.dev/",
         external: true,
       },
-      { label: "RantAIClaw", href: "https://claw.rantai.dev/", external: true },
+      { label: "RantAI Claw", href: "https://claw.rantai.dev/", external: true },
       {
         label: "RantAI LLMOps",
         href: "https://llmops.rantai.dev/",
         external: true,
       },
       {
-        label: "RantAI Lake",
+        label: "RantAI Lakehouse",
         href: "https://lakehouse.rantai.dev/",
         external: true,
       },
@@ -214,6 +215,19 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
                           : {})}
                         className={`group inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground ${linkUnderline}`}
                       >
+                        {productIdFrom(link.label) && (
+                          <ProductLogo
+                            id={productIdFrom(link.label)!}
+                            className="mr-1 h-3.5 dark:hidden"
+                          />
+                        )}
+                        {productIdFrom(link.label) && (
+                          <ProductLogo
+                            id={productIdFrom(link.label)!}
+                            variant="dark"
+                            className="mr-1 hidden h-3.5 dark:block"
+                          />
+                        )}
                         {link.label}
                         {link.external && (
                           <ArrowUpRight
