@@ -4,12 +4,14 @@ import Image from "next/image"
 import Link from "next/link"
 import {
   ArrowRight,
+  Check,
   CheckCircle2,
   Database,
   FileSpreadsheet,
   FileText,
   FileType2,
   Lock,
+  ScrollText,
   Server,
   ShieldCheck,
   type LucideIcon,
@@ -30,7 +32,7 @@ import { useRef, useState } from "react"
 import { Eyebrow } from "@/components/eyebrow"
 import { cn } from "@/lib/utils"
 
-type InlineKind = "files" | "data" | "agents" | "infra"
+type InlineKind = "files" | "data" | "agents" | "infra" | "policy"
 type CardKind = "answer" | "write" | "act"
 type Token = {
   text: string
@@ -38,25 +40,27 @@ type Token = {
   card?: CardKind
   mark?: boolean
   dwell?: number
+  /** Start this word on a new line (wide screens). */
+  breakBefore?: boolean
 }
 
 const tokens: Token[] = [
   { text: "RantAI" },
   { text: "turns" },
   { text: "your" },
-  { text: "documents,", inline: "files", dwell: 1 },
-  { text: "policies," },
+  { text: "documents", inline: "files", dwell: 1 },
+  { text: "policies", inline: "policy", breakBefore: true },
   { text: "and" },
   { text: "data", inline: "data" },
   { text: "into" },
   { text: "agents", inline: "agents", dwell: 1 },
-  { text: "that" },
+  { text: "that", breakBefore: true },
   { text: "answer,", card: "answer", dwell: 3 },
   { text: "write,", card: "write", dwell: 3 },
   { text: "and" },
   { text: "act,", card: "act", dwell: 3 },
   { text: "inside" },
-  { text: "your", mark: true },
+  { text: "your", mark: true, breakBefore: true },
   { text: "own", mark: true },
   { text: "infrastructure.", inline: "infra", mark: true, dwell: 4 },
 ]
@@ -87,6 +91,8 @@ type TileSpec = {
   logo?: string
   rotate: number
   iconClass?: string
+  /** A tile with its own small loop once it has landed. */
+  animated?: "policy" | "data"
 }
 
 const inlineTiles: Record<InlineKind, TileSpec[]> = {
@@ -95,12 +101,21 @@ const inlineTiles: Record<InlineKind, TileSpec[]> = {
     { className: "bg-sky-500", icon: FileText, rotate: 3 },
     { className: "bg-emerald-500", icon: FileSpreadsheet, rotate: -2 },
   ],
+  policy: [
+    {
+      className: "bg-violet-500",
+      icon: ScrollText,
+      rotate: -4,
+      animated: "policy",
+    },
+  ],
   data: [
     {
       className: "bg-amber-400",
       icon: Database,
       rotate: 3,
       iconClass: "text-amber-950",
+      animated: "data",
     },
   ],
   agents: [
@@ -110,6 +125,12 @@ const inlineTiles: Record<InlineKind, TileSpec[]> = {
       className: "bg-white ring-1 ring-black/10",
       logo: "/logo/RantAI Agents Light.svg",
       rotate: -3,
+    },
+    {
+      // RantAIClaw, the runtime the agents run on: dark tile for contrast.
+      className: "bg-neutral-950",
+      logo: "/logo/RantAIClaw Dark.svg",
+      rotate: 4,
     },
   ],
   infra: [
@@ -134,12 +155,14 @@ const spring = { stiffness: 380, damping: 20 }
 function Tile({
   spec,
   index,
+  count,
   appearAt,
   progress,
   reduce,
 }: Readonly<{
   spec: TileSpec
   index: number
+  count: number
   appearAt: number
   progress: MotionValue<number>
   reduce: boolean
@@ -149,34 +172,134 @@ function Tile({
   const pop = useSpring(target, spring)
   const rotate = useTransform(pop, [0, 1], [spec.rotate - 30, spec.rotate])
   const Icon = spec.icon
+  // On hover the stack lifts and fans apart: each tile drifts sideways and
+  // up a little, by its place in the stack.
+  // Fan out to the right only, so nothing slides over the word before it.
+  const spread = index * 0.32
+  const lift = count > 1 ? (index % 2 ? -0.12 : -0.24) : -0.16
 
   return (
-    <motion.span
+    <span
       className={cn(
-        "relative inline-flex size-[0.92em] shrink-0 items-center justify-center rounded-[0.24em] shadow-[0_0.08em_0.2em_rgba(0,0,0,0.18)] ring-[0.04em] ring-white",
-        index > 0 && "-ml-[0.3em]",
-        spec.className
+        "relative inline-flex transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/tiles:translate-x-(--sx) group-hover/tiles:translate-y-(--sy) motion-reduce:transition-none",
+        index > 0 && "-ml-[0.3em]"
       )}
       style={
-        reduce ? { rotate: spec.rotate } : { scale: pop, opacity: pop, rotate }
+        {
+          "--sx": `${spread}em`,
+          "--sy": `${lift}em`,
+          zIndex: index + 1,
+        } as React.CSSProperties
       }
+      data-tile
     >
-      {Icon && (
-        <Icon
-          className={cn("size-[0.5em]", spec.iconClass ?? "text-white")}
-          strokeWidth={2}
-        />
+      <motion.span
+        className={cn(
+          "relative inline-flex size-[0.92em] shrink-0 items-center justify-center rounded-[0.24em] shadow-[0_0.08em_0.2em_rgba(0,0,0,0.18)] ring-[0.04em] ring-white",
+          spec.className
+        )}
+        style={
+          reduce
+            ? { rotate: spec.rotate }
+            : { scale: pop, opacity: pop, rotate }
+        }
+      >
+        {Icon && spec.animated !== "policy" && (
+          <Icon
+            className={cn("size-[0.5em]", spec.iconClass ?? "text-white")}
+            strokeWidth={2}
+          />
+        )}
+        {spec.animated === "policy" && <PolicyFace reduce={reduce} />}
+        {spec.animated === "data" && <DataDrops reduce={reduce} />}
+        {spec.logo && (
+          <Image
+            src={spec.logo}
+            alt=""
+            width={40}
+            height={40}
+            className="h-[0.5em] w-auto"
+          />
+        )}
+      </motion.span>
+    </span>
+  )
+}
+
+/**
+ * A policy page being read and applied: a light scans down the page, then a
+ * check stamps the corner. Loops quietly.
+ */
+function PolicyFace({ reduce }: Readonly<{ reduce: boolean }>) {
+  const loop = { duration: 3.4, repeat: Infinity, ease: "easeInOut" } as const
+  return (
+    <span className="relative grid size-full place-items-center overflow-hidden rounded-[0.24em]">
+      <ScrollText className="size-[0.5em] text-white" strokeWidth={2} />
+      {!reduce && (
+        <>
+          {/* Scan line */}
+          <motion.span
+            className="absolute inset-x-[0.1em] h-[0.06em] rounded-full bg-white shadow-[0_0_0.12em_0.04em_rgb(255_255_255/0.9)]"
+            // Runs down the page, then is gone at once (no lingering glow).
+            animate={{
+              top: ["15%", "85%", "85%", "85%"],
+              opacity: [1, 1, 0, 0],
+            }}
+            transition={{
+              ...loop,
+              ease: "linear",
+              times: [0, 0.45, 0.46, 1],
+            }}
+          />
+          {/* Approved stamp */}
+          <motion.span
+            className="absolute right-[0.06em] bottom-[0.06em] grid size-[0.34em] place-items-center rounded-full bg-white text-violet-600"
+            animate={{
+              scale: [0, 0, 1.25, 1, 1, 0],
+              opacity: [0, 0, 1, 1, 1, 0],
+            }}
+            transition={{ ...loop, times: [0, 0.5, 0.6, 0.68, 0.94, 0.97] }}
+          >
+            <Check className="size-[0.22em]" strokeWidth={3.5} />
+          </motion.span>
+        </>
       )}
-      {spec.logo && (
-        <Image
-          src={spec.logo}
-          alt=""
-          width={40}
-          height={40}
-          className="h-[0.5em] w-auto"
+    </span>
+  )
+}
+
+/** Little bits of data flying in from around the tile and into the store. */
+function DataDrops({ reduce }: Readonly<{ reduce: boolean }>) {
+  if (reduce) return null
+  const from = [
+    ["-0.7em", "-0.45em"],
+    ["0.75em", "-0.35em"],
+    ["-0.6em", "0.5em"],
+    ["0.65em", "0.55em"],
+  ]
+  return (
+    <>
+      {from.map(([x, y], i) => (
+        <motion.span
+          key={i}
+          aria-hidden="true"
+          className="absolute size-[0.12em] rounded-full bg-amber-500"
+          animate={{
+            x: [x, "0em"],
+            y: [y, "0em"],
+            opacity: [0, 1, 0],
+            scale: [1, 0.6],
+          }}
+          transition={{
+            duration: 1.2,
+            delay: i * 0.35,
+            repeat: Infinity,
+            repeatDelay: 0.6,
+            ease: "easeIn",
+          }}
         />
-      )}
-    </motion.span>
+      ))}
+    </>
   )
 }
 
@@ -207,7 +330,7 @@ function InlineGroup({
   return (
     <motion.span
       aria-hidden="true"
-      className="inline-flex justify-end align-[-0.12em]"
+      className="group/tiles pointer-events-auto inline-flex justify-end align-[-0.12em]"
       style={{ width: reduce ? `${fullWidth}em` : width }}
     >
       {tiles.map((spec, index) => (
@@ -215,6 +338,7 @@ function InlineGroup({
           key={index}
           spec={spec}
           index={index}
+          count={tiles.length}
           appearAt={appearAt}
           progress={progress}
           reduce={reduce}
@@ -310,6 +434,9 @@ function Word({
   const mark = useSpring(markTarget, { stiffness: 200, damping: 30 })
   const markOpacity = useTransform(mark, [0, 0.04], [0, 1])
   const inlineAt = token.inline === "infra" ? FINALE + UNIT * 1.4 : lit
+  // Each card lands at its own angle, like notes dropped on a desk.
+  const tilt =
+    token.card === "answer" ? -3 : token.card === "write" ? 2.5 : -1.5
 
   return (
     <span className="relative inline-block whitespace-nowrap">
@@ -357,16 +484,22 @@ function Word({
       )}
       <AnimatePresence>
         {cardOpen && token.card && (
-          <motion.span
+          // Centred under its own word. The centring sits on this wrapper:
+          // motion animates transform on the card and would drop it.
+          <span
             aria-hidden="true"
-            className="pointer-events-none absolute top-full left-0 z-30 mt-3 block w-56 rounded-2xl border border-neutral-200 bg-white p-3.5 text-left text-base tracking-normal whitespace-normal shadow-[0_24px_48px_-12px_rgba(0,0,0,0.25)] sm:left-1/2 sm:w-64 sm:-translate-x-1/2"
-            initial={{ opacity: 0, y: 10, rotate: -5, scale: 0.92 }}
-            animate={{ opacity: 1, y: 0, rotate: -2, scale: 1 }}
-            exit={{ opacity: 0, y: 6, rotate: 1, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+            className="pointer-events-none absolute top-full left-0 z-30 mt-3 block w-56 sm:left-1/2 sm:w-64 sm:-translate-x-1/2"
           >
-            <CardContent kind={token.card} />
-          </motion.span>
+            <motion.span
+              className="block rounded-2xl border border-neutral-200 bg-white p-3.5 text-left text-base tracking-normal whitespace-normal shadow-[0_24px_48px_-12px_rgba(0,0,0,0.25)]"
+              initial={{ opacity: 0, y: 10, rotate: tilt * 2.5, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0, rotate: tilt, scale: 1 }}
+              exit={{ opacity: 0, y: 6, rotate: 1, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 420, damping: 28 }}
+            >
+              <CardContent kind={token.card} />
+            </motion.span>
+          </span>
         )}
       </AnimatePresence>
     </span>
@@ -413,10 +546,11 @@ export function HomeSolution() {
           <h2
             id="solution-heading"
             aria-label={sentence}
-            className="relative isolate mt-8 max-w-[24ch] text-[clamp(2.25rem,5.2vw,5rem)] leading-[1.12] font-medium tracking-[-0.04em] text-neutral-950"
+            className="relative isolate mt-8 max-w-[28ch] text-[clamp(2.25rem,5.2vw,5rem)] leading-[1.12] font-medium tracking-[-0.04em] text-neutral-950"
           >
             {tokens.map((token, index) => (
               <span key={`${token.text}-${index}`}>
+                {token.breakBefore && <br className="hidden sm:block" />}
                 <Word
                   token={token}
                   index={index}
