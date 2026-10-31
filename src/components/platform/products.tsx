@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useEffect, useRef } from "react"
 import { useInView, useReducedMotion } from "motion/react"
 
@@ -17,6 +18,8 @@ export type Product = {
   features: string[]
   video?: string
   videoFit?: "cover" | "contain"
+  /** A product screenshot, used when there is no demo video yet. */
+  image?: string
   flow?: string[]
 }
 
@@ -61,6 +64,7 @@ export const products: Product[] = [
       "A sovereign, AI-native lakehouse from raw data to BI-ready insight.",
     href: "https://lakehouse.rantai.dev/",
     features: ["Runs on your infrastructure", "AI-native", "BI-ready output"],
+    image: "/products/lake-dashboard.jpg",
     flow: ["Raw data", "Lakehouse", "BI-ready insight"],
   },
 ]
@@ -138,5 +142,15 @@ export function Media({
   compact,
 }: Readonly<{ product: Product; compact?: boolean }>) {
   if (product.video) return <Video src={product.video} fit={product.videoFit} />
+  if (product.image)
+    return (
+      <Image
+        src={product.image}
+        alt={`${product.name} interface`}
+        fill
+        sizes="(min-width: 1024px) 55vw, 100vw"
+        className="object-cover object-top-left"
+      />
+    )
   return <Flow steps={product.flow ?? []} compact={compact} />
 }

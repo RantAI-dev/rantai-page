@@ -119,8 +119,24 @@ export function DefineVisual({ active = true, done = false }: VisualProps) {
             return (
               <motion.div
                 key={o.name}
-                className="absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5"
-                style={{ left: `${o.x * 100}%`, top: `${o.y * 100}%` }}
+                // Anchored at the dot, not the row's centre, so the dot never
+                // moves when its label grows into a pill. Labels on the right
+                // half sit to the dot's left, so nothing runs off the edge.
+                className={cn(
+                  "absolute flex -translate-y-1/2 items-center gap-1.5",
+                  o.x > 0.6 && "flex-row-reverse"
+                )}
+                style={
+                  o.x > 0.6
+                    ? {
+                        right: `calc(${(1 - o.x) * 100}% - 4px)`,
+                        top: `${o.y * 100}%`,
+                      }
+                    : {
+                        left: `calc(${o.x * 100}% - 4px)`,
+                        top: `${o.y * 100}%`,
+                      }
+                }
                 initial={false}
                 animate={{
                   opacity: shown ? (dim ? 0.3 : 1) : 0,
