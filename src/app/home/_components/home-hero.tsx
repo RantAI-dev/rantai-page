@@ -9,8 +9,16 @@ import { PillLink } from "@/components/pill-link"
 import { SplitReveal } from "@/components/split-reveal"
 import { PageIntro } from "./page-intro"
 import { siteConfig } from "@/lib/config"
+import { cn } from "@/lib/utils"
 
 const ease = [0.22, 1, 0.36, 1] as const
+
+const headline =
+  "text-[clamp(2.75rem,7.6vw,7rem)] leading-[0.94] font-medium tracking-[-0.05em] text-balance"
+
+// A streak of light sweeps across the button on hover.
+const buttonSheen =
+  "relative overflow-hidden before:pointer-events-none before:absolute before:inset-y-0 before:-left-1/2 before:w-1/2 before:-skew-x-12 before:bg-linear-to-r before:from-transparent before:via-black/10 before:to-transparent before:transition-transform before:duration-700 before:ease-out hover:before:translate-x-[300%] motion-reduce:before:hidden"
 
 const partners = [
   { name: "NQRust", logo: "/partners/nqrust.png" },
@@ -50,15 +58,36 @@ export function HomeHero() {
           </div>
 
           <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-5 pb-8 text-center sm:px-8 sm:pb-10">
-            <SplitReveal
-              id="hero-heading"
-              as="h1"
-              text="AI systems for real‑world operations."
-              trigger="mount"
-              play={ready}
-              delay={0.3}
-              className="text-[clamp(2.75rem,7.6vw,7rem)] leading-[0.94] font-medium tracking-[-0.05em] text-balance"
-            />
+            <div className="relative">
+              <SplitReveal
+                id="hero-heading"
+                as="h1"
+                text="AI systems for real‑world operations."
+                trigger="mount"
+                play={ready}
+                delay={0.3}
+                className={headline}
+              />
+              {/* One pass of light across the headline once it has landed */}
+              {!reduce && (
+                <motion.p
+                  aria-hidden="true"
+                  className={cn(
+                    headline,
+                    "pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,transparent_40%,rgb(255_255_255/0.95)_50%,transparent_60%)] bg-[length:250%_100%] bg-clip-text text-transparent"
+                  )}
+                  initial={{ backgroundPosition: "120% 0", opacity: 0 }}
+                  animate={
+                    ready
+                      ? { backgroundPosition: "-20% 0", opacity: [0, 1, 1, 0] }
+                      : undefined
+                  }
+                  transition={{ duration: 1.6, delay: 1.5, ease: "easeInOut" }}
+                >
+                  AI systems for real‑world operations.
+                </motion.p>
+              )}
+            </div>
             <motion.p
               className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 sm:text-xl"
               initial={reduce ? false : { opacity: 0, y: 12 }}
@@ -79,7 +108,7 @@ export function HomeHero() {
                 href={`mailto:${siteConfig.links.email}`}
                 size="lg"
                 icon="external"
-                className="w-full sm:w-auto"
+                className={cn("w-full sm:w-auto", buttonSheen)}
               >
                 Talk to our team
               </PillLink>

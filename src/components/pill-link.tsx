@@ -33,7 +33,9 @@ export function PillLink({
         size === "md" ? "h-11 px-5 text-sm" : "h-12 px-7 text-[15px]",
         variant === "solid"
           ? "bg-foreground text-background hover:bg-foreground/85"
-          : "border border-foreground/25 text-foreground hover:border-foreground/70",
+          : // Hover: the edge stays soft; the pill fills with a faint glass
+            // tint and a thin highlight along its top edge.
+            "border border-foreground/20 text-foreground transition-[background-color,border-color,box-shadow] duration-300 hover:border-foreground/30 hover:bg-foreground/[0.07] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.12)]",
         className
       )}
     >

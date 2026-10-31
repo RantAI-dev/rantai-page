@@ -63,11 +63,15 @@ function noise3(x: number, y: number, z: number) {
   )
 }
 
+const SCRAMBLE = "@#%*+=-:;.01xX/<>"
+
 function drawEarth(
   ctx: CanvasRenderingContext2D,
   w: number,
   h: number,
-  t: number
+  spin: number,
+  /** Cursor in canvas pixels, with 0–1 strength (fades in and out). */
+  lamp: { x: number; y: number; k: number }
 ) {
   ctx.clearRect(0, 0, w, h)
   const radius = Math.max(w, h) * 0.75
@@ -88,8 +92,10 @@ function drawEarth(
   const cw = cell * 0.62
   ctx.font = `500 ${cell - 1}px ui-monospace, SFMono-Regular, Menlo, monospace`
   ctx.textBaseline = "top"
-  const spin = t * 0.06
   const buckets: number[][] = ramp.split("").map(() => [])
+  // Characters under the cursor: brighter, and some flicker to random glyphs.
+  const lit: { x: number; y: number; a: number; c: string }[] = []
+  const reach = 150
   for (let y = 0; y < h; y += cell) {
     for (let x = 0; x < w; x += cw) {
       const nx = (x - cx) / radius
@@ -111,6 +117,18 @@ function drawEarth(
           rim * 0.9
       )
       const i = Math.floor(v * ramp.length)
+      if (lamp.k > 0) {
+        const d = Math.hypot(x - lamp.x, y - lamp.y)
+        if (d < reach) {
+          const f = (1 - d / reach) ** 2 * lamp.k
+          const c =
+            Math.random() < f * 0.35
+              ? SCRAMBLE[Math.floor(Math.random() * SCRAMBLE.length)]
+              : ramp[Math.max(i, 2)]
+          lit.push({ x, y, a: Math.min(1, 0.1 + i * 0.06 + f * 0.8), c })
+          continue
+        }
+      }
       if (i > 0) buckets[i].push(x, y)
     }
   }
@@ -119,6 +137,10 @@ function drawEarth(
     for (let k = 0; k < cells.length; k += 2)
       ctx.fillText(ramp[i], cells[k], cells[k + 1])
   })
+  for (const l of lit) {
+    ctx.fillStyle = `rgba(255,255,255,${l.a})`
+    ctx.fillText(l.c, l.x, l.y)
+  }
 }
 
 /* ------------------------------ Panorama ------------------------------ */
@@ -137,12 +159,24 @@ export function HeroPanorama() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     const strips = [...ring.querySelectorAll<HTMLElement>("[data-strip]")]
     let angles: number[] = []
+    let centres: number[] = [] // each strip's card centre angle
     let R = 1000
     let dim = 1
     let frame = 0
+    let lastNow = 0
+    let lastScroll = window.scrollY
+    let boost = 0
+    let rot = 0
+    let earthSpin = 0
+    let dragging = false
+    let dragX = 0
+    let dragVel = 0
+    let tiltX = 0
+    let tiltY = 0
+    let lampK = 0
+    const pointer = { x: -999, y: -999, tx: 0, ty: 0, inside: false }
     let lastEarth = 0
     let visible = false
-    const start = performance.now()
 
     const layout = () => {
       const w = scene.clientWidth
@@ -170,6 +204,7 @@ export function HeroPanorama() {
       ring.style.top = `${h * (narrow ? 0.24 : 0.43)}px`
       dim = narrow ? 0.55 : 1
       angles = []
+      centres = []
       strips.forEach((el) => {
         const card = Number(el.dataset.card)
         const i = Number(el.dataset.strip)
@@ -177,6 +212,7 @@ export function HeroPanorama() {
         const shot = card % 2 ? claw : agents
         const a = card * step + (i - STRIPS / 2 + 0.5) * sliceA
         angles.push(a)
+        centres.push(card * step)
         el.style.width = `${sliceW + 2}px`
         el.style.height = `${cardH}px`
         el.style.marginLeft = `${-sliceW / 2}px`
@@ -190,9 +226,32 @@ export function HeroPanorama() {
     }
 
     const render = (now: number) => {
-      const t = reduce ? 0 : (now - start) / 1000
-      const rot = -t * 0.035
-      ring.style.transform = `translateZ(${R}px) rotateY(${rot}rad)`
+      const dt = Math.min(0.05, (now - (lastNow || now)) / 1000)
+      lastNow = now
+      // Scroll speed briefly speeds up the spin, then it settles.
+      const y = window.scrollY
+      const speed = Math.abs(y - lastScroll) / Math.max(dt, 0.016)
+      lastScroll = y
+      boost += (Math.min(1.2, speed / 900) - boost) * 0.08
+      if (!reduce) {
+        if (!dragging) {
+          // Let go of a drag: glide on, then return to the idle drift.
+          dragVel *= 0.94
+          rot += dragVel
+        }
+        rot -= dt * (0.035 + boost * 0.25)
+        earthSpin += dt * (0.06 + boost * 0.5)
+      }
+      // Ease the cursor tilt and the lamp toward their targets.
+      tiltX += (pointer.tx - tiltX) * 0.06
+      tiltY += (pointer.ty - tiltY) * 0.06
+      lampK += ((pointer.inside ? 1 : 0) - lampK) * 0.1
+      scene.style.perspectiveOrigin = `${50 + tiltX * 10}% ${50 + tiltY * 8}%`
+      // Parallax as the hero scrolls away. It lives inside the 3D transform:
+      // opacity or a separate translate here would flatten the ring.
+      const away = Math.max(0, -scene.getBoundingClientRect().top)
+      ring.style.transform = `translateY(${away * 0.12}px) translateZ(${R}px) rotateY(${rot}rad)`
+      canvas.style.transform = `translate(${-tiltX * 10}px, ${away * 0.3 - tiltY * 6}px)`
       strips.forEach((el, k) => {
         const a = angles[k]
         // Angle from straight ahead, wrapped to [-π, π].
@@ -203,10 +262,15 @@ export function HeroPanorama() {
         const shown = Math.abs(rel) < 1.2 && !el.dataset.off
         el.style.transform = `rotateY(${-a}rad) translateZ(${-R}px)`
         el.style.visibility = shown ? "visible" : "hidden"
-        // Dim toward the sides so the centre stays calm.
-        el.style.filter = `grayscale(1) brightness(${((0.75 - Math.min(0.35, Math.abs(rel) * 0.5)) * dim).toFixed(3)})`
+        // Dim toward the sides so the centre stays calm. Measured from the
+        // card's centre, so every strip of a card gets the same filter and
+        // no seams show between them.
+        let cardRel = (rot - centres[k]) % (Math.PI * 2)
+        if (cardRel > Math.PI) cardRel -= Math.PI * 2
+        if (cardRel < -Math.PI) cardRel += Math.PI * 2
+        el.style.filter = `grayscale(1) brightness(${((0.75 - Math.min(0.35, Math.abs(cardRel) * 0.5)) * dim).toFixed(3)})`
       })
-      if (now - lastEarth > 50) {
+      if (now - lastEarth > (lampK > 0.01 ? 33 : 50)) {
         const dpr = Math.min(window.devicePixelRatio || 1, 2)
         const w = canvas.clientWidth
         const h = canvas.clientHeight
@@ -218,10 +282,62 @@ export function HeroPanorama() {
           canvas.height = Math.round(h * dpr)
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-        drawEarth(ctx, w, h, t)
+        const r = canvas.getBoundingClientRect()
+        drawEarth(ctx, w, h, earthSpin, {
+          x: pointer.x - r.left,
+          y: pointer.y - r.top,
+          k: reduce ? 0 : lampK,
+        })
         lastEarth = now
       }
       frame = visible && !reduce ? requestAnimationFrame(render) : 0
+    }
+
+    // Pointer: tilt and lamp follow the cursor; drag spins the panorama.
+    // The dark hero card (the scene sits in a pointer-events-none wrapper).
+    const card = scene.closest<HTMLElement>(".dark") ?? scene
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return
+      const r = card.getBoundingClientRect()
+      pointer.x = e.clientX
+      pointer.y = e.clientY
+      pointer.tx = ((e.clientX - r.left) / r.width - 0.5) * 2
+      pointer.ty = ((e.clientY - r.top) / r.height - 0.5) * 2
+      pointer.inside = true
+      if (dragging) {
+        const dx = e.clientX - dragX
+        dragX = e.clientX
+        const step = (dx / Math.max(1, R)) * 1.2
+        rot += step
+        dragVel = step
+      }
+    }
+    const onLeave = () => {
+      pointer.inside = false
+      pointer.tx = 0
+      pointer.ty = 0
+      dragging = false
+      card.style.cursor = ""
+    }
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return
+      if ((e.target as HTMLElement).closest("a,button,input,textarea")) return
+      dragging = true
+      dragX = e.clientX
+      dragVel = 0
+      card.style.cursor = "grabbing"
+      card.style.userSelect = "none"
+    }
+    const onUp = () => {
+      dragging = false
+      card.style.cursor = ""
+      card.style.userSelect = ""
+    }
+    if (!reduce) {
+      card.addEventListener("pointermove", onMove)
+      card.addEventListener("pointerleave", onLeave)
+      card.addEventListener("pointerdown", onDown)
+      window.addEventListener("pointerup", onUp)
     }
 
     layout()
@@ -240,6 +356,10 @@ export function HeroPanorama() {
       cancelAnimationFrame(frame)
       ro.disconnect()
       io.disconnect()
+      card.removeEventListener("pointermove", onMove)
+      card.removeEventListener("pointerleave", onLeave)
+      card.removeEventListener("pointerdown", onDown)
+      window.removeEventListener("pointerup", onUp)
     }
   }, [])
 
@@ -271,7 +391,9 @@ export function HeroPanorama() {
       {/* Shade behind the headline and copy */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_44%_30%_at_50%_58%,rgb(0_0_0/0.85),transparent)]" />
       <div className="absolute inset-x-0 top-0 h-[12%] bg-gradient-to-b from-black to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-[30%] bg-gradient-to-t from-black via-black/85 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-[12%] bg-gradient-to-t from-black/80 to-transparent" />
+      {/* Quiet patch behind the partner logos */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_42%_14%_at_50%_90%,rgb(0_0_0/0.95)_40%,transparent)]" />
     </div>
   )
 }
