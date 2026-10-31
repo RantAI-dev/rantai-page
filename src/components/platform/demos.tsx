@@ -28,6 +28,11 @@ import { cn } from "@/lib/utils"
 const ease = [0.22, 1, 0.36, 1] as const
 const W = 880
 const H = 550
+// Narrow screens get a portrait canvas with only the main cards, so the
+// text stays readable instead of shrinking the desktop layout.
+const CW = 400
+const CH = 500
+const COMPACT_BELOW = 640
 
 /* ------------------------------------------------------------------ */
 /*  Shared pieces                                                      */
@@ -44,8 +49,15 @@ const desks = {
 /** Lays the demo out at a fixed design size and scales it to fit. */
 function Stage({
   desk,
+  compact,
   children,
-}: Readonly<{ desk: keyof typeof desks; children: React.ReactNode }>) {
+}: Readonly<{
+  desk: keyof typeof desks
+  compact: boolean
+  children: React.ReactNode
+}>) {
+  const w = compact ? CW : W
+  const h = compact ? CH : H
   const d = desks[desk]
   const pattern =
     d.pattern === "grid"
@@ -63,11 +75,17 @@ function Stage({
     const el = ref.current
     if (!el) return
     const ro = new ResizeObserver(([e]) =>
-      setScale(Math.min(e.contentRect.width / W, e.contentRect.height / H))
+      setScale(
+        Math.min(
+          e.contentRect.width / w,
+          e.contentRect.height / h,
+          compact ? 1.15 : Infinity
+        )
+      )
     )
     ro.observe(el)
     return () => ro.disconnect()
-  }, [])
+  }, [w, h, compact])
   return (
     <div
       ref={ref}
@@ -77,8 +95,8 @@ function Stage({
       <div
         className="absolute top-1/2 left-1/2 origin-center text-neutral-900"
         style={{
-          width: W,
-          height: H,
+          width: w,
+          height: h,
           transform: `translate(-50%, -50%) scale(${scale})`,
         }}
       >
@@ -191,7 +209,22 @@ function usePlaying(active: boolean) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { amount: 0.4 })
   const reduce = useReducedMotion()
-  return { ref, playing: active && inView && !reduce, reduce: Boolean(reduce) }
+  const [compact, setCompact] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const ro = new ResizeObserver(([e]) =>
+      setCompact(e.contentRect.width < COMPACT_BELOW)
+    )
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  return {
+    ref,
+    compact,
+    playing: active && inView && !reduce,
+    reduce: Boolean(reduce),
+  }
 }
 
 function Chips({
@@ -299,7 +332,7 @@ const agentPrompts = [
 const agentTiming = [1500, 1700, 2600]
 
 export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
-  const { ref, playing, reduce } = usePlaying(active)
+  const { ref, playing, reduce, compact } = usePlaying(active)
   const [pick, setPick] = useState(0)
   const p = agentPrompts[pick]
   const step = useScript(agentTiming, playing, `${pick}`, () =>
@@ -310,9 +343,9 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
 
   return (
     <div ref={ref} className="size-full">
-      <Stage desk="agents">
+      <Stage desk="agents" compact={compact}>
         {/* Knowledge */}
-        <Card className="top-16 left-8 w-[220px] p-4" show={s >= 1}>
+        <Card className="top-16 left-8 w-[220px] p-4" show={!compact && s >= 1}>
           <p className="text-[12px] font-medium text-neutral-500">Knowledge</p>
           <ul className="mt-3 space-y-2.5">
             {p.sources.map((src, i) => {
@@ -347,7 +380,12 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
 
         {/* Chat */}
         <Card
-          className="top-10 left-[270px] flex h-[400px] w-[380px] flex-col overflow-hidden"
+          className={cn(
+            "flex flex-col overflow-hidden",
+            compact
+              ? "inset-x-5 top-5 h-[318px]"
+              : "top-10 left-[270px] h-[400px] w-[380px]"
+          )}
           key={`chat-${pick}`}
         >
           <div className="flex items-center gap-2 border-b border-black/[0.06] px-4 py-3 text-[13px] font-medium">
@@ -397,7 +435,24 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
         </Card>
 
         {/* Artifact */}
-        <Card className="top-[190px] right-8 w-[190px] p-4" show={s >= 3}>
+        <Card
+          className="inset-x-5 top-[352px] flex items-center gap-3 p-3"
+          show={compact && s >= 3}
+        >
+          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#8b5cf6]/12 text-[#8b5cf6]">
+            <FileText className="size-4" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[11px] text-neutral-500">Artifact</span>
+            <span className="block truncate text-[13px] font-medium">
+              {p.artifact}
+            </span>
+          </span>
+        </Card>
+        <Card
+          className="top-[190px] right-8 w-[190px] p-4"
+          show={!compact && s >= 3}
+        >
           <p className="text-[12px] font-medium text-neutral-500">Artifact</p>
           <div className="mt-3 rounded-xl border border-black/[0.07] bg-neutral-50 p-3">
             <span className="grid size-8 place-items-center rounded-lg bg-[#8b5cf6]/12 text-[#8b5cf6]">
@@ -469,7 +524,7 @@ const clawRuns = [
 ]
 
 export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
-  const { ref, playing, reduce } = usePlaying(active)
+  const { ref, playing, reduce, compact } = usePlaying(active)
   const [pick, setPick] = useState(0)
   const run = clawRuns[pick]
   const timing = run.lines.map((_, i) => (i === 0 ? 900 : 520))
@@ -480,9 +535,12 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
 
   return (
     <div ref={ref} className="size-full">
-      <Stage desk="claw">
+      <Stage desk="claw" compact={compact}>
         <Card
-          className="top-10 left-10 w-[520px] overflow-hidden border-white/10 bg-[#0d0f12] text-white"
+          className={cn(
+            "overflow-hidden border-white/10 bg-[#0d0f12] text-white",
+            compact ? "inset-x-5 top-5" : "top-10 left-10 w-[520px]"
+          )}
           key={`term-${pick}`}
         >
           <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
@@ -493,7 +551,14 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
               rantaiclaw · ~/ops
             </span>
           </div>
-          <div className="min-h-[300px] space-y-1.5 p-5 [font-family:ui-monospace,SFMono-Regular,Menlo,monospace] text-[13px]">
+          <div
+            className={cn(
+              "space-y-1.5 [font-family:ui-monospace,SFMono-Regular,Menlo,monospace]",
+              compact
+                ? "min-h-[228px] p-4 text-[12px]"
+                : "min-h-[300px] p-5 text-[13px]"
+            )}
+          >
             <p>
               <span className="text-[#5cb6f9]">$</span> rantaiclaw run{" "}
               {run.chip}
@@ -523,7 +588,13 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
           </div>
         </Card>
 
-        <Card className="top-16 right-8 w-[230px] p-4" key={`sched-${pick}`}>
+        <Card
+          className={cn(
+            "p-4",
+            compact ? "inset-x-5 top-[310px]" : "top-16 right-8 w-[230px]"
+          )}
+          key={`sched-${pick}`}
+        >
           <p className="text-[12px] font-medium text-neutral-500">Schedule</p>
           <p className="mt-2 text-[15px] font-medium">{run.chip}</p>
           <p className="mt-1 text-[12px] text-neutral-500">{run.schedule}</p>
@@ -536,7 +607,7 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
           </div>
         </Card>
 
-        <Card className="right-8 bottom-24 w-[230px] p-4">
+        <Card className="right-8 bottom-24 w-[230px] p-4" show={!compact}>
           <p className="text-[12px] font-medium text-neutral-500">Channels</p>
           <ul className="mt-3 space-y-2 text-[13px]">
             {["Telegram", "Slack", "Email"].map((c) => (
@@ -596,7 +667,7 @@ const lakeAsks = [
 const lakeTiming = [1700, 1900, 600]
 
 export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
-  const { ref, playing, reduce } = usePlaying(active)
+  const { ref, playing, reduce, compact } = usePlaying(active)
   const [pick, setPick] = useState(0)
   const a = lakeAsks[pick]
   const step = useScript(lakeTiming, playing, `${pick}`, () =>
@@ -607,10 +678,15 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
 
   return (
     <div ref={ref} className="size-full">
-      <Stage desk="lake">
+      <Stage desk="lake" compact={compact}>
         {/* Ask */}
         <Card
-          className="top-8 left-1/2 w-[560px] -translate-x-1/2 p-3"
+          className={cn(
+            "p-3",
+            compact
+              ? "inset-x-5 top-5"
+              : "top-8 left-1/2 w-[560px] -translate-x-1/2"
+          )}
           key={`ask-${pick}`}
         >
           <div className="flex items-center gap-3 px-1">
@@ -626,8 +702,11 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
 
         {/* SQL */}
         <Card
-          className="top-[110px] left-8 w-[300px] overflow-hidden"
-          show={s >= 1}
+          className={cn(
+            "overflow-hidden",
+            compact ? "inset-x-5 top-[104px]" : "top-[110px] left-8 w-[300px]"
+          )}
+          show={s >= 1 && (!compact || s < 2)}
           key={`sql-${pick}`}
         >
           <div className="flex items-center justify-between border-b border-black/[0.06] px-4 py-2.5 text-[12px] font-medium text-neutral-500">
@@ -645,7 +724,10 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
 
         {/* Chart */}
         <Card
-          className="top-[110px] right-8 w-[480px] p-5"
+          className={cn(
+            "p-5",
+            compact ? "inset-x-5 top-[104px]" : "top-[110px] right-8 w-[480px]"
+          )}
           show={s >= 2}
           key={`chart-${pick}`}
         >
@@ -675,7 +757,13 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
         </Card>
 
         {/* Lineage */}
-        <Card className="bottom-20 left-8 w-[300px] p-4" show={s >= 3}>
+        <Card
+          className={cn(
+            "p-4",
+            compact ? "inset-x-5 top-[340px]" : "bottom-20 left-8 w-[300px]"
+          )}
+          show={s >= 3}
+        >
           <p className="text-[12px] font-medium text-neutral-500">Lineage</p>
           <div className="mt-3 flex items-center gap-2 text-[11px]">
             {[
@@ -729,7 +817,7 @@ const llmRuns = [
 const llmTiming = [900, 2600, 1300, 900]
 
 export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
-  const { ref, playing, reduce } = usePlaying(active)
+  const { ref, playing, reduce, compact } = usePlaying(active)
   const [pick, setPick] = useState(0)
   const r = llmRuns[pick]
   const step = useScript(llmTiming, playing, `${pick}`, () =>
@@ -740,8 +828,14 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
 
   return (
     <div ref={ref} className="size-full">
-      <Stage desk="llmops">
-        <Card className="top-10 left-8 w-[250px] p-4" key={`run-${pick}`}>
+      <Stage desk="llmops" compact={compact}>
+        <Card
+          className={cn(
+            "p-4",
+            compact ? "inset-x-5 top-5" : "top-10 left-8 w-[250px]"
+          )}
+          key={`run-${pick}`}
+        >
           <p className="text-[12px] font-medium text-neutral-500">
             Run · {r.chip}
           </p>
@@ -755,7 +849,12 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
               />
             ))}
           </ul>
-          <div className="mt-4 flex items-center gap-2 rounded-xl bg-neutral-50 px-3 py-2 text-[12px]">
+          <div
+            className={cn(
+              "mt-4 flex items-center gap-2 rounded-xl bg-neutral-50 px-3 py-2 text-[12px]",
+              compact && "hidden"
+            )}
+          >
             <FileText className="size-3.5 text-[#8b5cf6]" />
             <span className="flex-1 truncate">{r.data}</span>
             <span className="text-neutral-400">{r.rows}</span>
@@ -763,8 +862,11 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
         </Card>
 
         <Card
-          className="top-10 right-8 w-[540px] p-5"
-          show={s >= 2}
+          className={cn(
+            "p-5",
+            compact ? "inset-x-5 top-[196px]" : "top-10 right-8 w-[540px]"
+          )}
+          show={s >= 2 && (!compact || s < 3)}
           key={`train-${pick}`}
         >
           <div className="flex items-baseline justify-between">
@@ -775,7 +877,10 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           </div>
           <svg
             viewBox="0 0 320 100"
-            className="mt-3 h-[150px] w-full overflow-visible"
+            className={cn(
+              "mt-3 w-full overflow-visible",
+              compact ? "h-[110px]" : "h-[150px]"
+            )}
           >
             {[25, 50, 75].map((y) => (
               <line
@@ -801,7 +906,12 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
         </Card>
 
         <Card
-          className="right-[300px] bottom-20 w-[260px] p-4"
+          className={cn(
+            "p-4",
+            compact
+              ? "inset-x-5 top-[232px]"
+              : "right-[300px] bottom-20 w-[260px]"
+          )}
           show={s >= 3}
           key={`eval-${pick}`}
         >
@@ -830,7 +940,13 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           ))}
         </Card>
 
-        <Card className="right-8 bottom-20 w-[250px] p-4" show={s >= 4}>
+        <Card
+          className={cn(
+            "p-4",
+            compact ? "inset-x-5 top-[354px]" : "right-8 bottom-20 w-[250px]"
+          )}
+          show={s >= 4}
+        >
           <div className="flex items-center justify-between">
             <p className="text-[12px] font-medium text-neutral-500">Endpoint</p>
             <span className="flex items-center gap-1.5 text-[11px] text-[#10b981]">
@@ -841,7 +957,12 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           <p className="mt-2 rounded-lg bg-neutral-50 px-2.5 py-2 [font-family:ui-monospace,monospace] text-[11px] text-neutral-700">
             POST /v1/chat/completions
           </p>
-          <p className="mt-2 text-[11px] text-neutral-500">
+          <p
+            className={cn(
+              "mt-2 text-[11px] text-neutral-500",
+              compact && "hidden"
+            )}
+          >
             OpenAI-compatible · on your GPUs
           </p>
         </Card>

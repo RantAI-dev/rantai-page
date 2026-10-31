@@ -27,7 +27,7 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react"
-import { useRef, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 
 import { Eyebrow } from "@/components/eyebrow"
 import { cn } from "@/lib/utils"
@@ -486,8 +486,8 @@ function Word({
         {cardOpen && token.card && (
           // Centred under its own word. The centring sits on this wrapper:
           // motion animates transform on the card and would drop it.
-          <span
-            aria-hidden="true"
+          <KeepInView
+            key="card"
             className="pointer-events-none absolute top-full left-0 z-30 mt-3 block w-56 sm:left-1/2 sm:w-64 sm:-translate-x-1/2"
           >
             <motion.span
@@ -499,9 +499,37 @@ function Word({
             >
               <CardContent kind={token.card} />
             </motion.span>
-          </span>
+          </KeepInView>
         )}
       </AnimatePresence>
+    </span>
+  )
+}
+
+/** Slides a popover sideways so it never runs past the screen edge. */
+function KeepInView({
+  className,
+  children,
+}: Readonly<{ className?: string; children: React.ReactNode }>) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const [shift, setShift] = useState(0)
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const gap = 16
+    const box = el.getBoundingClientRect()
+    const vw = document.documentElement.clientWidth
+    if (box.right > vw - gap) setShift(vw - gap - box.right)
+    else if (box.left < gap) setShift(gap - box.left)
+  }, [])
+  return (
+    <span
+      ref={ref}
+      aria-hidden="true"
+      className={className}
+      style={{ marginLeft: shift }}
+    >
+      {children}
     </span>
   )
 }

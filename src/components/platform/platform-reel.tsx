@@ -78,7 +78,9 @@ function useStickyProgress(ref: React.RefObject<HTMLElement | null>) {
 function useIsDesktop() {
   const [desktop, setDesktop] = useState(false)
   useEffect(() => {
-    const q = window.matchMedia("(min-width: 1024px)")
+    // Below 1280px the media column is too narrow for the demos to read, so
+    // those screens get the stacked list instead.
+    const q = window.matchMedia("(min-width: 1280px)")
     const update = () => setDesktop(q.matches)
     update()
     q.addEventListener("change", update)
@@ -420,7 +422,7 @@ function StackedReel() {
         {products.map((p) => (
           <section key={p.id} id={anchors[p.id]} className="scroll-mt-24">
             <PanelText product={p} />
-            <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-2xl border border-white/12 bg-neutral-950">
+            <div className="relative mt-8 aspect-[4/5] overflow-hidden rounded-2xl border border-white/12 bg-neutral-950 md:aspect-[16/10]">
               {demos[p.id] ? (
                 (() => {
                   const Demo = demos[p.id]
