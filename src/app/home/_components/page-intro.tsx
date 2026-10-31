@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 
 const ease = [0.22, 1, 0.36, 1] as const
 const open = [0.76, 0, 0.24, 1] as const
-const HOLD_MS = 2000
+const HOLD_MS = 1350
 const OPEN_S = 1.25
 const STORAGE_KEY = "rantai-intro"
 
@@ -85,7 +85,7 @@ export function PageIntro({
         width: ["0px", `${from.width}px`],
         height: ["0px", `${from.height}px`],
       },
-      { duration: 1.1, ease: [0.65, 0, 0.35, 1], delay: 0.15 }
+      { duration: 0.6, ease: [0.65, 0, 0.35, 1] }
     )
 
     let cancelled = false
@@ -159,7 +159,7 @@ export function PageIntro({
             transition={
               opening
                 ? { duration: OPEN_S * 0.6, ease }
-                : { duration: 0.9, ease, delay: 0.2 }
+                : { duration: 0.7, ease, delay: 0.1 }
             }
           >
             RantAI
