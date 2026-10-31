@@ -8,7 +8,8 @@ import { HomeInsights } from "@/app/home/_components/home-insights"
 import { HomeProblem } from "@/app/home/_components/home-problem"
 import { HomeProcess } from "@/app/home/_components/home-process"
 import { HomeSolution } from "@/app/home/_components/home-solution"
-import { ProductShowcase } from "@/components/product-showcase"
+import { DarkPanel } from "@/components/dark-panel"
+import { PlatformReel } from "@/components/platform/platform-reel"
 import { SiteShell } from "@/components/site-shell"
 
 export const metadata: Metadata = {
@@ -49,7 +50,13 @@ export default function Page() {
       <HomeHero />
       <HomeProblem />
       <HomeSolution />
-      <ProductShowcase />
+      <DarkPanel
+        id="platform"
+        aria-labelledby="platform-heading"
+        className="scroll-mt-20"
+      >
+        <PlatformReel />
+      </DarkPanel>
       <CapabilityMarquee />
       <HomeProcess />
       <HomeInsights />

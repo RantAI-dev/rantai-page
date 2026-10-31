@@ -105,8 +105,10 @@ const inlineTiles: Record<InlineKind, TileSpec[]> = {
   ],
   agents: [
     {
-      className: "bg-neutral-950",
-      logo: "/logo/RantAI Agents Dark.svg",
+      // Light version of the logo on a white tile, with a hairline so it
+      // still reads against the white page.
+      className: "bg-white ring-1 ring-black/10",
+      logo: "/logo/RantAI Agents Light.svg",
       rotate: -3,
     },
   ],

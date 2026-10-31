@@ -6,6 +6,15 @@ import { useEffect } from "react"
 
 let activeLenis: Lenis | null = null
 
+/** Smoothly scrolls to `y`, through Lenis when it is running. */
+export function smoothScrollTo(y: number, duration = 0.9) {
+  if (activeLenis) activeLenis.scrollTo(y, { duration })
+  else {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" })
+  }
+}
+
 /** Scrolls to the top, through Lenis when it is running. */
 export function scrollToTop() {
   if (activeLenis) activeLenis.scrollTo(0)
