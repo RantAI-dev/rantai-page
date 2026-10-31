@@ -7,14 +7,14 @@ import { PageHero } from "@/components/page-hero"
 import { PillLink } from "@/components/pill-link"
 import { ExpandingPanel } from "@/components/platform/expanding-panel"
 import { PlatformReel } from "@/components/platform/platform-reel"
-import { ProductStack } from "@/components/platform/product-stack"
+import { DataJourney } from "@/components/platform/data-journey"
 import { ServicesOverview } from "@/components/services-overview"
 import { SiteShell } from "@/components/site-shell"
 
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "RantAI Agents, RantAIClaw, RantAI LLMOps, and RantAI Lake: AI products built to run on your own infrastructure.",
+    "RantAI Agents, RantAI Claw, RantAI LLMOps, and RantAI Lakehouse: AI products built to run on your own infrastructure.",
 }
 
 export default function ProductsPage() {
@@ -52,7 +52,7 @@ export default function ProductsPage() {
           See them in action
         </PillLink>
       </PageHero>
-      <ProductStack />
+      <DataJourney />
       <ExpandingPanel
         id="platform"
         aria-labelledby="platform-heading"
