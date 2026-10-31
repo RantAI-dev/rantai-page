@@ -81,8 +81,6 @@ function Footnote() {
   )
 }
 
-const short = ["Define", "Build", "Run"]
-
 /** Tilts toward the cursor and lets a soft glare follow it (in focus only). */
 function TiltCard({
   on,
@@ -123,7 +121,7 @@ function TiltCard({
         {children}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 rounded-3xl transition-opacity duration-300"
+          className="pointer-events-none absolute inset-0 rounded-[24px] transition-opacity duration-300"
           style={{
             opacity: on && tilt.hover ? 1 : 0,
             background: `radial-gradient(420px circle at ${tilt.gx}% ${tilt.gy}%, rgb(255 255 255 / 0.08), transparent 45%)`,
@@ -134,20 +132,184 @@ function TiltCard({
   )
 }
 
-/** Progress segment for one step: fills while that step plays. */
-function Segment({
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v))
+/** Opacity of a border at rest (same as the card's normal border). */
+const REST = 0.3
+/** 0 → 1 between a and b, eased at both ends. */
+const ease01 = (v: number, a: number, b: number) => {
+  const k = clamp01((v - a) / (b - a))
+  return k * k * k * (k * (k * 6 - 15) + 10)
+}
+
+// Share of each step spent on the connector that leads into its card.
+const LEAD = 0.14
+
+/**
+ * A horizontal connector at the cards' mid-line. `fill` maps scroll progress
+ * to how much of it is drawn (0 to 1, left to right).
+ */
+function Connector({
+  progress,
+  fill,
+  className,
+}: Readonly<{
+  progress: MotionValue<number>
+  fill: (p: number) => { drawn: number; line: number }
+  className?: string
+}>) {
+  // No visible line: only a small light travels across the gap.
+  const left = useTransform(progress, (p) => `${fill(p).drawn * 100}%`)
+  const opacity = useTransform(progress, (p) => {
+    const d = fill(p).drawn
+    // Fades in as it leaves and out before it arrives, so it never
+    // lingers against a card's edge when scrolling stops.
+    return ease01(d, 0, 0.15) * (1 - ease01(d, 0.7, 0.95))
+  })
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "pointer-events-none absolute top-1/2 h-4 -translate-y-1/2 overflow-hidden",
+        className
+      )}
+    >
+      <motion.span
+        className="absolute top-1/2 h-1.5 w-6 -translate-x-full -translate-y-1/2 rounded-full bg-white blur-[4px]"
+        style={{ left, opacity }}
+      />
+      <motion.span
+        className="absolute top-1/2 h-px w-4 -translate-x-full -translate-y-1/2 bg-linear-to-r from-transparent to-white"
+        style={{ left, opacity }}
+      />
+    </span>
+  )
+}
+
+/** Lead-in for card i: draws during the first part of its step. */
+function leadFill(i: number) {
+  return (p: number) => {
+    if (p >= PLAY) return { drawn: 1, line: 1 }
+    const local = (p - (i * PLAY) / 3) / (PLAY / 3)
+    if (local <= 0) return { drawn: 0, line: 1 }
+    return { drawn: clamp01(local / LEAD), line: 1 }
+  }
+}
+
+/** Tail after the last card: runs out to the edge as the finale starts. */
+function tailFill(p: number) {
+  if (p < PLAY) return { drawn: 0, line: 1 }
+  return { drawn: clamp01((p - PLAY) / (1 - PLAY) / 0.25), line: 1 }
+}
+
+/**
+ * The card's own border as a progress line. While a step plays, the line
+ * starts at the middle of the left edge and splits in two: one half runs
+ * over the top, the other along the bottom, and they meet on the right.
+ * The closed border then glows, dims, and the next card takes over. Finished
+ * borders stay drawn; in the finale all three simply light up together.
+ */
+function BorderProgress({
   progress,
   index,
 }: Readonly<{ progress: MotionValue<number>; index: number }>) {
-  const width = useTransform(progress, (p) => {
-    const start = (index * PLAY) / 3
-    return `${Math.max(0, Math.min(1, (p - start) / (PLAY / 3))) * 100}%`
+  const ref = useRef<SVGSVGElement>(null)
+  const [size, setSize] = useState({ w: 0, h: 0 })
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const ro = new ResizeObserver(([e]) =>
+      setSize({ w: e.contentRect.width, h: e.contentRect.height })
+    )
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  const state = useTransform(progress, (p) => {
+    if (p >= PLAY) {
+      const f = (p - PLAY) / (1 - PLAY)
+      // A brief flare: rises, holds a moment, then settles back to rest.
+      const g = ease01(f, 0.1, 0.35) * (1 - ease01(f, 0.55, 0.85))
+      return { drawn: 1, line: REST + (1 - REST) * g, glow: g * 0.75, tip: 0 }
+    }
+    const local = (p - (index * PLAY) / 3) / (PLAY / 3)
+    if (local < LEAD) return { drawn: 0, line: 0, glow: 0, tip: 0 }
+    if (local > 1) return { drawn: 1, line: REST, glow: 0, tip: 0 } // finished: normal border
+    const drawn = clamp01((local - LEAD) / (0.65 - LEAD))
+    // A light rides the tip while the line draws, then fades once it closes.
+    const tip =
+      ease01(local, LEAD, LEAD + 0.05) * (1 - ease01(local, 0.62, 0.78))
+    // Bright while the light runs, then settles to a normal border.
+    const line = 1 - (1 - REST) * ease01(local, 0.62, 0.85)
+    return { drawn, line, glow: 0, tip }
   })
+  const dash = useTransform(state, (st) => `${st.drawn} 1`)
+  const glow = useTransform(state, (st) => st.glow)
+  const line = useTransform(state, (st) => st.line)
+  const tip = useTransform(state, (st) => st.tip)
+  // Only the last stretch of the drawn line, so the light sits on its tip.
+  // One short dash shifted to end at the tip. (A zero-length leading dash
+  // would draw a stray round dot at the start of the path.)
+  const TIP = 0.12
+  const tipDash = useTransform(state, (st) => `${Math.min(TIP, st.drawn)} 3`)
+  const tipOffset = useTransform(state, (st) => -Math.max(0, st.drawn - TIP))
+
+  const { w, h } = size
+  const r = Math.min(24, h / 2)
+  const e = 0.5
+  const top = `M${e},${h / 2} L${e},${r} A${r - e},${r - e} 0 0 1 ${r},${e} L${w - r},${e} A${r - e},${r - e} 0 0 1 ${w - e},${r} L${w - e},${h / 2}`
+  const bottom = `M${e},${h / 2} L${e},${h - r} A${r - e},${r - e} 0 0 0 ${r},${h - e} L${w - r},${h - e} A${r - e},${r - e} 0 0 0 ${w - e},${h - r} L${w - e},${h / 2}`
+  const id = `bp-glow-${index}`
+
   return (
-    <motion.span
-      className="absolute top-0 left-0 h-px bg-white"
-      style={{ width }}
-    />
+    <svg
+      ref={ref}
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 size-full overflow-visible"
+    >
+      <defs>
+        <filter id={id} x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur stdDeviation="5" />
+        </filter>
+      </defs>
+      {w > 0 &&
+        [top, bottom].map((d) => (
+          <g key={d.slice(0, 12) + (d === top ? "t" : "b")}>
+            <motion.path
+              d={d}
+              fill="none"
+              stroke="white"
+              strokeWidth="6"
+              filter={`url(#${id})`}
+              pathLength={1}
+              style={{ strokeDasharray: dash, opacity: glow }}
+            />
+            {/* Light riding the tip of the line while it draws */}
+            <motion.path
+              d={d}
+              fill="none"
+              stroke="white"
+              strokeWidth="7"
+              strokeLinecap="round"
+              filter={`url(#${id})`}
+              pathLength={1}
+              style={{
+                strokeDasharray: tipDash,
+                strokeDashoffset: tipOffset,
+                opacity: tip,
+              }}
+            />
+            <motion.path
+              d={d}
+              fill="none"
+              stroke="white"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              pathLength={1}
+              style={{ strokeDasharray: dash, opacity: line }}
+            />
+          </g>
+        ))}
+    </svg>
   )
 }
 
@@ -158,13 +320,31 @@ function SequenceRow({
 }: Readonly<{ active: number; progress: MotionValue<number> }>) {
   const all = active === 3
   return (
-    <ol className="grid gap-6 md:grid-cols-3 md:gap-8 xl:gap-12">
+    <ol className="grid gap-6 md:grid-cols-3 md:gap-5 xl:gap-6">
       {steps.map((s, i) => {
         const Visual = visuals[i]
         const done = i < active
-        const on = i === active || all
+        // Finished steps stay fully lit; only upcoming ones wait in the dark.
+        const on = i <= active || all
         return (
-          <li key={s.title} className="flex flex-col">
+          <li key={s.title} className="relative flex flex-col">
+            {/* Line into this card: from the panel edge for the first card,
+                across the gap for the others */}
+            <Connector
+              progress={progress}
+              fill={leadFill(i)}
+              className={cn(
+                "right-full hidden md:block",
+                i === 0 ? "w-10 lg:w-14" : "w-5 xl:w-6"
+              )}
+            />
+            {i === steps.length - 1 && (
+              <Connector
+                progress={progress}
+                fill={tailFill}
+                className="left-full hidden w-10 md:block lg:w-14"
+              />
+            )}
             <div className="relative flex-1">
               {/* Soft light behind the card in focus */}
               <div
@@ -177,35 +357,14 @@ function SequenceRow({
               <TiltCard on={i === active || all}>
                 <div
                   className={cn(
-                    "relative flex h-full flex-col overflow-hidden rounded-3xl border transition-[border-color,background-color,opacity,transform,box-shadow,filter] duration-700",
+                    "relative flex h-full flex-col overflow-hidden rounded-[24px] border transition-[border-color,background-color,opacity,transform,box-shadow,filter] duration-700",
                     on
-                      ? "scale-[1.02] border-white/30 bg-[#0d0d0f]/95 shadow-[0_30px_80px_-40px_rgb(255_255_255/0.25),inset_0_1px_0_rgb(255_255_255/0.12)]"
+                      ? "border-transparent bg-[#0d0d0f]/95 shadow-[0_30px_80px_-40px_rgb(255_255_255/0.25),inset_0_1px_0_rgb(255_255_255/0.12)]"
                       : done
                         ? "border-transparent bg-transparent opacity-50"
                         : "border-transparent bg-transparent opacity-30 blur-[1px]"
                   )}
                 >
-                  {/* Progress rail, inside the card: label and line on one row */}
-                  <div className="hidden items-center gap-3 px-6 pt-5 md:flex">
-                    <span
-                      className={cn(
-                        "shrink-0 text-[13px] transition-colors duration-500",
-                        on
-                          ? "text-white"
-                          : done
-                            ? "text-white/55"
-                            : "text-white/30"
-                      )}
-                    >
-                      <span className="mr-1.5 text-[11px] tabular-nums">
-                        0{i + 1}
-                      </span>
-                      {short[i]}
-                    </span>
-                    <span className="relative h-px flex-1 bg-white/12">
-                      <Segment progress={progress} index={i} />
-                    </span>
-                  </div>
                   <div
                     className={cn(
                       "relative h-[clamp(11rem,30dvh,17rem)] min-h-0 overflow-hidden border-b transition-colors duration-700",
@@ -227,6 +386,9 @@ function SequenceRow({
                     </h3>
                     <p className="mt-1.5 text-white/60">{s.body}</p>
                   </div>
+                </div>
+                <div className="pointer-events-none absolute inset-0">
+                  <BorderProgress progress={progress} index={i} />
                 </div>
               </TiltCard>
             </div>
