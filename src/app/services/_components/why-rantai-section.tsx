@@ -7,12 +7,14 @@ import { Eyebrow } from "@/components/eyebrow"
 import { MotionInView } from "@/components/motion-in-view"
 import { cn } from "@/lib/utils"
 import type { WhyItem } from "../types"
-import { whyRantAIIllustrations } from "./why-rantai-illustrations"
+import { whyRantAIVisuals } from "./why-rantai-visuals"
 
 export function WhyRantAISection({ items }: { items: WhyItem[] }) {
   const [selectedIdx, setSelectedIdx] = useState(0)
   const selected = items[selectedIdx]
-  const SelectedIllustration = whyRantAIIllustrations[selectedIdx]
+  const SelectedVisual = whyRantAIVisuals[selectedIdx]
+  // Each point gets a desk tinted with its own icon colour.
+  const tone = /#[0-9a-f]{6}/i.exec(selected.iconBg)?.[0] ?? "#517fbb"
 
   return (
     <section
@@ -86,7 +88,14 @@ export function WhyRantAISection({ items }: { items: WhyItem[] }) {
             </motion.div>
           </AnimatePresence>
 
-          <div className="relative mx-3 mb-3 flex min-h-[280px] flex-1 items-center justify-center overflow-hidden rounded-xl bg-background p-6 sm:p-8">
+          <div
+            className="relative mx-3 mb-3 flex min-h-[300px] flex-1 items-center justify-center overflow-hidden rounded-xl p-6 transition-colors duration-500 sm:p-8"
+            style={{
+              backgroundColor: `${tone}14`,
+              backgroundImage: `radial-gradient(${tone}33 1.2px, transparent 1.4px)`,
+              backgroundSize: "18px 18px",
+            }}
+          >
             <AnimatePresence mode="wait">
               <motion.div
                 key={selectedIdx + "-illustration"}
@@ -96,7 +105,7 @@ export function WhyRantAISection({ items }: { items: WhyItem[] }) {
                 transition={{ duration: 0.3 }}
                 className="flex h-full max-h-[340px] w-full max-w-2xl items-center justify-center"
               >
-                <SelectedIllustration />
+                <SelectedVisual />
               </motion.div>
             </AnimatePresence>
           </div>

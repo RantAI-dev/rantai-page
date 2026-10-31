@@ -1,15 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { CircleCheckBig } from "lucide-react"
+import { CircleCheckBig, Server, Users } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 
-import { DarkPanel } from "@/components/dark-panel"
+import { HomeProcess } from "@/app/home/_components/home-process"
 import { Eyebrow } from "@/components/eyebrow"
 import { MotionInView } from "@/components/motion-in-view"
+import { ServicesVisual } from "@/components/hero-visuals"
 import { PageHero } from "@/components/page-hero"
 import { PillLink } from "@/components/pill-link"
 import { SiteShell } from "@/components/site-shell"
+import { SplitReveal } from "@/components/split-reveal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { siteConfig } from "@/lib/config"
 import {
@@ -19,6 +21,21 @@ import {
 import { PartnersSection } from "./_components/partners-section"
 import { WhyRantAISection } from "./_components/why-rantai-section"
 import { softwareEngineering, aiEngineering, partners, whyRantAI } from "./data"
+
+const fdePoints = [
+  {
+    icon: Users,
+    tone: "#3b82f6",
+    title: "Your use case, built together",
+    body: "Work directly with our engineers to turn an AI use case into a solution for your team, from defining the problem to building and installing it.",
+  },
+  {
+    icon: Server,
+    tone: "#14b8a6",
+    title: "Start with your environment",
+    body: "Share your infrastructure, data access, and operational requirements so we can scope the work. On-premise and regulated setups are welcome.",
+  },
+]
 
 const fdeMailto = `mailto:${siteConfig.links.email}?subject=${encodeURIComponent("Forward Deployed Engineering")}`
 
@@ -43,9 +60,11 @@ export default function ServicesPage() {
       }}
     >
       <PageHero
+        tone="peach"
         eyebrow="Services"
-        title="Ship better software, faster."
-        description="Software and AI engineering focused on outcomes you can measure, from architecture to production."
+        title={"Ship better\nsoftware, faster."}
+        description="Software and AI engineering that takes your systems from architecture to production."
+        visual={<ServicesVisual />}
       >
         <PillLink href="#forward-deployed-engineering" size="lg">
           Forward Deployed Engineering
@@ -55,60 +74,64 @@ export default function ServicesPage() {
         </PillLink>
       </PageHero>
 
-      <DarkPanel
+      <section
         id="forward-deployed-engineering"
         aria-labelledby="fde-heading"
-        className="scroll-mt-20"
+        className="mx-auto grid max-w-[1440px] scroll-mt-20 gap-14 px-5 py-24 sm:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20 lg:px-14 lg:py-32"
       >
-        <div className="mx-auto grid max-w-[1440px] gap-14 px-5 py-20 sm:px-10 lg:grid-cols-2 lg:gap-20 lg:px-14 lg:py-28">
+        <div>
+          <Eyebrow className="text-muted-foreground">
+            Build with our engineers
+          </Eyebrow>
+          <SplitReveal
+            id="fde-heading"
+            text="Forward Deployed Engineering"
+            className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-balance"
+          />
           <MotionInView>
-            <Eyebrow className="text-white/50">Build with our engineers</Eyebrow>
-            <h2
-              id="fde-heading"
-              className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-balance"
-            >
-              Forward Deployed Engineering
-            </h2>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/65">
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
               RantAI engineers work alongside your team to build and install AI
               solutions in your environment. We start with your workflows and
               requirements, then work with you on implementation.
             </p>
-            <PillLink href={fdeMailto} size="lg" icon="external" className="mt-9">
+            <PillLink
+              href={fdeMailto}
+              size="lg"
+              icon="external"
+              className="mt-9"
+            >
               Discuss your project
             </PillLink>
           </MotionInView>
-          <MotionInView className="grid content-center gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10">
-            <div className="bg-black p-7 sm:p-8">
-              <p className="text-xs font-medium tracking-[0.08em] text-white/45 uppercase">
-                01
-              </p>
-              <h3 className="mt-4 text-xl font-medium tracking-[-0.02em]">
-                Your use case, built together
-              </h3>
-              <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-                Work directly with our engineers to turn an AI use case into a
-                solution for your team, from defining the problem to building
-                and installing it.
-              </p>
-            </div>
-            <div className="bg-black p-7 sm:p-8">
-              <p className="text-xs font-medium tracking-[0.08em] text-white/45 uppercase">
-                02
-              </p>
-              <h3 className="mt-4 text-xl font-medium tracking-[-0.02em]">
-                Start with your environment
-              </h3>
-              <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-                Share your infrastructure, data access, and operational
-                requirements so we can discuss the implementation scope. If you
-                are evaluating on-premise AI or work in a regulated
-                organization, bring those requirements into the conversation.
-              </p>
-            </div>
-          </MotionInView>
         </div>
-      </DarkPanel>
+        <div className="grid content-center gap-3 sm:grid-cols-2">
+          {fdePoints.map((point, i) => (
+            <MotionInView
+              key={point.title}
+              transition={{ duration: 0.7, delay: i * 0.1 }}
+              className="flex flex-col rounded-2xl bg-muted p-7"
+            >
+              <span
+                className="grid size-11 place-items-center rounded-xl"
+                style={{ background: `${point.tone}1f`, color: point.tone }}
+              >
+                <point.icon className="size-5" />
+              </span>
+              <p className="mt-8 text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
+                0{i + 1}
+              </p>
+              <h3 className="mt-2 text-xl font-medium tracking-[-0.02em]">
+                {point.title}
+              </h3>
+              <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+                {point.body}
+              </p>
+            </MotionInView>
+          ))}
+        </div>
+      </section>
+
+      <HomeProcess links={false} />
 
       <section
         id="what-we-do"

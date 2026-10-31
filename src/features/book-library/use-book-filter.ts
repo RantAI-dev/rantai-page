@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react"
-import { categoryColors } from "./constants"
+import { categoryTones, fallbackTone } from "./constants"
 import type { Book } from "./types"
 
 export function useBookFilter(books: readonly Book[]) {
@@ -25,8 +25,8 @@ export function useBookFilter(books: readonly Book[]) {
     })
   }, [books, searchQuery, selectedCategory])
 
-  const getCategoryBadgeClass = (category: string) =>
-    categoryColors[category] || "bg-muted text-muted-foreground border-border"
+  const getCategoryTone = (category: string) =>
+    categoryTones[category] ?? fallbackTone
 
   const getCategoryCount = (category: string) =>
     books.filter((b) => b.category === category).length
@@ -38,7 +38,7 @@ export function useBookFilter(books: readonly Book[]) {
     setSelectedCategory,
     categories,
     filteredBooks,
-    getCategoryBadgeClass,
+    getCategoryTone,
     getCategoryCount,
   }
 }

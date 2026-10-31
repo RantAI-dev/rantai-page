@@ -1,16 +1,20 @@
 import type { Metadata } from "next"
 
+import { CapabilityMarquee } from "@/app/home/_components/capability-marquee"
 import { siteConfig } from "@/lib/config"
+import { ProductsHeroVisual } from "@/components/products-bento"
 import { PageHero } from "@/components/page-hero"
 import { PillLink } from "@/components/pill-link"
-import { ProductShowcase } from "@/components/product-showcase"
+import { ExpandingPanel } from "@/components/platform/expanding-panel"
+import { PlatformReel } from "@/components/platform/platform-reel"
+import { ProductStack } from "@/components/platform/product-stack"
 import { ServicesOverview } from "@/components/services-overview"
 import { SiteShell } from "@/components/site-shell"
 
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "RantAI Agents and RantAIClaw: AI agents and an agent runtime built for enterprise operations.",
+    "RantAI Agents, RantAIClaw, RantAI LLMOps, and RantAI Lake: AI products built to run on your own infrastructure.",
 }
 
 export default function ProductsPage() {
@@ -31,9 +35,11 @@ export default function ProductsPage() {
       }}
     >
       <PageHero
+        tone="blue"
         eyebrow="Products"
-        title="AI products built for real operations."
-        description="Built for the enterprise. Deployed in days, not months."
+        title={"AI products built\nfor real operations."}
+        description="Four products that work together, from your data to the agents that act on it."
+        visual={<ProductsHeroVisual />}
       >
         <PillLink
           href={`mailto:${siteConfig.links.email}?subject=${encodeURIComponent("RantAI product demo")}`}
@@ -42,11 +48,21 @@ export default function ProductsPage() {
         >
           Request a demo
         </PillLink>
-        <PillLink href="#rantai-agents" size="lg" variant="outline">
-          See the products
+        <PillLink href="#platform" size="lg" variant="outline">
+          See them in action
         </PillLink>
       </PageHero>
-      <ProductShowcase showIntro={false} showAllProductsLink={false} />
+      <ProductStack />
+      <ExpandingPanel
+        id="platform"
+        aria-labelledby="platform-heading"
+        className="scroll-mt-20"
+      >
+        <PlatformReel
+          intro={{ eyebrow: "In action", title: "Try each product." }}
+        />
+      </ExpandingPanel>
+      <CapabilityMarquee />
       <ServicesOverview />
     </SiteShell>
   )

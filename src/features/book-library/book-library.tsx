@@ -2,34 +2,41 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import {
-  SearchIcon,
-  LayoutGridIcon,
-  ListIcon,
-  BookOpenIcon,
-} from "lucide-react"
-import { motion, AnimatePresence } from "motion/react"
+import { LayoutGridIcon, ListIcon, SearchIcon, XIcon } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 
-import { Badge } from "@/components/ui/badge"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateTitle,
-  EmptyStateDescription,
-  EmptyStateAction,
-} from "@/components/ui/empty-state"
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText,
-} from "@/components/ui/input-group"
+import { FilterChips } from "@/components/filter-chips"
+import { cn } from "@/lib/utils"
 
 import { useBookFilter } from "./use-book-filter"
-import { type BookLibraryProps } from "./types"
+import { type Book, type BookLibraryProps } from "./types"
+
+function CategoryTag({
+  category,
+  tone,
+}: Readonly<{ category: string; tone: { tone: string; text: string } }>) {
+  return (
+    <span
+      className="inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
+      style={{ background: `${tone.tone}1a`, color: tone.text }}
+    >
+      <span
+        aria-hidden="true"
+        className="size-1.5 rounded-full"
+        style={{ background: tone.tone }}
+      />
+      {category}
+    </span>
+  )
+}
+
+function linkProps(book: Book) {
+  return {
+    href: book.url || "#",
+    target: book.url ? "_blank" : undefined,
+    rel: book.url ? "noopener noreferrer" : undefined,
+  }
+}
 
 export function BookLibrary({ books }: BookLibraryProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
@@ -41,214 +48,184 @@ export function BookLibrary({ books }: BookLibraryProps) {
     setSelectedCategory,
     categories,
     filteredBooks,
-    getCategoryBadgeClass,
+    getCategoryTone,
     getCategoryCount,
   } = useBookFilter(books)
 
   return (
-    <div className="space-y-4">
-      {/* ── Search & Filter Bar ─────────────────────────────────────── */}
+    <div className="flex flex-col gap-8">
+      {/* Search, count and view switch */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <InputGroup className="max-w-sm flex-1">
-          <InputGroupAddon>
-            <InputGroupText>
-              <SearchIcon className="size-4" />
-            </InputGroupText>
-          </InputGroupAddon>
-          <InputGroupInput
-            placeholder="Search by code or title..."
+        <div className="relative w-full sm:max-w-md">
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="font-mono"
+            placeholder="Search by code or title"
+            aria-label="Search books"
+            className="h-12 w-full rounded-full border border-border bg-muted py-3 pr-11 pl-12 text-[15px] text-foreground transition-colors placeholder:text-muted-foreground focus:border-foreground/40 focus:bg-background focus:outline-none [&::-webkit-search-cancel-button]:hidden"
           />
-        </InputGroup>
-
-        <Tabs
-          value={viewMode}
-          onValueChange={(v) => setViewMode(v as "grid" | "list")}
-        >
-          <TabsList className="h-8">
-            <TabsTrigger value="grid" className="px-2.5" aria-label="Grid view">
-              <LayoutGridIcon className="size-4" />
-            </TabsTrigger>
-            <TabsTrigger value="list" className="px-2.5" aria-label="List view">
-              <ListIcon className="size-4" />
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-
-      {/* ── Category Pills & Results Count ──────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-y-2">
-        <div className="flex flex-wrap items-center gap-1.5">
-          {/* <FilterIcon className="mr-0.5 size-4 text-muted-foreground" /> */}
-          {categories.map((cat) => (
-            <Badge
-              key={cat}
-              asChild
-              variant={selectedCategory === cat ? "default" : "outline"}
-              className="h-6 cursor-pointer px-2.5 font-mono text-xs transition-all duration-200 hover:scale-105"
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              aria-label="Clear search"
+              className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
             >
-              <button onClick={() => setSelectedCategory(cat)}>
-                {cat}
-                {cat !== "All" && (
-                  <span className="ml-1 opacity-60">
-                    {getCategoryCount(cat)}
-                  </span>
-                )}
-              </button>
-            </Badge>
-          ))}
+              <XIcon className="size-4" />
+            </button>
+          )}
         </div>
 
-        <div className="flex items-center gap-1.5">
-          <BookOpenIcon className="size-4 text-muted-foreground" />
-          <span className="font-mono text-xs text-muted-foreground">
+        <div className="flex items-center justify-between gap-4 sm:justify-end">
+          <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
             {filteredBooks.length} of {books.length} books
-            {selectedCategory !== "All" && (
-              <>
-                {" "}
-                in <span className="text-foreground">{selectedCategory}</span>
-              </>
-            )}
-            {searchQuery && (
-              <>
-                {" "}
-                matching &quot;
-                <span className="text-foreground">{searchQuery}</span>&quot;
-              </>
-            )}
-          </span>
+          </p>
+          <div
+            role="group"
+            aria-label="Layout"
+            className="flex rounded-full bg-muted p-1"
+          >
+            {(
+              [
+                ["grid", LayoutGridIcon, "Grid view"],
+                ["list", ListIcon, "List view"],
+              ] as const
+            ).map(([mode, Icon, label]) => (
+              <button
+                key={mode}
+                type="button"
+                aria-label={label}
+                aria-pressed={viewMode === mode}
+                onClick={() => setViewMode(mode)}
+                className={cn(
+                  "grid size-9 place-items-center rounded-full transition-colors",
+                  viewMode === mode
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className="size-4" />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ── Grid View ───────────────────────────────────────────────── */}
-      {viewMode === "grid" && (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <FilterChips
+        label="Book categories"
+        value={selectedCategory}
+        onChange={setSelectedCategory}
+        options={categories.map((cat) => ({
+          value: cat,
+          count: cat === "All" ? undefined : getCategoryCount(cat),
+          tone: cat === "All" ? undefined : getCategoryTone(cat).tone,
+        }))}
+      />
+
+      {viewMode === "grid" ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <AnimatePresence mode="popLayout">
             {filteredBooks.map((book, idx) => (
-              <motion.div
+              <motion.a
                 key={book.code}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3, delay: idx * 0.04 }}
+                {...linkProps(book)}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.35, delay: Math.min(idx, 8) * 0.03 }}
+                className="group flex flex-col rounded-2xl bg-muted p-3 transition-colors hover:bg-neutral-200/70"
               >
-                <a
-                  href={book.url || "#"}
-                  target={book.url ? "_blank" : undefined}
-                  rel={book.url ? "noopener noreferrer" : undefined}
-                  className="group block h-full"
-                >
-                  <Card className="h-full overflow-hidden pt-0 transition-all duration-300 hover:shadow-lg hover:ring-2 hover:shadow-primary/5 hover:ring-primary/30">
-                    <div className="relative aspect-3/4 w-full overflow-hidden bg-muted/40">
-                      <Image
-                        src={book.imageUrl}
-                        alt={book.code}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                        className="object-contain transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-
-                    <CardHeader className="gap-2">
-                      <p className="font-mono text-sm text-muted-foreground uppercase">
-                        {book.code}
-                      </p>
-                      <CardTitle className="line-clamp-2 leading-snug">
-                        {book.name}
-                      </CardTitle>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getCategoryBadgeClass(book.category)}>
-                          {book.category}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                </a>
-              </motion.div>
+                <div className="relative aspect-3/4 overflow-hidden rounded-xl bg-neutral-200">
+                  <Image
+                    src={book.imageUrl}
+                    alt={book.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col gap-2 px-1.5 pt-4 pb-1.5">
+                  <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
+                    {book.code}
+                  </p>
+                  <p className="line-clamp-2 text-[17px] leading-snug font-medium tracking-[-0.015em] text-foreground">
+                    {book.name}
+                  </p>
+                  <div className="mt-auto pt-2">
+                    <CategoryTag
+                      category={book.category}
+                      tone={getCategoryTone(book.category)}
+                    />
+                  </div>
+                </div>
+              </motion.a>
             ))}
           </AnimatePresence>
         </div>
-      )}
-
-      {/* ── List View ───────────────────────────────────────────────── */}
-      {viewMode === "list" && (
-        <div className="space-y-3">
+      ) : (
+        <div className="flex flex-col gap-2">
           <AnimatePresence mode="popLayout">
             {filteredBooks.map((book, idx) => (
-              <motion.div
+              <motion.a
                 key={book.code}
                 layout
-                initial={{ opacity: 0, x: -10 }}
+                {...linkProps(book)}
+                initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.25, delay: idx * 0.03 }}
+                exit={{ opacity: 0, x: -8 }}
+                transition={{ duration: 0.3, delay: Math.min(idx, 8) * 0.03 }}
+                className="group flex items-center gap-4 rounded-2xl bg-muted p-3 transition-colors hover:bg-neutral-200/70"
               >
-                <a
-                  href={book.url || "#"}
-                  target={book.url ? "_blank" : undefined}
-                  rel={book.url ? "noopener noreferrer" : undefined}
-                  className="group block"
-                >
-                  <Card className="flex flex-row items-center gap-4 overflow-hidden p-0 transition-all duration-300 hover:shadow-lg hover:ring-2 hover:shadow-primary/5 hover:ring-primary/30">
-                    <div className="relative aspect-3/4 h-24 shrink-0 overflow-hidden bg-muted/40 sm:h-28">
-                      <Image
-                        src={book.imageUrl}
-                        alt={book.code}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                        className="object-contain transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-
-                    <div className="flex flex-1 flex-col gap-1.5 py-3 pr-4">
-                      <p className="font-mono text-sm text-muted-foreground uppercase">
-                        {book.code}
-                      </p>
-                      <p className="line-clamp-2 font-medium text-foreground">
-                        {book.name}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getCategoryBadgeClass(book.category)}>
-                          {book.category}
-                        </Badge>
-                      </div>
-                    </div>
-                  </Card>
-                </a>
-              </motion.div>
+                <div className="relative aspect-3/4 h-24 shrink-0 overflow-hidden rounded-lg bg-neutral-200 sm:h-28">
+                  <Image
+                    src={book.imageUrl}
+                    alt={book.name}
+                    fill
+                    sizes="112px"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
+                    {book.code}
+                  </p>
+                  <p className="line-clamp-2 font-medium text-foreground">
+                    {book.name}
+                  </p>
+                  <CategoryTag
+                    category={book.category}
+                    tone={getCategoryTone(book.category)}
+                  />
+                </div>
+              </motion.a>
             ))}
           </AnimatePresence>
         </div>
       )}
 
-      {/* ── Empty State ─────────────────────────────────────────────── */}
       {filteredBooks.length === 0 && (
-        <EmptyState>
-          <EmptyStateIcon>
-            <SearchIcon />
-          </EmptyStateIcon>
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-muted px-6 py-16 text-center">
+          <SearchIcon className="size-5 text-muted-foreground" />
           <div>
-            <EmptyStateTitle>No books found</EmptyStateTitle>
-            <EmptyStateDescription>
-              Try adjusting your search or filter criteria
-            </EmptyStateDescription>
+            <p className="font-medium">No books found</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Try another search or category.
+            </p>
           </div>
-          <EmptyStateAction>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSearchQuery("")
-                setSelectedCategory("All")
-              }}
-            >
-              Clear filters
-            </Button>
-          </EmptyStateAction>
-        </EmptyState>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery("")
+              setSelectedCategory("All")
+            }}
+            className="h-10 rounded-full border border-border px-5 text-sm transition-colors hover:border-foreground/40"
+          >
+            Clear filters
+          </button>
+        </div>
       )}
     </div>
   )

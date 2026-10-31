@@ -37,7 +37,11 @@ const steps = [
   },
 ]
 
-function Header() {
+/** On the services page the section is already about engineering, so the
+ *  links back to it are dropped. */
+type Links = { links: boolean }
+
+function Header({ links }: Readonly<Links>) {
   return (
     <div className="mb-[min(2.5rem,4dvh)] max-w-3xl">
       <Eyebrow className="text-white/50">How we work</Eyebrow>
@@ -47,13 +51,15 @@ function Header() {
         className="mt-5 text-[clamp(2.25rem,min(5.6vw,8dvh),5rem)] leading-[0.98] font-medium tracking-[-0.045em]"
       />
       <div className="mt-[min(2rem,3dvh)] flex flex-col gap-3 sm:flex-row">
-        <PillLink href="/services#forward-deployed-engineering" size="lg">
-          Forward Deployed Engineering
-        </PillLink>
+        {links && (
+          <PillLink href="/services#forward-deployed-engineering" size="lg">
+            Forward Deployed Engineering
+          </PillLink>
+        )}
         <PillLink
           href={`mailto:${siteConfig.links.email}?subject=${encodeURIComponent("Forward Deployed Engineering")}`}
           size="lg"
-          variant="outline"
+          variant={links ? "outline" : "solid"}
           icon="external"
         >
           Talk to our team
@@ -63,7 +69,8 @@ function Header() {
   )
 }
 
-function Footnote() {
+function Footnote({ links }: Readonly<Links>) {
+  if (!links) return null
   return (
     <p className="mt-[min(2rem,3dvh)] text-sm text-white/50">
       Also available as{" "}
@@ -404,7 +411,7 @@ function SequenceRow({
 // where all three stay in focus.
 const PLAY = 0.78
 
-function PinnedSequence() {
+function PinnedSequence({ links }: Readonly<Links>) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -436,22 +443,22 @@ function PinnedSequence() {
         >
           <FooterAscii />
         </div>
-        <Header />
+        <Header links={links} />
         <SequenceRow active={active} progress={progress} />
-        <Footnote />
+        <Footnote links={links} />
       </div>
     </div>
   )
 }
 
 /** Phones, tablets and reduced motion: the three cards, all in focus. */
-function StaticSequence() {
+function StaticSequence({ links }: Readonly<Links>) {
   const progress = useMotionValue(1)
   return (
     <div className="px-5 py-24 sm:px-10">
-      <Header />
+      <Header links={links} />
       <SequenceRow active={3} progress={progress} />
-      <Footnote />
+      <Footnote links={links} />
     </div>
   )
 }
@@ -468,7 +475,7 @@ function useIsDesktop() {
   return desktop
 }
 
-export function HomeProcess() {
+export function HomeProcess({ links = true }: Readonly<Partial<Links>>) {
   const desktop = useIsDesktop()
   const reduce = useReducedMotion()
   if (desktop && !reduce) {
@@ -478,7 +485,7 @@ export function HomeProcess() {
         aria-labelledby="process-heading"
         className="scroll-mt-20 px-3 sm:px-4"
       >
-        <PinnedSequence />
+        <PinnedSequence links={links} />
       </section>
     )
   }
@@ -488,7 +495,7 @@ export function HomeProcess() {
       aria-labelledby="process-heading"
       className="scroll-mt-20"
     >
-      <StaticSequence />
+      <StaticSequence links={links} />
     </DarkPanel>
   )
 }

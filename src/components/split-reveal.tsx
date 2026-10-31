@@ -52,12 +52,14 @@ export function SplitReveal({
     shown: { transition: { staggerChildren: step, delayChildren: delay } },
     exit: { transition: { staggerChildren: step / 2 } },
   }
-  const words = text.split(" ")
+  // A "\n" in the text forces a line break from the sm breakpoint up.
+  const lines = text.split("\n").map((line) => line.trim().split(" "))
+  const label = text.replace(/\s*\n\s*/g, " ")
 
   return (
     <MotionTag
       id={id}
-      aria-label={text}
+      aria-label={label}
       className={className}
       variants={containerVariants}
       initial={reduce ? false : "hidden"}
@@ -66,26 +68,39 @@ export function SplitReveal({
         ? { animate: play ? "shown" : "hidden" }
         : { whileInView: "shown", viewport: { once: true, amount: 0.4 } })}
     >
-      {words.map((word, wordIndex) => (
-        <Fragment key={`${word}-${wordIndex}`}>
-          <span aria-hidden="true" className="inline-block whitespace-nowrap">
-            {by === "word" ? (
-              <motion.span className="inline-block" variants={unitVariants}>
-                {word}
-              </motion.span>
-            ) : (
-              Array.from(word).map((char, charIndex) => (
-                <motion.span
-                  key={`${char}-${charIndex}`}
-                  className="inline-block"
-                  variants={unitVariants}
-                >
-                  {char}
-                </motion.span>
-              ))
-            )}
-          </span>
-          {wordIndex < words.length - 1 && " "}
+      {lines.map((words, lineIndex) => (
+        <Fragment key={lineIndex}>
+          {lineIndex > 0 && (
+            <>
+              {" "}
+              <br className="hidden sm:block" />
+            </>
+          )}
+          {words.map((word, wordIndex) => (
+            <Fragment key={`${word}-${wordIndex}`}>
+              <span
+                aria-hidden="true"
+                className="inline-block whitespace-nowrap"
+              >
+                {by === "word" ? (
+                  <motion.span className="inline-block" variants={unitVariants}>
+                    {word}
+                  </motion.span>
+                ) : (
+                  Array.from(word).map((char, charIndex) => (
+                    <motion.span
+                      key={`${char}-${charIndex}`}
+                      className="inline-block"
+                      variants={unitVariants}
+                    >
+                      {char}
+                    </motion.span>
+                  ))
+                )}
+              </span>
+              {wordIndex < words.length - 1 && " "}
+            </Fragment>
+          ))}
         </Fragment>
       ))}
     </MotionTag>
