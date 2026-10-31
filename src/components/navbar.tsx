@@ -31,21 +31,38 @@ const navItems = [
 export function Navbar() {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
+  const [overDark, setOverDark] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 8)
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 8)
+      // Go dark while a full-bleed dark section sits under the bar.
+      const under = [
+        ...document.querySelectorAll<HTMLElement>("[data-nav-dark]"),
+      ].some((el) => {
+        const r = el.getBoundingClientRect()
+        return r.top <= 64 && r.bottom >= 32
+      })
+      setOverDark(under)
+    }
     handleScroll()
     window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
+    window.addEventListener("nav-theme", handleScroll)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("nav-theme", handleScroll)
+    }
   }, [])
 
   return (
     <header
       className={cn(
-        "sticky inset-x-0 top-0 z-50 border-b transition-[background-color,border-color] duration-300",
-        scrolled
-          ? "border-border bg-background/85 backdrop-blur-xl"
-          : "border-transparent bg-background"
+        "sticky inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,color] duration-500",
+        overDark
+          ? "dark border-white/10 bg-black/80 text-foreground backdrop-blur-xl"
+          : scrolled
+            ? "border-border bg-background/85 backdrop-blur-xl"
+            : "border-transparent bg-background"
       )}
     >
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-6 px-5 sm:px-8">
@@ -60,7 +77,10 @@ export function Navbar() {
               alt=""
               width={36}
               height={36}
-              className="size-7"
+              className={cn(
+                "size-7 transition-[filter] duration-500",
+                overDark && "brightness-0 invert"
+              )}
               priority
             />
             <span className="text-[19px] font-semibold tracking-[-0.03em]">
