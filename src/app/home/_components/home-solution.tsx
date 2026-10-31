@@ -28,6 +28,7 @@ import {
 import { useLayoutEffect, useRef, useState } from "react"
 
 import { Eyebrow } from "@/components/eyebrow"
+import { ProductTile } from "@/components/product-logo"
 import { cn } from "@/lib/utils"
 
 type InlineKind = "files" | "data" | "agents" | "infra" | "policy"
@@ -150,10 +151,13 @@ const TILE = 0.92
 const OVERLAP = 0.3
 const GAP = 0.2
 
-const links = [
-  { label: "RantAI Agents", href: "#rantai-agents" },
-  { label: "RantAI Claw", href: "#rantaiclaw" },
-  { label: "Our engineers", href: "#how-we-work" },
+// Shortcuts once the sentence has played: each product's panel in the
+// reel below, then the engineering team.
+const productLinks = [
+  { id: "agents", label: "Agents", href: "#rantai-agents" },
+  { id: "claw", label: "Claw", href: "#rantaiclaw" },
+  { id: "llmops", label: "LLMOps", href: "#rantai-llmops" },
+  { id: "lake", label: "Lakehouse", href: "#rantai-lakehouse" },
 ] as const
 
 const spring = { stiffness: 380, damping: 20 }
@@ -603,23 +607,41 @@ export function HomeSolution() {
             ))}
           </h2>
           <motion.ul
-            className="mt-12 flex flex-wrap gap-x-8 gap-y-3"
+            className="mt-12 flex flex-wrap items-center gap-2.5"
             style={reduce ? undefined : { opacity: linksOpacity, y: linksY }}
           >
-            {links.map((link) => (
-              <li key={link.label}>
+            {productLinks.map((link) => (
+              <li key={link.id}>
                 <Link
                   href={link.href}
-                  className="group inline-flex items-center gap-1.5 text-base font-medium text-neutral-900"
+                  aria-label={`RantAI ${link.label}`}
+                  className="inline-flex h-10 items-center gap-2 rounded-full border border-neutral-200 bg-white pr-4 pl-1.5 text-[15px] font-medium text-neutral-800 transition-colors hover:border-neutral-300 hover:text-neutral-950"
                 >
-                  {link.label}
-                  <ArrowRight
-                    aria-hidden="true"
-                    className="size-4 transition-transform group-hover:translate-x-0.5"
+                  <ProductTile
+                    id={link.id}
+                    className="size-7 rounded-full shadow-none ring-0"
+                    logoClassName="h-3.5"
                   />
+                  {link.label}
                 </Link>
               </li>
             ))}
+            <li
+              aria-hidden="true"
+              className="hidden h-6 w-px bg-neutral-200 sm:block"
+            />
+            <li>
+              <Link
+                href="#how-we-work"
+                className="group inline-flex h-10 items-center gap-1.5 text-[15px] font-medium text-neutral-900"
+              >
+                Our engineers
+                <ArrowRight
+                  aria-hidden="true"
+                  className="size-4 transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            </li>
           </motion.ul>
         </div>
       </div>

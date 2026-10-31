@@ -25,6 +25,8 @@ import { PanelScene } from "@/components/platform/scenes"
 const anchors: Record<string, string> = {
   agents: "rantai-agents",
   claw: "rantaiclaw",
+  llmops: "rantai-llmops",
+  lake: "rantai-lakehouse",
 }
 
 type Intro = { eyebrow: string; title: string }
