@@ -1,5 +1,6 @@
 "use client"
 
+import { useSyncExternalStore } from "react"
 import { Link2 } from "lucide-react"
 import { toast } from "sonner"
 import {
@@ -22,7 +23,18 @@ interface ShareDropdownProps {
   readonly children: React.ReactNode
 }
 
+const subscribe = () => () => {}
+
 export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
+  // Radix gives the menu generated ids that can differ between the server
+  // and the browser, which breaks hydration. The server sends the plain
+  // button; the menu attaches once the page is running in the browser.
+  const mounted = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false
+  )
+
   function shareX() {
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
@@ -59,6 +71,8 @@ export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
     await navigator.clipboard.writeText(url)
     toast.success("Link copied!")
   }
+
+  if (!mounted) return children
 
   return (
     <DropdownMenu>
