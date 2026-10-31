@@ -19,6 +19,7 @@ import {
   Table2,
 } from "lucide-react"
 
+import { ProductLogo, ProductTile } from "@/components/product-logo"
 import { cn } from "@/lib/utils"
 
 // Interactive product demos for the platform reel: each one plays a short,
@@ -389,9 +390,7 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           key={`chat-${pick}`}
         >
           <div className="flex items-center gap-2 border-b border-black/[0.06] px-4 py-3 text-[13px] font-medium">
-            <span className="grid size-6 place-items-center rounded-md bg-neutral-900 text-white">
-              <Sparkles className="size-3.5" />
-            </span>
+            <ProductTile id="agents" />
             HR Assistant
           </div>
           <div className="flex-1 space-y-3 p-4">
@@ -478,7 +477,7 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  RantAIClaw: a scheduled skill runs in the terminal                 */
+/*  RantAI Claw: a scheduled skill runs in the terminal                 */
 /* ------------------------------------------------------------------ */
 
 const clawRuns = [
@@ -547,7 +546,8 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
             {[0, 1, 2].map((i) => (
               <span key={i} className="size-2.5 rounded-full bg-white/15" />
             ))}
-            <span className="ml-3 [font-family:ui-monospace,monospace] text-[11px] text-white/45">
+            <ProductLogo id="claw" variant="dark" className="ml-3 h-3.5" />
+            <span className="[font-family:ui-monospace,monospace] text-[11px] text-white/45">
               rantaiclaw · ~/ops
             </span>
           </div>
@@ -633,7 +633,7 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  RantAI Lake: ask in plain language, see the SQL, get a chart       */
+/*  RantAI Lakehouse: ask in plain language, see the SQL, get a chart       */
 /* ------------------------------------------------------------------ */
 
 const lakeAsks = [
@@ -690,7 +690,7 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
           key={`ask-${pick}`}
         >
           <div className="flex items-center gap-3 px-1">
-            <Sparkles className="size-4 text-[#2563eb]" />
+            <ProductLogo id="lake" className="h-4" />
             <span className="flex-1 text-[14px]">
               <Typed text={a.q} on={s >= 0} />
             </span>
@@ -836,7 +836,8 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           )}
           key={`run-${pick}`}
         >
-          <p className="text-[12px] font-medium text-neutral-500">
+          <p className="flex items-center gap-2 text-[12px] font-medium text-neutral-500">
+            <ProductTile id="llmops" className="size-5" logoClassName="h-3" />
             Run · {r.chip}
           </p>
           <ul className="mt-3 space-y-3">

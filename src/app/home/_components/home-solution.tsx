@@ -6,13 +6,11 @@ import {
   ArrowRight,
   Check,
   CheckCircle2,
-  Database,
   FileSpreadsheet,
   FileText,
   FileType2,
   Lock,
   ScrollText,
-  Server,
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react"
@@ -114,10 +112,10 @@ const inlineTiles: Record<InlineKind, TileSpec[]> = {
   ],
   data: [
     {
-      className: "bg-amber-400",
-      icon: Database,
+      // RantAI Lakehouse, where the data lands: drops still fly into it.
+      className: "bg-white ring-1 ring-black/10",
+      logo: "/logo/RantAI Lakehouse Light.svg",
       rotate: 3,
-      iconClass: "text-amber-950",
       animated: "data",
     },
   ],
@@ -130,16 +128,21 @@ const inlineTiles: Record<InlineKind, TileSpec[]> = {
       rotate: -3,
     },
     {
-      // RantAIClaw, the runtime the agents run on: dark tile for contrast.
-      className: "bg-neutral-950",
-      logo: "/logo/RantAIClaw Dark.svg",
+      // RantAI Claw, the runtime the agents run on.
+      className: "bg-white ring-1 ring-black/10",
+      logo: "/logo/RantAIClaw Light.svg",
       rotate: 4,
     },
   ],
   infra: [
     { className: "bg-emerald-400", icon: Lock, rotate: -5 },
-    { className: "bg-sky-400", icon: Server, rotate: 4 },
-    { className: "bg-violet-400", icon: ShieldCheck, rotate: -2 },
+    { className: "bg-violet-400", icon: ShieldCheck, rotate: 4 },
+    {
+      // RantAI LLMOps on top: models trained and served on your hardware.
+      className: "bg-white ring-1 ring-black/10",
+      logo: "/logo/RantAI LLMOps Light.svg",
+      rotate: -2,
+    },
   ],
 }
 
@@ -149,7 +152,7 @@ const GAP = 0.2
 
 const links = [
   { label: "RantAI Agents", href: "#rantai-agents" },
-  { label: "RantAIClaw", href: "#rantaiclaw" },
+  { label: "RantAI Claw", href: "#rantaiclaw" },
   { label: "Our engineers", href: "#how-we-work" },
 ] as const
 
@@ -286,7 +289,7 @@ function DataDrops({ reduce }: Readonly<{ reduce: boolean }>) {
         <motion.span
           key={i}
           aria-hidden="true"
-          className="absolute size-[0.12em] rounded-full bg-amber-500"
+          className="absolute size-[0.12em] rounded-full bg-[#44a6fa]"
           animate={{
             x: [x, "0em"],
             y: [y, "0em"],
@@ -333,7 +336,7 @@ function InlineGroup({
   return (
     <motion.span
       aria-hidden="true"
-      className="group/tiles pointer-events-auto inline-flex justify-end align-[-0.12em]"
+      className="group/tiles pointer-events-auto inline-flex justify-end align-[0.1em]"
       style={{ width: reduce ? `${fullWidth}em` : width }}
     >
       {tiles.map((spec, index) => (

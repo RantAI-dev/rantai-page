@@ -35,7 +35,7 @@ export const products: Product[] = [
   },
   {
     id: "claw",
-    name: "RantAIClaw",
+    name: "RantAI Claw",
     layer: "Runtime",
     tagline: "A lightweight multi-agent runtime written in Rust.",
     href: "https://claw.rantai.dev/",
@@ -58,7 +58,7 @@ export const products: Product[] = [
   },
   {
     id: "lake",
-    name: "RantAI Lake",
+    name: "RantAI Lakehouse",
     layer: "Data",
     tagline:
       "A sovereign, AI-native lakehouse from raw data to BI-ready insight.",

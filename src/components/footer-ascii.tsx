@@ -24,7 +24,7 @@ function noise(x: number, y: number) {
 }
 
 /**
- * A field of ASCII characters, in the style of the RantAIClaw terminal.
+ * A field of ASCII characters, in the style of the RantAI Claw terminal.
  * Waves ripple out from the bottom centre along an arc; the middle, where
  * the text sits, stays quieter.
  */
