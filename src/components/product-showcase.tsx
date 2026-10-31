@@ -70,14 +70,14 @@ const moreProducts: {
     name: "RantAI LLMOps",
     body: "Model lifecycle control with a sovereign registry, fine-tuning, orchestration, and evaluation.",
     icon: Workflow,
-    href: null,
+    href: "https://llmops.rantai.dev/",
     image: null,
   },
   {
     name: "RantAI Lake",
     body: "A sovereign, AI-native lakehouse from raw data to BI-ready insight.",
     icon: Database,
-    href: null,
+    href: "https://lakehouse.rantai.dev/",
     image: null,
   },
 ]

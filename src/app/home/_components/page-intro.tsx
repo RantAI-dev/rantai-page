@@ -1,102 +1,146 @@
 "use client"
 
-import { motion } from "motion/react"
-import { useEffect, useState } from "react"
+import { animate, motion } from "motion/react"
+import { useEffect, useRef, useState } from "react"
 
 const ease = [0.22, 1, 0.36, 1] as const
-const curtain = [0.76, 0, 0.24, 1] as const
-const HOLD_MS = 1500
+const open = [0.76, 0, 0.24, 1] as const
+const HOLD_MS = 1400
+const OPEN_S = 1.25
 const STORAGE_KEY = "rantai-intro"
 
-const pixels = [
-  { x: 0, y: 0 },
-  { x: 1, y: 1 },
-  { x: 0, y: 2 },
-] as const
-
+/**
+ * First-visit intro. The screen is black except for a small window in the
+ * middle that already shows the real hero behind it, with the wordmark on
+ * top. The window then opens up until it matches the hero card, the
+ * wordmark parts, and the hero copy comes in.
+ */
 export function PageIntro({
+  target,
   onReveal,
   onDone,
-}: Readonly<{ onReveal: () => void; onDone: () => void }>) {
-  const [lifting, setLifting] = useState(false)
+}: Readonly<{
+  target: React.RefObject<HTMLElement | null>
+  onReveal: () => void
+  onDone: () => void
+}>) {
+  const holeRef = useRef<HTMLDivElement>(null)
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const [opening, setOpening] = useState(false)
 
   useEffect(() => {
+    const hole = holeRef.current
+    const card = target.current
     let seen = false
     try {
       seen = sessionStorage.getItem(STORAGE_KEY) === "1"
     } catch {}
-
-    if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const box = card?.getBoundingClientRect()
+    const skip =
+      seen ||
+      !hole ||
+      !box ||
+      box.top < -1 || // page restored mid-scroll: the hero is not in view
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    if (skip || !hole || !box) {
       onReveal()
       onDone()
       return
     }
 
-    const timeout = window.setTimeout(() => {
-      setLifting(true)
-      onReveal()
-    }, HOLD_MS)
-    return () => window.clearTimeout(timeout)
-  }, [onReveal, onDone])
+    // Hold the page still while the intro plays.
+    const block = (e: Event) => e.preventDefault()
+    const opts = { capture: true, passive: false } as const
+    window.addEventListener("wheel", block, opts)
+    window.addEventListener("touchmove", block, opts)
+    const release = () => {
+      window.removeEventListener("wheel", block, opts)
+      window.removeEventListener("touchmove", block, opts)
+    }
 
-  return (
-    <motion.div
-      aria-hidden="true"
-      className="fixed inset-0 z-[100] flex animate-[intro-failsafe_0.3s_ease_4s_forwards] items-center justify-center overflow-hidden rounded-b-[32px] bg-black text-white"
-      initial={{ y: 0 }}
-      animate={{ y: lifting ? "-100%" : 0 }}
-      transition={{ duration: 0.9, ease: curtain }}
-      onAnimationComplete={() => {
-        if (!lifting) return
+    const vw = window.innerWidth
+    const w = vw < 640 ? vw * 0.72 : Math.min(vw * 0.44, 560)
+    const h = w * 0.62
+    // Centre the window on the product ring, so it opens on the screens
+    // rather than on the dark lower half of the hero.
+    const cy = box.top + box.height * (vw < 640 ? 0.3 : 0.42)
+    const from = { left: (vw - w) / 2, top: cy - h / 2, width: w, height: h }
+    overlayRef.current?.style.setProperty("--intro-y", `${cy}px`)
+    const radius = parseFloat(getComputedStyle(card!).borderTopLeftRadius) || 28
+    Object.assign(hole.style, {
+      left: `${from.left}px`,
+      top: `${from.top}px`,
+      width: `${from.width}px`,
+      height: `${from.height}px`,
+      borderRadius: "20px",
+    })
+
+    let cancelled = false
+    const timer = window.setTimeout(() => {
+      setOpening(true)
+      onReveal()
+      animate(
+        hole,
+        {
+          left: [`${from.left}px`, `${box.left}px`],
+          top: [`${from.top}px`, `${box.top}px`],
+          width: [`${from.width}px`, `${box.width}px`],
+          height: [`${from.height}px`, `${box.height}px`],
+          borderRadius: ["20px", `${radius}px`],
+        },
+        { duration: OPEN_S, ease: open }
+      ).then(() => {
+        if (cancelled) return
         try {
           sessionStorage.setItem(STORAGE_KEY, "1")
         } catch {}
+        release()
         onDone()
-      }}
-    >
-      <motion.div
-        className="flex items-center gap-5 sm:gap-7"
-        animate={lifting ? { opacity: 0, y: -40 } : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease }}
-      >
-        <div className="relative size-10 sm:size-14">
-          {pixels.map((pixel, index) => (
-            <motion.span
-              key={index}
-              className="absolute size-1/3 bg-brand-1"
-              style={{ left: `${pixel.x * 33.333}%`, top: `${pixel.y * 33.333}%` }}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.4, ease, delay: 0.15 + index * 0.12 }}
-            />
-          ))}
-        </div>
-        <span className="flex overflow-hidden text-[clamp(3rem,9vw,7rem)] leading-none font-medium tracking-[-0.05em]">
-          {Array.from("RantAI").map((char, index) => (
-            <motion.span
-              key={index}
-              className="inline-block"
-              initial={{ y: "110%" }}
-              animate={{ y: "0%" }}
-              transition={{ duration: 0.7, ease, delay: 0.35 + index * 0.05 }}
-            >
-              {char}
-            </motion.span>
-          ))}
-        </span>
-      </motion.div>
+      })
+    }, HOLD_MS)
 
-      <motion.span
-        className="absolute bottom-10 left-1/2 h-px w-40 -translate-x-1/2 overflow-hidden bg-white/15"
-        animate={lifting ? { opacity: 0 } : { opacity: 1 }}
-      >
-        <motion.span
-          className="absolute inset-0 origin-left bg-white"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: HOLD_MS / 1000, ease: "easeInOut" }}
-        />
-      </motion.span>
-    </motion.div>
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+      release()
+    }
+  }, [target, onReveal, onDone])
+
+  return (
+    <div
+      ref={overlayRef}
+      aria-hidden="true"
+      className="pointer-events-auto fixed inset-0 z-[100] animate-[intro-failsafe_0.3s_ease_5s_forwards] overflow-hidden"
+    >
+      {/* The window: transparent, with a huge page-coloured shadow that covers
+          everything around it. Before it is sized (server render) it sits at
+          0×0 in the corner, and the shadow alone already covers the page. */}
+      <div
+        ref={holeRef}
+        className="absolute top-0 left-0 shadow-[0_0_0_200vmax_var(--background)]"
+      />
+
+      {/* Wordmark over the window; it lifts away as the window opens */}
+      <div className="pointer-events-none absolute inset-x-0 top-(--intro-y,50%) flex -translate-y-1/2 justify-center">
+        <span className="overflow-hidden pb-[0.08em] text-[clamp(3.25rem,10vw,9rem)] leading-none font-semibold tracking-[-0.055em] text-white">
+          <motion.span
+            className="inline-block"
+            initial={{ y: "105%" }}
+            animate={
+              opening
+                ? { y: "0%", scale: 1.12, opacity: 0, filter: "blur(12px)" }
+                : { y: "0%", scale: 1, opacity: 1, filter: "blur(0px)" }
+            }
+            transition={
+              opening
+                ? { duration: OPEN_S * 0.6, ease }
+                : { duration: 0.9, ease, delay: 0.2 }
+            }
+          >
+            RantAI
+          </motion.span>
+        </span>
+      </div>
+    </div>
   )
 }
