@@ -35,6 +35,11 @@ export default async function AcademyPage() {
           "Custom books for scientists and engineers — with ready-to-use GenAI prompts, real use cases, and proven code.",
         label: "Contact us",
         subject: "RantAI Academy for Enterprises",
+        prompts: [
+          "Train our engineers to build with GenAI",
+          "A custom book for our data science team",
+          "Hands-on prompt engineering for our analysts",
+        ],
       }}
     >
       <PageHero

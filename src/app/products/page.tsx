@@ -22,6 +22,11 @@ export default function ProductsPage() {
           "Deploy your first AI product in under two weeks — no long procurement cycles required.",
         label: "Request a demo",
         subject: "RantAI product demo",
+        prompts: [
+          "An agent that answers from our internal documents",
+          "Run AI models on our own infrastructure",
+          "Bring our data into one searchable place",
+        ],
         showServicesLink: true,
       }}
     >
