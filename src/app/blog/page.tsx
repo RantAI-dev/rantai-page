@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { tags } from "@/lib/db/schema"
-import { getPosts } from "@/lib/blog"
+import { getPosts, getPostTags } from "@/lib/blog"
 import { BlogMain } from "@/components/blog-main"
 import { PostsVisual } from "@/components/hero-visuals"
 import { MotionInView } from "@/components/motion-in-view"
@@ -14,9 +14,10 @@ export const metadata = {
 }
 
 export default async function BlogPage() {
-  const [firstPage, tagRows] = await Promise.all([
+  const [firstPage, tagRows, postTags] = await Promise.all([
     getPosts(),
     db.select({ name: tags.name, color: tags.color }).from(tags),
+    getPostTags(),
   ])
 
   const tagColors = Object.fromEntries(tagRows.map((t) => [t.name, t.color]))
@@ -39,6 +40,7 @@ export default async function BlogPage() {
             initialPosts={firstPage.posts}
             initialCursor={firstPage.nextCursor}
             tagColors={tagColors}
+            tags={postTags}
           />
         </MotionInView>
       </section>
