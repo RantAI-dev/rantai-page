@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/RantAI-dev/rantai-page/compare/v2.1.0...v2.2.0) (2026-11-01)
+
+
+### Features
+
+* make every page work properly on phones ([0e32fa9](https://github.com/RantAI-dev/rantai-page/commit/0e32fa90e0f4f272092ab18bdc227acf4966d72f))
+
 ## [2.1.0](https://github.com/RantAI-dev/rantai-page/compare/v2.0.0...v2.1.0) (2026-11-01)
 
 
