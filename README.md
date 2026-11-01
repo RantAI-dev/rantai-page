@@ -1,46 +1,46 @@
 # RantAI
 
-Website dan CMS untuk [RantAI](https://www.rantai.dev): produk AI, layanan engineering, Academy, dan Insights, beserta dashboard admin untuk mengelola kontennya.
+The website and CMS for [RantAI](https://www.rantai.dev): AI products, engineering services, the Academy and Insights, plus an admin dashboard to manage the content.
 
 [![CI](https://github.com/RantAI-dev/rantai-page/actions/workflows/ci.yml/badge.svg)](https://github.com/RantAI-dev/rantai-page/actions/workflows/ci.yml)
 
-**Live:** [www.rantai.dev](https://www.rantai.dev) · **Dibangun dengan:** Next.js 16, Neon PostgreSQL, Drizzle ORM, Tailwind CSS v4
+**Live:** [www.rantai.dev](https://www.rantai.dev) · **Built with:** Next.js 16, Neon PostgreSQL, Drizzle ORM, Tailwind CSS v4
 
-## Fitur
+## Features
 
-- **Halaman publik:** Home, Products, Services, Academy, Insights (blog), dan Company, dengan animasi berbasis scroll yang tetap ringan dan stabil di HP.
-- **CMS** di `/admin`:
-  - artikel dengan editor Tiptap dan jadwal terbit
-  - buku Academy
-  - anggota tim
-  - tag
-  - pembuat thumbnail artikel
-- **SEO dan preview share:**
-  - gambar preview otomatis per halaman
-  - `sitemap.xml`, `robots.txt`, dan `rss.xml`
-  - URL kanonik dan data terstruktur (JSON-LD)
-- **Keamanan:**
-  - HTML artikel disanitasi
-  - input admin divalidasi (zod)
-  - login admin dengan batas percobaan
-  - header keamanan (CSP, HSTS, dan lainnya)
-- **Aksesibilitas:** diuji dengan axe-core (WCAG 2.1 AA).
+- **Public pages:** Home, Products, Services, Academy, Insights (blog) and Company, with scroll-driven animation that stays light and stable on phones.
+- **CMS** at `/admin`:
+  - posts with a Tiptap editor and scheduled publishing
+  - Academy books
+  - team members
+  - tags
+  - a thumbnail designer for posts
+- **SEO and link previews:**
+  - a generated preview image for every page
+  - `sitemap.xml`, `robots.txt` and `rss.xml`
+  - canonical URLs and structured data (JSON-LD)
+- **Security:**
+  - sanitized article HTML
+  - validated admin input (zod)
+  - rate-limited admin sign-in
+  - security headers (CSP, HSTS and more)
+- **Accessibility:** checked with axe-core (WCAG 2.1 AA).
 
-## Halaman
+## Pages
 
-| Route | Isi |
+| Route | Content |
 |---|---|
 | `/` | Home |
-| `/products` | Produk RantAI |
-| `/services` | Layanan engineering |
-| `/academy` | Library buku |
-| `/blog`, `/blog/[slug]` | Insights: daftar artikel dan halaman baca |
-| `/our-team` | Company (`/team` diarahkan ke sini) |
-| `/admin` | CMS (perlu login) |
+| `/products` | RantAI products |
+| `/services` | Engineering services |
+| `/academy` | Book library |
+| `/blog`, `/blog/[slug]` | Insights: post list and reading page |
+| `/our-team` | Company (`/team` redirects here) |
+| `/admin` | CMS (sign-in required) |
 
 ## Stack
 
-| Bagian | Teknologi |
+| Area | Technology |
 |---|---|
 | Framework | Next.js 16 (App Router), React 19, TypeScript |
 | Database | Neon PostgreSQL + Drizzle ORM |
@@ -48,75 +48,75 @@ Website dan CMS untuk [RantAI](https://www.rantai.dev): produk AI, layanan engin
 | Editor | Tiptap |
 | Auth | JWT (jose) + bcrypt |
 | Storage | Vercel Blob |
-| Test | Vitest |
+| Tests | Vitest |
 | Hosting | Vercel (Analytics, Speed Insights, Cron) |
 
-## Mulai
+## Getting started
 
-Butuh Node.js 22 atau lebih baru.
+Requires Node.js 22 or newer.
 
 ```bash
 npm install
-cp .env.example .env.local   # lalu isi nilainya
-npm run db:push              # buat tabel di database
+cp .env.example .env.local   # then fill in the values
+npm run db:push              # create the tables
 npm run dev                  # http://localhost:3000
 ```
 
 ### Environment variables
 
-Semua variabel dijelaskan di [`.env.example`](.env.example):
+Every variable is described in [`.env.example`](.env.example):
 
-| Variabel | Untuk apa |
+| Variable | Used for |
 |---|---|
-| `DATABASE_URL` | Koneksi Neon. Juga dibaca saat build, karena halaman di-render dari data CMS. |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH` | Login admin. Buat hash dengan `npm run db:generate-hash <password>`. |
-| `JWT_SECRET` | Menandatangani sesi admin. **Wajib:** login menolak bekerja tanpanya. Pakai 32+ karakter acak, misalnya `openssl rand -base64 32`. |
-| `BLOB_READ_WRITE_TOKEN` | Upload gambar dari admin. |
-| `CRON_SECRET` | Mengamankan `/api/cron/*` (terbit terjadwal, bersih-bersih gambar). |
+| `DATABASE_URL` | Neon connection string. Also read at build time, because pages are prerendered from CMS data. |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH` | Admin sign-in. Create the hash with `npm run db:generate-hash <password>`. |
+| `JWT_SECRET` | Signs admin sessions. **Required:** sign-in refuses to work without it. Use 32+ random characters, e.g. `openssl rand -base64 32`. |
+| `BLOB_READ_WRITE_TOKEN` | Image uploads from the admin. |
+| `CRON_SECRET` | Protects `/api/cron/*` (scheduled publishing, image clean-up). |
 
-> Di file env yang dibaca shell, tulis setiap `$` di `ADMIN_PASSWORD_HASH` sebagai `\$`.
+> In env files that a shell reads, write each `$` in `ADMIN_PASSWORD_HASH` as `\$`.
 
 ## Scripts
 
-| Perintah | Fungsi |
+| Command | What it does |
 |---|---|
 | `npm run dev` | Dev server |
-| `npm run build` / `npm run start` | Build dan jalankan production |
+| `npm run build` / `npm run start` | Production build and server |
 | `npm run lint` | ESLint |
-| `npm test` | Unit test (Vitest) |
-| `npm run test:coverage` | Laporan coverage |
-| `npm run db:push` | Sinkronkan schema ke database |
+| `npm test` | Unit tests (Vitest) |
+| `npm run test:coverage` | Coverage report |
+| `npm run db:push` | Sync the schema to the database |
 | `npm run db:studio` | Drizzle Studio |
-| `npm run db:generate-hash <password>` | Hash password admin |
-| `npm run db:seed-tags` | Isi tag awal |
+| `npm run db:generate-hash <password>` | Hash the admin password |
+| `npm run db:seed-tags` | Seed the initial tags |
 
-## Struktur
+## Project structure
 
 ```
 src/
-  app/          route; komponen khusus satu halaman di app/<route>/_components
-  components/   komponen bersama: layout, shared, blog, platform, effects, ui, admin
+  app/          routes; components used by one page live in app/<route>/_components
+  components/   shared components: layout, shared, blog, platform, effects, ui, admin
   hooks/        React hooks
-  lib/          kode non-UI: blog, auth, db, data-table, seo, revalidate, ...
-__tests__/      unit test, mengikuti struktur src/
+  lib/          non-UI code: blog, auth, db, data-table, seo, revalidate, ...
+__tests__/      unit tests, mirroring src/
 ```
 
-Aturan lengkap letak kode ada di [AGENTS.md](AGENTS.md).
+The full rules for where code goes are in [AGENTS.md](AGENTS.md).
 
-## Kontribusi
+## Contributing
 
-1. Buat branch dari `main`, lalu buka pull request. `main` dilindungi: tidak bisa di-push langsung.
-2. PR baru bisa di-merge setelah dua check lolos:
-   - **CI** (`.github/workflows/ci.yml`): lint, type check, unit test, dan audit dependency
-   - **Vercel:** build dan preview deployment
-3. Pesan commit memakai gaya Conventional Commits, misalnya `feat: …`, `fix: …`, `chore: …`.
-4. Sertakan screenshot untuk perubahan tampilan, dan sebutkan dampak ke database, auth, environment, atau deployment kalau ada.
+1. Branch from `main` and open a pull request. `main` is protected and can't be pushed to directly.
+2. A PR can merge once both checks pass:
+   - **CI** (`.github/workflows/ci.yml`): lint, type check, unit tests and a dependency audit
+   - **Vercel:** build and preview deployment
+3. Commit messages follow Conventional Commits, e.g. `feat: …`, `fix: …`, `chore: …`.
+4. Include screenshots for visual changes, and call out any database, auth, environment or deployment impact.
 
 ## Deployment
 
-`main` otomatis ter-deploy ke Vercel; setiap PR mendapat preview deployment.
+`main` deploys to Vercel automatically, and every PR gets a preview deployment.
 
-- Isi semua variabel dari `.env.example` di Vercel → Settings → Environment Variables.
-- Cron (`vercel.json`) menjalankan terbit terjadwal dan bersih-bersih Blob setiap hari. Keduanya butuh `CRON_SECRET`.
-- Header keamanan diatur di `next.config.ts`. CSP hanya aktif di production.
-- Login admin dibatasi 5 percobaan gagal per IP per 15 menit, di memori tiap instance. Untuk batas yang pasti, tambahkan aturan rate limit `POST /api/auth/login` di Vercel Firewall.
+- Set every variable from `.env.example` in Vercel → Settings → Environment Variables.
+- Cron jobs (`vercel.json`) run scheduled publishing and Blob clean-up daily. Both need `CRON_SECRET`.
+- Security headers are set in `next.config.ts`. The CSP is only active in production.
+- Admin sign-in allows 5 failed attempts per IP per 15 minutes, counted in each instance's memory. For a hard limit, add a rate-limit rule for `POST /api/auth/login` in the Vercel Firewall.
