@@ -8,7 +8,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import type { Tag } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
-import { gradientForColor } from "@/lib/tag-colors";
+import { gradientForColor } from "@/lib/blog/tag-colors";
 
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";

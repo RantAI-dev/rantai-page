@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { SearchIcon, SearchX } from "lucide-react";
 
-import type { Option } from "@/types/data-table";
+import type { Option } from "@/lib/data-table/types";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { DataTable } from "@/components/data-table/data-table";

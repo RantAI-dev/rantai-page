@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import type { Book } from "@/lib/db/schema";
-import type { Option } from "@/types/data-table";
+import type { Option } from "@/lib/data-table/types";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

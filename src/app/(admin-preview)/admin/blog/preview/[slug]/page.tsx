@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 
-import { BlogPostView } from "@/components/blog-post-view";
+import { BlogPostView } from "@/components/blog/blog-post-view";
 import { db } from "@/lib/db";
 import { blogPosts } from "@/lib/db/schema";
-import { getBlogPostingDate } from "@/lib/blog-date";
-import type { BlogPost } from "@/lib/blog";
+import { getBlogPostingDate } from "@/lib/blog/date";
+import type { BlogPost } from "@/lib/blog/posts";
 
 function mapPostToPreview(post: typeof blogPosts.$inferSelect): BlogPost {
   return {

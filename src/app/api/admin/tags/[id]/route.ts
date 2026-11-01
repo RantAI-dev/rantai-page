@@ -4,7 +4,7 @@ import { count, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { blogPosts, tags } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
-import { getDatabaseErrorResponse } from "@/lib/blog-input";
+import { getDatabaseErrorResponse } from "@/lib/blog/input";
 
 function revalidateBlogPages() {
   revalidatePath("/blog");

@@ -1,16 +1,16 @@
 import type { Metadata } from "next"
 
-import { CapabilityMarquee } from "@/app/home/_components/capability-marquee"
+import { CapabilityMarquee } from "@/components/shared/capability-marquee"
 import { siteConfig } from "@/lib/config"
-import { ProductsHeroVisual } from "@/components/products-bento"
-import { PageHero } from "@/components/page-hero"
-import { PillLink } from "@/components/pill-link"
+import { ProductsHeroVisual } from "./_components/products-bento"
+import { PageHero } from "@/components/shared/page-hero"
+import { PillLink } from "@/components/shared/pill-link"
 import { ExpandingPanel } from "@/components/platform/expanding-panel"
 import { PlatformReel } from "@/components/platform/platform-reel"
 import { DataJourney } from "@/components/platform/data-journey"
-import { ServicesOverview } from "@/components/services-overview"
-import { SectionNav } from "@/components/section-nav"
-import { SiteShell } from "@/components/site-shell"
+import { ServicesOverview } from "./_components/services-overview"
+import { SectionNav } from "@/components/layout/section-nav"
+import { SiteShell } from "@/components/layout/site-shell"
 
 export const metadata: Metadata = {
   title: "Products",

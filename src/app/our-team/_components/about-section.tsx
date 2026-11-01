@@ -11,9 +11,9 @@ import {
   useTransform,
 } from "motion/react"
 
-import { Eyebrow } from "@/components/eyebrow"
-import { ProductTile } from "@/components/product-logo"
-import { SplitReveal } from "@/components/split-reveal"
+import { Eyebrow } from "@/components/shared/eyebrow"
+import { ProductTile } from "@/components/shared/product-logo"
+import { SplitReveal } from "@/components/shared/split-reveal"
 import { cn } from "@/lib/utils"
 
 // "Who we are": four facts, each counted from real data and shown with a

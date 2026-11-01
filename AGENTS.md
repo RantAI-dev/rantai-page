@@ -2,7 +2,34 @@
 
 ## Project Structure & Module Organization
 
-This is a Next.js 16 App Router project for the RantAI landing page and CMS. Application routes live in `src/app`, shared UI components in `src/components`, reusable hooks in `src/hooks` and `src/lib/hooks`, and shared utilities/config in `src/lib`. Database schema and helpers are under `src/lib/db`, with Drizzle configuration in `drizzle.config.ts`. Static assets belong in `public`. Unit tests live in `__tests__/`, currently organized by domain such as `__tests__/lib`.
+This is a Next.js 16 App Router project for the RantAI landing page and CMS. Database schema and helpers are under `src/lib/db`, with Drizzle configuration in `drizzle.config.ts`. Static assets belong in `public`. Unit tests live in `__tests__/`, mirroring `src` (for example `__tests__/lib/blog/date.test.ts` tests `src/lib/blog/date.ts`).
+
+Where code goes:
+
+```
+src/
+  app/                    routes only (URLs never depend on folder moves)
+    page.tsx              home; its sections in app/_components/home/
+    <route>/page.tsx      a public page
+    <route>/_components/  components used by that page only
+    admin/  api/  login/  CMS, route handlers, sign-in
+  components/
+    layout/    site chrome: navbar, footer, site-shell, section-nav, smooth-scroll
+    shared/    building blocks used by several pages: page-hero, eyebrow, pill-link…
+    blog/      article and post-card pieces used by more than one route
+    platform/  the product reel, journey and demos (home + products)
+    effects/   canvas/WebGL backgrounds: dot-grid, ghost-fibers, line-waves, ascii
+    admin/  ui/ (shadcn)  tiptap/  data-table/
+  hooks/       reusable React hooks
+  lib/         non-UI code: auth, upload, utils, partners…
+    blog/      posts queries, dates, slugs, publishing, article HTML, tag colours
+    data-table/  table config, types, parsers, helpers
+    db/        Drizzle schema and client
+```
+
+- Used by one page: put it in that route's `_components/`. Used by two or more: move it to `src/components/<role>/`.
+- Import your own `_components` relatively (`./_components/x`); import everything else through `@/`. Pages never import another page's `_components`.
+- File names are kebab-case (`team-grid.tsx`, `use-media-query.ts`).
 
 ## Build, Test, and Development Commands
 

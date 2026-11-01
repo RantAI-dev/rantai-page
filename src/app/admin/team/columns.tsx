@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import type { TeamMember } from "@/lib/db/schema";
-import type { Option } from "@/types/data-table";
+import type { Option } from "@/lib/data-table/types";
 
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";

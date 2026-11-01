@@ -4,7 +4,7 @@ import { asc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { tags } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
-import { getDatabaseErrorResponse } from "@/lib/blog-input";
+import { getDatabaseErrorResponse } from "@/lib/blog/input";
 
 export async function GET() {
   const session = await getSession();

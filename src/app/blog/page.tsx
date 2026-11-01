@@ -1,12 +1,12 @@
 import { db } from "@/lib/db"
 import { tags } from "@/lib/db/schema"
-import { getPosts, getPostTags } from "@/lib/blog"
-import { BlogMain } from "@/components/blog-main"
-import { PostsVisual } from "@/components/hero-visuals"
-import { MotionInView } from "@/components/motion-in-view"
-import { PageHero } from "@/components/page-hero"
-import { SectionNav } from "@/components/section-nav"
-import { SiteShell } from "@/components/site-shell"
+import { getPosts, getPostTags } from "@/lib/blog/posts"
+import { BlogMain } from "./_components/blog-main"
+import { PostsVisual } from "@/components/shared/hero-visuals"
+import { MotionInView } from "@/components/shared/motion-in-view"
+import { PageHero } from "@/components/shared/page-hero"
+import { SectionNav } from "@/components/layout/section-nav"
+import { SiteShell } from "@/components/layout/site-shell"
 
 export const metadata = {
   title: "Blog",

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import type { BlogPublicationStatus } from "@/lib/blog-date";
+import type { BlogPublicationStatus } from "@/lib/blog/date";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,

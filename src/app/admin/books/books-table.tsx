@@ -7,7 +7,7 @@ import { SearchIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import type { Book } from "@/lib/db/schema";
-import type { Option } from "@/types/data-table";
+import type { Option } from "@/lib/data-table/types";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { DataTable } from "@/components/data-table/data-table";

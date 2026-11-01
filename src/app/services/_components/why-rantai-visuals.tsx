@@ -20,7 +20,7 @@ import {
   Rocket,
 } from "lucide-react"
 
-import { ProductTile, productIdFrom } from "@/components/product-logo"
+import { ProductTile, productIdFrom } from "@/components/shared/product-logo"
 import { cn } from "@/lib/utils"
 
 // One small product fragment per "Why RantAI" point, in the same card style

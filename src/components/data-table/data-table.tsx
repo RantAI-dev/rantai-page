@@ -32,7 +32,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { getColumnPinningStyle } from "@/lib/data-table";
+import { getColumnPinningStyle } from "@/lib/data-table/utils";
 import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData> extends React.ComponentProps<"div"> {

@@ -8,8 +8,8 @@ import {
   getDatabaseErrorResponse,
   normalizeBlogInput,
   scheduleWasInvalid,
-} from "@/lib/blog-input"
-import { generateUniqueSlug } from "@/lib/blog-slug"
+} from "@/lib/blog/input"
+import { generateUniqueSlug } from "@/lib/blog/slug"
 import { desc } from "drizzle-orm"
 
 export async function GET() {

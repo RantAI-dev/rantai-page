@@ -3,8 +3,8 @@
 import { motion, useReducedMotion } from "motion/react"
 import { ArrowRight, CalendarDays, Check, Users } from "lucide-react"
 
-import { Eyebrow } from "@/components/eyebrow"
-import { SplitReveal } from "@/components/split-reveal"
+import { Eyebrow } from "@/components/shared/eyebrow"
+import { SplitReveal } from "@/components/shared/split-reveal"
 import { siteConfig } from "@/lib/config"
 
 // "For teams": three ways a company can use the Academy, each told by a

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { publishDueScheduledPosts } from "@/lib/blog-publish";
+import { publishDueScheduledPosts } from "@/lib/blog/publish";
 
 export async function GET(req: NextRequest) {
   // Vercel Cron sends `Authorization: Bearer <CRON_SECRET>` automatically when

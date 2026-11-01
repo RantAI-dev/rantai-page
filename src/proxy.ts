@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
-import { BLOG_SLUG_MAX_LENGTH } from "@/lib/blog-input";
+import { BLOG_SLUG_MAX_LENGTH } from "@/lib/blog/input";
 
 export async function proxy(req: NextRequest) {
   const blogSlug = req.nextUrl.pathname.match(/^\/blog\/([^/]+)$/)?.[1];

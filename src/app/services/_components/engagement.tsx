@@ -21,11 +21,11 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { Eyebrow } from "@/components/eyebrow"
-import { PillLink } from "@/components/pill-link"
+import { Eyebrow } from "@/components/shared/eyebrow"
+import { PillLink } from "@/components/shared/pill-link"
 import { ExpandingPanel } from "@/components/platform/expanding-panel"
-import { smoothScrollTo } from "@/components/smooth-scroll"
-import { SplitReveal } from "@/components/split-reveal"
+import { smoothScrollTo } from "@/components/layout/smooth-scroll"
+import { SplitReveal } from "@/components/shared/split-reveal"
 import { siteConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
 

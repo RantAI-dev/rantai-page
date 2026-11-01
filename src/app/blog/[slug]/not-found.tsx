@@ -1,5 +1,5 @@
-import { NotFoundView } from "@/components/not-found-view"
-import { PillLink } from "@/components/pill-link"
+import { NotFoundView } from "@/components/shared/not-found-view"
+import { PillLink } from "@/components/shared/pill-link"
 
 export default function BlogPostNotFound() {
   return (

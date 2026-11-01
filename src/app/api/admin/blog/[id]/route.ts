@@ -9,9 +9,9 @@ import {
   isPublishedOnlyBlogUpdate,
   normalizeBlogInput,
   scheduleWasInvalid,
-} from "@/lib/blog-input"
-import { generateUniqueSlug } from "@/lib/blog-slug"
-import { getPublishedAtForUpdate } from "@/lib/blog-date"
+} from "@/lib/blog/input"
+import { generateUniqueSlug } from "@/lib/blog/slug"
+import { getPublishedAtForUpdate } from "@/lib/blog/date"
 import { eq } from "drizzle-orm"
 
 function revalidateBlogPages(...slugs: string[]) {
