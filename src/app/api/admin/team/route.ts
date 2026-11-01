@@ -3,6 +3,7 @@ import { revalidateTeam } from "@/lib/revalidate";
 import { db } from "@/lib/db";
 import { teamMembers } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
+import { parseTeamInput, readJson } from "@/lib/admin-input";
 import { asc } from "drizzle-orm";
 
 export async function GET() {
@@ -17,17 +18,10 @@ export async function POST(req: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await req.json();
-  const { name, role, bio, imageUrl, linkedin, github, orderIndex } = body;
+  const input = parseTeamInput(await readJson(req));
+  if (!input.ok) return NextResponse.json({ error: input.error }, { status: 400 });
 
-  if (!name || !role) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-  }
-
-  const [member] = await db
-    .insert(teamMembers)
-    .values({ name, role, bio, imageUrl, linkedin, github, orderIndex: orderIndex ?? 0 })
-    .returning();
+  const [member] = await db.insert(teamMembers).values(input.data).returning();
 
   revalidateTeam();
   return NextResponse.json(member, { status: 201 });

@@ -9,6 +9,7 @@ import {
   normalizeBlogInput,
   scheduleWasInvalid,
 } from "@/lib/blog/input"
+import { sanitizeBlogHtml } from "@/lib/blog/sanitize"
 import { generateUniqueSlug } from "@/lib/blog/slug"
 import { desc } from "drizzle-orm"
 
@@ -31,6 +32,8 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
   const input = normalizeBlogInput(body)
+  // Stored sanitized, so nothing unsafe reaches the database.
+  input.content = sanitizeBlogHtml(input.content)
   const inputError = getBlogInputError(input)
 
   if (inputError) {
