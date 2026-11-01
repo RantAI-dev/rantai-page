@@ -5,7 +5,7 @@ export const siteConfig = {
     "Enterprise AI Products & Engineering — Building production-ready AI platforms for government and enterprise.",
   links: {
     website: "https://www.rantai.dev",
-    email: "admin@rantai.dev",
+    email: "contacts@rantai.dev",
     github: "https://github.com/rantai",
     linkedin: "https://linkedin.com/company/rantai",
   },
