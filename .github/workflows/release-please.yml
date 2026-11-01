@@ -1,0 +1,35 @@
+name: Release
+
+# Keeps a release PR open that bumps the version and updates CHANGELOG.md
+# from the Conventional Commits merged into main. Merging that PR creates
+# the vX.Y.Z tag and the GitHub release. See "Releases & versioning" in
+# AGENTS.md.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    env:
+      # Read here so the step can be skipped (not failed) until it is set.
+      RELEASE_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+    steps:
+      - name: Skip until RELEASE_PLEASE_TOKEN is set
+        if: env.RELEASE_TOKEN == ''
+        run: echo "::notice::Add the RELEASE_PLEASE_TOKEN secret to enable automatic releases (see AGENTS.md)."
+
+      - uses: googleapis/release-please-action@v5
+        if: env.RELEASE_TOKEN != ''
+        with:
+          # A fine-grained token (Contents + Pull requests: read and write on
+          # this repo). Release PRs opened with the default GITHUB_TOKEN don't
+          # trigger CI, and main requires CI to pass before merging.
+          token: ${{ env.RELEASE_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
