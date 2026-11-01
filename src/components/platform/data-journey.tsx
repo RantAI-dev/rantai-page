@@ -6,6 +6,8 @@ import {
   AnimatePresence,
   motion,
   useMotionValue,
+  useTransform,
+  type MotionValue,
   useReducedMotion,
   useScroll,
 } from "motion/react"
@@ -381,21 +383,38 @@ const tilts = [-6, 4, -3, 5, -4]
 
 function Route({
   active,
+  progress,
   onPick,
-}: Readonly<{ active: number; onPick: (i: number) => void }>) {
+}: Readonly<{
+  active: number
+  progress?: MotionValue<number>
+  onPick: (i: number) => void
+}>) {
   const reduce = useReducedMotion()
-  const spring = { type: "spring", stiffness: 140, damping: 22 } as const
+  const n = stops.length
+  // The line fills with the scroll itself and reaches stop i exactly when
+  // stop i becomes active (at progress i / n).
+  const fallback = useMotionValue(0)
+  const fill = useTransform(progress ?? fallback, (v) =>
+    progress ? Math.min(1, Math.max(0, (v * n) / (n - 1))) : active / (n - 1)
+  )
+  const tip = useTransform(fill, (f) => `${10 + f * 80}%`)
   return (
     <div className="relative mx-auto w-full max-w-4xl">
       {/* Track, and the part already travelled */}
       <div className="absolute top-6 right-[10%] left-[10%] h-px bg-neutral-200" />
       <motion.div
         className="absolute top-6 left-[10%] h-px w-[80%] origin-left bg-neutral-900"
-        initial={false}
-        animate={{ scaleX: active / (stops.length - 1) }}
-        transition={spring}
+        style={{ scaleX: fill }}
       />
-      <ol className="relative grid grid-cols-5">
+      {/* The request travelling along the line; tiles sit above it */}
+      {progress && (
+        <motion.span
+          className="absolute top-6 -mt-[5px] -ml-[5px] size-2.5 rounded-full bg-neutral-900 shadow-[0_0_0_4px_rgb(255_255_255)]"
+          style={{ left: tip }}
+        />
+      )}
+      <ol className="relative z-10 grid grid-cols-5">
         {stops.map((s, i) => {
           const on = i <= active
           const now = i === active
@@ -540,7 +559,7 @@ function PinnedJourney() {
     <div ref={ref} className="relative h-[420svh]">
       <div className="sticky top-16 flex h-[calc(100svh-4rem)] flex-col justify-center gap-[min(3rem,5svh)] px-14">
         <Header />
-        <Route active={active} onPick={pick} />
+        <Route active={active} progress={progress} onPick={pick} />
         <div
           className="relative mx-auto flex h-[min(360px,40svh)] w-full max-w-4xl items-center justify-center overflow-hidden rounded-[28px] transition-colors duration-700"
           style={{ background: `${stop.tone}12` }}
