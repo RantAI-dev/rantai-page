@@ -6,6 +6,7 @@ import { BooksVisual } from "@/components/hero-visuals"
 import { MotionInView } from "@/components/motion-in-view"
 import { PageHero } from "@/components/page-hero"
 import { SectionNav } from "@/components/section-nav"
+import { ForTeams } from "./_components/for-teams"
 import { SiteShell } from "@/components/site-shell"
 import { BookLibrary } from "@/features/book-library"
 
@@ -63,7 +64,13 @@ export default async function AcademyPage() {
           <BookLibrary books={books} />
         </MotionInView>
       </section>
-      <SectionNav sections={[{ id: "library", label: "Library" }]} />
+      <ForTeams />
+      <SectionNav
+        sections={[
+          { id: "library", label: "Library" },
+          { id: "for-teams", label: "For teams" },
+        ]}
+      />
     </SiteShell>
   )
 }

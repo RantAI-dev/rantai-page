@@ -437,7 +437,7 @@ function Book({ src }: Readonly<{ src: string }>) {
   const pages =
     "repeating-linear-gradient(var(--dir), #ffffff 0 1.5px, #dcdad3 1.5px 2.5px)"
   return (
-    <div className="relative aspect-[3/4]">
+    <div className="relative aspect-[2/3]">
       {/* Page block peeking out on the right and bottom */}
       <div
         className="absolute top-[5px] -right-[7px] bottom-[2px] w-[9px] rounded-r-[3px] shadow-[2px_0_4px_rgba(0,0,0,0.12)]"
