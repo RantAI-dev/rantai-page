@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "motion/react"
+import type { LucideIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -10,6 +11,8 @@ export type FilterOption = {
   count?: number
   /** Optional colour dot, matching the tags on the cards. */
   tone?: string
+  /** Optional icon, shown in place of the dot (tinted with `tone`). */
+  icon?: LucideIcon
 }
 
 /**
@@ -60,7 +63,14 @@ export function FilterChips({
                 transition={{ type: "spring", stiffness: 420, damping: 34 }}
               />
             )}
-            {o.tone && (
+            {o.icon ? (
+              <o.icon
+                aria-hidden="true"
+                className="size-4"
+                strokeWidth={2}
+                style={{ color: active ? undefined : o.tone }}
+              />
+            ) : o.tone && (
               <span
                 aria-hidden="true"
                 className="size-2 rounded-full"
