@@ -7,6 +7,7 @@ import { ArrowUp } from "lucide-react"
 import { FooterAscii } from "@/components/effects/footer-ascii"
 import { scrollToTop } from "@/components/layout/smooth-scroll"
 import { cn } from "@/lib/utils"
+import { useDesktopMotion } from "@/hooks/use-desktop-motion"
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -70,6 +71,7 @@ export function FooterWordmark({
 }: Readonly<{ text: string; className?: string }>) {
   const ref = useRef<HTMLDivElement>(null)
   const reduce = useReducedMotion()
+  const desktopMotion = useDesktopMotion()
   const letters = Array.from(text)
 
   useEffect(() => {
@@ -132,14 +134,15 @@ export function FooterWordmark({
     const root = ref.current
     const panel = root?.parentElement
     const footer = root?.closest("footer")
-    if (!root || !panel || !footer || reduce) return
+    // Never intercept touch scrolling, even while the footer is offscreen.
+    // Safari must be free to handle momentum and its own rubber band.
+    if (!root || !panel || !footer || !desktopMotion) return
 
     let pull = 0 // raw input since the pull started
     let shown = 0 // pixels currently revealed
     let room = 0 // pixels needed to show the whole word
     let frame = 0
     let release: ReturnType<typeof setTimeout> | undefined
-    let touchY: number | null = null
 
     const atBottom = () =>
       window.scrollY + window.innerHeight >=
@@ -198,41 +201,16 @@ export function FooterWordmark({
         e.stopPropagation()
       }
     }
-    const onTouchStart = (e: TouchEvent) => {
-      touchY = e.touches[0]?.clientY ?? null
-    }
-    const onTouchMove = (e: TouchEvent) => {
-      const y = e.touches[0]?.clientY
-      if (touchY === null || y === undefined) return
-      const used = take(touchY - y)
-      touchY = y
-      if (used && e.cancelable) e.preventDefault()
-    }
-    const onTouchEnd = () => {
-      touchY = null
-      clearTimeout(release)
-      pull = 0
-      kick()
-    }
-
     window.addEventListener("wheel", onWheel, { capture: true, passive: false })
-    window.addEventListener("touchstart", onTouchStart, { passive: true })
-    window.addEventListener("touchmove", onTouchMove, { passive: false })
-    window.addEventListener("touchend", onTouchEnd)
-    window.addEventListener("touchcancel", onTouchEnd)
     return () => {
       cancelAnimationFrame(frame)
       clearTimeout(release)
       window.removeEventListener("wheel", onWheel, { capture: true })
-      window.removeEventListener("touchstart", onTouchStart)
-      window.removeEventListener("touchmove", onTouchMove)
-      window.removeEventListener("touchend", onTouchEnd)
-      window.removeEventListener("touchcancel", onTouchEnd)
       root.style.marginBottom = ""
       root.style.removeProperty("--pull")
       footer.style.transform = ""
     }
-  }, [reduce])
+  }, [desktopMotion])
 
   return (
     <div

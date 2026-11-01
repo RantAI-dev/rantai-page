@@ -1,69 +1,115 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 export type SectionLink = { id: string; label: string }
 
-/**
- * Keeps the URL in sync with the section being read: the address bar shows
- * #proof while you are on Proof, so a copied link opens right there, and
- * opening such a link lands on that section. Renders nothing.
- */
+/** Shareable section URLs, updated only after scrolling has settled. */
 export function SectionNav({
   sections,
 }: Readonly<{ sections: SectionLink[] }>) {
-  const [active, setActive] = useState<string | null>(null)
-
-  // Opening /page#section: wait for the page to settle (pinned sections
-  // change height after they load), then land on the section.
-  const [ready, setReady] = useState(false)
   useEffect(() => {
-    const id = decodeURIComponent(window.location.hash.slice(1))
-    const el = id ? document.getElementById(id) : null
-    if (!el) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- nothing to land on
-      setReady(true)
-      return
-    }
-    const t = setTimeout(() => {
-      window.scrollTo({
-        top: el.getBoundingClientRect().top + window.scrollY - 72,
-        behavior: "instant",
-      })
-      setReady(true)
-    }, 400)
-    return () => clearTimeout(t)
-  }, [])
+    let landing: ReturnType<typeof setTimeout> | undefined
+    let idle: ReturnType<typeof setTimeout> | undefined
+    let touching = false
 
-  // Which section is under a line 40% down the screen.
-  useEffect(() => {
-    const update = () => {
+    const updateUrl = () => {
+      if (landing !== undefined || touching) return
       const line = window.innerHeight * 0.4
-      let current: string | null = null
-      for (const s of sections) {
-        const r = document.getElementById(s.id)?.getBoundingClientRect()
-        if (r && r.top <= line && r.bottom > line) current = s.id
+      let active: string | null = null
+      for (const section of sections) {
+        const rect = document
+          .getElementById(section.id)
+          ?.getBoundingClientRect()
+        if (rect && rect.top <= line && rect.bottom > line) active = section.id
       }
-      setActive(current)
+      const url = window.location.pathname + window.location.search
+      const next = active ? `${url}#${active}` : url
+      if (next !== url + window.location.hash) {
+        window.history.replaceState(window.history.state, "", next)
+      }
     }
-    update()
-    window.addEventListener("scroll", update, { passive: true })
-    window.addEventListener("resize", update)
+
+    // No layout reads, React updates or history writes during a swipe.
+    // The timer covers browsers without scrollend; inertia resets it.
+    const schedule = () => {
+      clearTimeout(idle)
+      idle = setTimeout(updateUrl, 250)
+    }
+    const settled = () => {
+      clearTimeout(idle)
+      updateUrl()
+    }
+    const cancelLanding = () => {
+      clearTimeout(landing)
+      landing = undefined
+    }
+    const touchStart = () => {
+      touching = true
+      clearTimeout(idle)
+      cancelLanding()
+    }
+    const touchEnd = () => {
+      touching = false
+      schedule()
+    }
+    const keyDown = (event: KeyboardEvent) => {
+      if (
+        [
+          "ArrowUp",
+          "ArrowDown",
+          "PageUp",
+          "PageDown",
+          "Home",
+          "End",
+          " ",
+        ].includes(event.key)
+      ) {
+        cancelLanding()
+      }
+    }
+
+    // A direct link may need correction after hydration. Cancel it as soon
+    // as the visitor takes control, instead of pulling them back mid-gesture.
+    let id = ""
+    try {
+      id = decodeURIComponent(window.location.hash.slice(1))
+    } catch {}
+    const target = id ? document.getElementById(id) : null
+    if (target) {
+      landing = setTimeout(() => {
+        landing = undefined
+        window.scrollTo({
+          top: target.getBoundingClientRect().top + window.scrollY - 72,
+          behavior: "instant",
+        })
+        schedule()
+      }, 400)
+    } else {
+      schedule()
+    }
+
+    window.addEventListener("scroll", schedule, { passive: true })
+    window.addEventListener("scrollend", settled)
+    window.addEventListener("resize", schedule)
+    window.addEventListener("wheel", cancelLanding, { passive: true })
+    window.addEventListener("touchstart", touchStart, { passive: true })
+    window.addEventListener("touchend", touchEnd, { passive: true })
+    window.addEventListener("touchcancel", touchEnd, { passive: true })
+    window.addEventListener("keydown", keyDown)
     return () => {
-      window.removeEventListener("scroll", update)
-      window.removeEventListener("resize", update)
+      clearTimeout(landing)
+      clearTimeout(idle)
+      window.removeEventListener("scroll", schedule)
+      window.removeEventListener("scrollend", settled)
+      window.removeEventListener("resize", schedule)
+      window.removeEventListener("wheel", cancelLanding)
+      window.removeEventListener("touchstart", touchStart)
+      window.removeEventListener("touchend", touchEnd)
+      window.removeEventListener("touchcancel", touchEnd)
+      window.removeEventListener("keydown", keyDown)
     }
   }, [sections])
-
-  // Keep the URL pointing at that section, without adding history entries.
-  useEffect(() => {
-    if (!ready) return
-    const url = window.location.pathname + window.location.search
-    const next = active ? `${url}#${active}` : url
-    if (next !== url + window.location.hash) {
-      window.history.replaceState(window.history.state, "", next)
-    }
-  }, [active, ready])
 
   return null
 }
