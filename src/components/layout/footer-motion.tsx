@@ -46,7 +46,7 @@ export function Reveal({
 
   return (
     <motion.div
-      className={className}
+      className={cn(className, "max-md:filter-none!")}
       initial={reduce ? false : { opacity: 0, y: 24, filter: "blur(6px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-60px" }}

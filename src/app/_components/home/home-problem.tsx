@@ -591,6 +591,23 @@ export function HomeProblem() {
         <div className="mx-auto grid w-full max-w-[1440px] items-center gap-8 px-5 sm:px-10 lg:grid-cols-2 lg:gap-16 lg:px-14">
           <div className="order-2 lg:order-1">
             <div className="grid min-h-[11rem] sm:min-h-[14rem]">
+              {/* Every problem, invisible, in the same cell: the block is as
+                  tall as the longest one, so switching never changes its
+                  height (which moved the whole pinned screen on phones). */}
+              {problems.map((item) => (
+                <div
+                  key={item.title}
+                  aria-hidden="true"
+                  className="invisible col-start-1 row-start-1"
+                >
+                  <p className="text-[clamp(2.5rem,5.4vw,5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance">
+                    {item.title}
+                  </p>
+                  <p className="mt-5 max-w-md text-lg leading-relaxed">
+                    {item.body}
+                  </p>
+                </div>
+              ))}
               <AnimatePresence initial={false}>
                 <div key={index} className="col-start-1 row-start-1">
                   <SplitReveal
@@ -635,13 +652,15 @@ export function HomeProblem() {
           </div>
 
           <div
-            className="order-1 grid aspect-[4/3] w-full overflow-hidden rounded-3xl bg-neutral-100 p-6 transition-[background-image] duration-700 sm:aspect-[5/4] lg:order-2"
+            className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-3xl bg-neutral-100 transition-[background-image] duration-700 sm:aspect-[5/4] lg:order-2"
             style={{ backgroundImage: tints[index] }}
           >
             <AnimatePresence initial={false}>
               <motion.div
                 key={index}
-                className="col-start-1 row-start-1 h-full w-full"
+                // Absolute, so the box keeps its aspect ratio whatever the
+                // visual inside measures.
+                className="absolute inset-6"
                 initial={reduce ? false : { opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={reduce ? undefined : { opacity: 0, scale: 0.97 }}

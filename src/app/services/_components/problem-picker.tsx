@@ -643,7 +643,7 @@ export function ProblemPicker() {
               <motion.div
                 key={`${p.id}-${after}`}
                 aria-hidden="true"
-                className="absolute inset-0 flex items-center justify-center"
+                className="absolute inset-0 flex items-center justify-center max-md:filter-none!"
                 initial={{ opacity: 0, scale: 0.97, filter: "blur(6px)" }}
                 animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                 exit={{ opacity: 0, scale: 1.02, filter: "blur(6px)" }}

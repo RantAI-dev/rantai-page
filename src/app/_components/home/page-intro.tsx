@@ -95,8 +95,18 @@ export function PageIntro({
     // Centre the window on the product ring, so it opens on the screens
     // rather than on the dark lower half of the hero.
     const cy = box.top + box.height * (vw < 640 ? 0.3 : 0.42)
-    const from: Box = { left: (vw - w) / 2, top: cy - h / 2, width: w, height: h }
-    const to: Box = { left: box.left, top: box.top, width: box.width, height: box.height }
+    const from: Box = {
+      left: (vw - w) / 2,
+      top: cy - h / 2,
+      width: w,
+      height: h,
+    }
+    const to: Box = {
+      left: box.left,
+      top: box.top,
+      width: box.width,
+      height: box.height,
+    }
     overlayRef.current?.style.setProperty("--intro-y", `${cy}px`)
     const radius = parseFloat(getComputedStyle(card!).borderTopLeftRadius) || 28
     // The window opens from nothing in the middle before it holds.
@@ -164,7 +174,7 @@ export function PageIntro({
       <div className="pointer-events-none absolute inset-x-0 top-(--intro-y,50%) flex -translate-y-1/2 justify-center">
         <span className="overflow-hidden pb-[0.08em] text-[clamp(3.25rem,10vw,9rem)] leading-none font-semibold tracking-[-0.055em] text-white">
           <motion.span
-            className="inline-block"
+            className="inline-block max-md:filter-none!"
             initial={{ y: "105%" }}
             animate={
               opening

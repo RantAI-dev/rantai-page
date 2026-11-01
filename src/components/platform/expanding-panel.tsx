@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import {
   motion,
   useMotionValue,
@@ -13,6 +13,10 @@ import {
  * A dark panel that grows to the full width of the screen as it scrolls into
  * place (the side gutters and rounded corners melt away), then settles back
  * into a card as it scrolls out.
+ *
+ * The growth is a clip-path on a full-width panel, not a change of padding:
+ * the content keeps one width the whole time, so nothing inside re-wraps and
+ * nothing below moves while scrolling (that read as jumping on phones).
  */
 export function ExpandingPanel({
   children,
@@ -27,15 +31,6 @@ export function ExpandingPanel({
 }>) {
   const ref = useRef<HTMLElement>(null)
   const reduce = useReducedMotion()
-  const [gutter, setGutter] = useState(16)
-
-  useEffect(() => {
-    const q = window.matchMedia("(min-width: 640px)")
-    const update = () => setGutter(q.matches ? 16 : 12)
-    update()
-    q.addEventListener("change", update)
-    return () => q.removeEventListener("change", update)
-  }, [])
 
   const { scrollYProgress: enter } = useScroll({
     target: ref,
@@ -72,10 +67,8 @@ export function ExpandingPanel({
     }
   }, [enter, exit, open])
 
-  const padding = useTransform(open, (k) =>
-    reduce ? gutter : gutter * (1 - k)
-  )
-  const radius = useTransform(open, (k) => (reduce ? 28 : 28 * (1 - k)))
+  // 0 = a card inset by the gutter, 1 = full width. Read by the clip below.
+  const k = useTransform(open, (v) => (reduce ? 0 : v))
 
   return (
     <motion.section
@@ -83,13 +76,12 @@ export function ExpandingPanel({
       id={id}
       className={className}
       aria-labelledby={labelledBy}
-      style={{ paddingLeft: padding, paddingRight: padding }}
     >
       <motion.div
-        className="dark overflow-clip bg-black text-white"
-        style={{ borderRadius: radius }}
+        className="dark overflow-clip bg-black text-white [--g:12px] [clip-path:inset(0_calc((1-var(--k))*var(--g))_round_calc((1-var(--k))*28px))] sm:[--g:16px]"
+        style={{ "--k": k } as React.CSSProperties}
       >
-        {children}
+        <div className="px-(--g)">{children}</div>
       </motion.div>
     </motion.section>
   )
