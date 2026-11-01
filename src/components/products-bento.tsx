@@ -38,7 +38,7 @@ const products: P[] = [
     name: "RantAI Agents",
     icon: Bot,
     tone: "#3b82f6",
-    src: "/products/rantai-agents-chat.png",
+    src: "/products/rantai-agents-chat.webp",
     video: "/videos/rantai-agents/rag-prompt.mp4",
   },
   {
@@ -46,7 +46,7 @@ const products: P[] = [
     name: "RantAI Claw",
     icon: Terminal,
     tone: "#f97316",
-    src: "/products/rantai-claw-console.png",
+    src: "/products/rantai-claw-console.webp",
     video: "/videos/rantai-claw/claw-demo.mp4",
   },
   {

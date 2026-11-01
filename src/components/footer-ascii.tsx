@@ -94,9 +94,10 @@ export function FooterAscii({ className }: Readonly<{ className?: string }>) {
       })
     }
 
-    // ~20 fps is plenty for a slow wave and keeps the main thread free.
+    // ~15 fps: the wave is slow and the glyphs change in steps anyway, so
+    // more frames don't show, while each one repaints the whole footer.
     const loop = (now: number) => {
-      if (now - last > 50) {
+      if (now - last > 66) {
         draw(now)
         last = now
       }

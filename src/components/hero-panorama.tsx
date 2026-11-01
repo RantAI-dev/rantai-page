@@ -15,13 +15,13 @@ type Shot = {
 }
 
 const agents: Shot = {
-  src: "/products/rantai-agents-chat.png",
+  src: "/products/rantai-agents-chat.webp",
   size: 1,
   x: 0,
   y: 0,
 }
 const claw: Shot = {
-  src: "/products/rantai-claw-console.png",
+  src: "/products/rantai-claw-console.webp",
   size: 1.1035,
   x: -0.0517,
   y: -0.0573,
@@ -256,6 +256,11 @@ export function HeroPanorama() {
     const pointer = { x: -999, y: -999, tx: 0, ty: 0, inside: false }
     let lastEarth = 0
     let visible = false
+    // Last values written per strip, so styles are only touched on change.
+    const shownWas: (boolean | null)[] = strips.map(() => null)
+    const filterWas: string[] = strips.map(() => "")
+    let originWas = ""
+    let canvasWas = ""
 
     const layout = () => {
       const w = scene.clientWidth
@@ -326,6 +331,14 @@ export function HeroPanorama() {
         el.style.borderRadius =
           i === 0 ? "14px 0 0 14px" : i === STRIPS - 1 ? "0 14px 14px 0" : "0"
       })
+      // Each strip's place on the ring only changes with the layout.
+      strips.forEach((el, k) => {
+        el.style.transform = `rotateY(${-angles[k]}rad) translateZ(${-R}px)`
+      })
+      shownWas.fill(null)
+      filterWas.fill("")
+      originWas = ""
+      canvasWas = ""
       lastEarth = 0
     }
 
@@ -346,16 +359,31 @@ export function HeroPanorama() {
         rot -= dt * (0.035 + boost * 0.25)
         earthSpin += dt * (0.06 + boost * 0.5)
       }
+      // Read layout before writing any style, so the browser never has to
+      // recalculate layout mid-frame.
+      const away = Math.max(0, -scene.getBoundingClientRect().top)
+      const earthRect = canvas.getBoundingClientRect()
       // Ease the cursor tilt and the lamp toward their targets.
       tiltX += (pointer.tx - tiltX) * 0.06
       tiltY += (pointer.ty - tiltY) * 0.06
       lampK += ((pointer.inside ? 1 : 0) - lampK) * 0.1
-      scene.style.perspectiveOrigin = `${50 + tiltX * 10}% ${50 + tiltY * 8}%`
+      // Rounded, and only written on change: once the cursor settles these
+      // stay the same, and an unchanged write still costs a style pass.
+      const origin = `${(50 + tiltX * 10).toFixed(1)}% ${(50 + tiltY * 8).toFixed(1)}%`
+      if (origin !== originWas) {
+        scene.style.perspectiveOrigin = origin
+        originWas = origin
+      }
       // Parallax as the hero scrolls away. It lives inside the 3D transform:
       // opacity or a separate translate here would flatten the ring.
-      const away = Math.max(0, -scene.getBoundingClientRect().top)
       ring.style.transform = `translateY(${away * 0.12}px) translateZ(${R}px) rotateY(${rot}rad)`
-      canvas.style.transform = `translate(${-tiltX * 10}px, ${away * 0.3 - tiltY * 6}px)`
+      const shift = `translate(${(-tiltX * 10).toFixed(1)}px, ${(away * 0.3 - tiltY * 6).toFixed(1)}px)`
+      if (shift !== canvasWas) {
+        canvas.style.transform = shift
+        canvasWas = shift
+      }
+      // Every strip of a card gets the same filter: work it out once per card.
+      const cardFilter = new Map<number, string>()
       strips.forEach((el, k) => {
         const a = angles[k]
         // Angle from straight ahead, wrapped to [-π, π].
@@ -364,15 +392,10 @@ export function HeroPanorama() {
         if (rel > Math.PI) rel -= Math.PI * 2
         if (rel < -Math.PI) rel += Math.PI * 2
         const shown = Math.abs(rel) < 1.2 && !el.dataset.off
-        el.style.transform = `rotateY(${-a}rad) translateZ(${-R}px)`
-        el.style.visibility = shown ? "visible" : "hidden"
-        // Dim toward the sides so the centre stays calm. Measured from the
-        // card's centre, so every strip of a card gets the same filter and
-        // no seams show between them.
-        let cardRel = (rot - centres[k]) % (Math.PI * 2)
-        if (cardRel > Math.PI) cardRel -= Math.PI * 2
-        if (cardRel < -Math.PI) cardRel += Math.PI * 2
-        el.style.filter = `grayscale(1) brightness(${((0.75 - Math.min(0.35, Math.abs(cardRel) * 0.5)) * dim).toFixed(3)})`
+        if (shownWas[k] !== shown) {
+          el.style.visibility = shown ? "visible" : "hidden"
+          shownWas[k] = shown
+        }
         // Videos only play while their card is in view.
         const video = el.firstElementChild
         if (video instanceof HTMLVideoElement) {
@@ -380,8 +403,28 @@ export function HeroPanorama() {
           if (play && video.paused) video.play().catch(() => {})
           else if (!play && !video.paused) video.pause()
         }
+        if (!shown) return
+        // Dim toward the sides so the centre stays calm. Measured from the
+        // card's centre, so every strip of a card gets the same filter and
+        // no seams show between them.
+        let filter = cardFilter.get(centres[k])
+        if (filter === undefined) {
+          let cardRel = (rot - centres[k]) % (Math.PI * 2)
+          if (cardRel > Math.PI) cardRel -= Math.PI * 2
+          if (cardRel < -Math.PI) cardRel += Math.PI * 2
+          // Rounded to 0.01: changing a filter repaints the strip, so only
+          // write it when the change is visible.
+          filter = `grayscale(1) brightness(${((0.75 - Math.min(0.35, Math.abs(cardRel) * 0.5)) * dim).toFixed(2)})`
+          cardFilter.set(centres[k], filter)
+        }
+        if (filterWas[k] !== filter) {
+          el.style.filter = filter
+          filterWas[k] = filter
+        }
       })
-      if (now - lastEarth > (lampK > 0.01 ? 33 : 50)) {
+      // The planet turns slowly: ~15 fps is enough on its own, ~30 while the
+      // cursor lamp is on it so the glow follows the pointer closely.
+      if (now - lastEarth > (lampK > 0.01 ? 33 : 66)) {
         const dpr = Math.min(window.devicePixelRatio || 1, 2)
         const w = canvas.clientWidth
         const h = canvas.clientHeight
@@ -393,10 +436,9 @@ export function HeroPanorama() {
           canvas.height = Math.round(h * dpr)
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-        const r = canvas.getBoundingClientRect()
         drawEarth(ctx, w, h, earthSpin, {
-          x: pointer.x - r.left,
-          y: pointer.y - r.top,
+          x: pointer.x - earthRect.left,
+          y: pointer.y - earthRect.top,
           k: reduce ? 0 : lampK,
         })
         lastEarth = now
