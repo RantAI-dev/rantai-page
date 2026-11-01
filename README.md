@@ -16,15 +16,20 @@ Landing page dan CMS untuk [RantAI](https://rantai.dev) — dibangun dengan Next
 
 | Route | Keterangan |
 |---|---|
-| `/` | Landing page |
-| `/blog` | Daftar artikel |
-| `/blog/[slug]` | Detail artikel |
+| `/` | Home |
+| `/products` | Produk RantAI |
+| `/services` | Layanan engineering |
 | `/academy` | Library buku |
-| `/team` | Halaman tim |
+| `/blog` | Insights: daftar artikel |
+| `/blog/[slug]` | Halaman baca artikel |
+| `/our-team` | Company: tim (`/team` mengarah ke sini) |
+| `/sitemap.xml`, `/robots.txt`, `/rss.xml` | Untuk mesin pencari dan pembaca RSS |
 | `/admin` | CMS dashboard (protected) |
 | `/admin/blog` | Kelola artikel |
 | `/admin/books` | Kelola buku |
 | `/admin/team` | Kelola anggota tim |
+
+Letak kode (komponen per halaman, komponen bersama, `lib/`) dijelaskan di [AGENTS.md](AGENTS.md).
 
 ## Getting Started
 
@@ -36,15 +41,13 @@ npm install
 
 ### 2. Environment variables
 
-Buat file `.env.local`:
+Salin `.env.example` menjadi `.env.local`, lalu isi nilainya:
 
-```env
-DATABASE_URL=          # Neon connection string
-ADMIN_EMAIL=           # Email login CMS
-ADMIN_PASSWORD_HASH=   # bcrypt hash dari password (lihat db:generate-hash)
-JWT_SECRET=            # Random string panjang untuk sign JWT
-BLOB_READ_WRITE_TOKEN= # Vercel Blob token
+```bash
+cp .env.example .env.local
 ```
+
+`JWT_SECRET` wajib diisi (login admin menolak bekerja tanpanya); pakai 32+ karakter acak, misalnya dari `openssl rand -base64 32`.
 
 > **Penting:** Escape semua `$` dalam `ADMIN_PASSWORD_HASH` dengan `\$` agar tidak di-expand oleh shell.
 > Contoh: `ADMIN_PASSWORD_HASH=\$2b\$12\$...`
@@ -87,18 +90,19 @@ Buka [http://localhost:3000](http://localhost:3000).
 
 Unit test ada di `__tests__/`:
 
-```
-__tests__/
-  lib/
-    auth.test.ts    # hashPassword, verifyPassword, createToken, verifyToken
-    utils.test.ts   # cn() class merger
-    slug.test.ts    # generateSlug()
-```
+Struktur `__tests__/` mengikuti `src/` (misalnya `__tests__/lib/blog/sanitize.test.ts` menguji `src/lib/blog/sanitize.ts`). Yang dicakup antara lain: auth, sanitasi HTML artikel, validasi input admin, rate limit login, slug, tanggal, dan pemrosesan HTML artikel.
 
 ```bash
 npm test
 ```
 
+## CI
+
+`.github/workflows/ci.yml` berjalan di setiap pull request dan push ke `main`: lint, type check, unit test, dan `npm audit` (high/critical di dependency production). Build ikut berjalan bila secret `DATABASE_URL` diisi di **Settings → Secrets and variables → Actions** (role database read-only sudah cukup); tanpa secret itu, langkah build dilewati.
+
 ## Deployment
 
-Deploy ke [Vercel](https://vercel.com). Pastikan environment variables sudah di-set di Vercel project settings, termasuk `DATABASE_URL` dari Neon dan `BLOB_READ_WRITE_TOKEN` dari Vercel Blob.
+Deploy ke [Vercel](https://vercel.com). Set semua variabel dari `.env.example` di Vercel project settings.
+
+- Header keamanan (CSP, HSTS, X-Frame-Options, dll.) diatur di `next.config.ts`; CSP hanya aktif di production.
+- Login admin dibatasi 5 percobaan gagal per IP per 15 menit, di memori tiap instance. Untuk batas yang pasti di semua instance, tambahkan aturan rate limit untuk `POST /api/auth/login` di Vercel Firewall.
