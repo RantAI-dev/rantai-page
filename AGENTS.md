@@ -56,6 +56,20 @@ Tests use Vitest in a Node environment with shared setup in `vitest.setup.ts`. A
 
 Recent history uses concise Conventional Commit-style prefixes such as `feat:` and `chore:`. Follow that pattern, for example `feat: add blog preview route` or `chore: update thumbnail copy`. Pull requests should include a short summary, testing performed, linked issue or context when available, and screenshots for visible UI changes. Call out database, auth, environment, or deployment impacts explicitly.
 
+## Releases & Versioning
+
+Releases are automated with [release-please](https://github.com/googleapis/release-please) (`.github/workflows/release-please.yml`). Versions follow semantic versioning and are tagged `vX.Y.Z`; `v2.0.0` is the revamped site.
+
+- Every merge to `main` updates an open **release PR** that bumps the version and adds the merged changes to `CHANGELOG.md`. Merging that PR creates the tag and the GitHub release. Merge it whenever a set of changes is worth a release; it does not need to happen on every PR.
+- The version is decided by commit messages, so they must follow Conventional Commits:
+  - `fix:` → patch (2.0.0 → 2.0.1)
+  - `feat:` → minor (2.0.0 → 2.1.0)
+  - `feat!:` or a `BREAKING CHANGE:` footer → major (2.0.0 → 3.0.0)
+  - `perf:` → patch; `docs:`, `chore:`, `refactor:`, `ci:`, `test:` don't trigger a release on their own
+- PRs are merged with rebase or merge commits, so every commit message on `main` counts. Keep each commit's prefix accurate. With squash merges, the PR title is what counts.
+- Don't create tags or GitHub releases by hand, and don't edit `CHANGELOG.md`, `.release-please-manifest.json` or the `version` in `package.json` directly; release-please owns them.
+- The workflow needs a `RELEASE_PLEASE_TOKEN` repository secret: a fine-grained personal access token for this repository with **Contents** and **Pull requests** set to read and write. Release PRs opened with the default `GITHUB_TOKEN` would not trigger CI, which `main` requires. Until the secret exists the workflow is skipped.
+
 ## Security & Configuration Tips
 
 Create `.env.local` from the README variables: `DATABASE_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `JWT_SECRET`, and `BLOB_READ_WRITE_TOKEN`. Never commit secrets. Escape `$` characters in bcrypt hashes as `\$` in shell-loaded env files.

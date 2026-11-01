@@ -109,7 +109,7 @@ The full rules for where code goes are in [AGENTS.md](AGENTS.md).
 2. A PR can merge once both checks pass:
    - **CI** (`.github/workflows/ci.yml`): lint, type check, unit tests and a dependency audit
    - **Vercel:** build and preview deployment
-3. Commit messages follow Conventional Commits, e.g. `feat: …`, `fix: …`, `chore: …`.
+3. Commit messages follow Conventional Commits, e.g. `feat: …`, `fix: …`, `chore: …`. They also decide the next version: releases are cut automatically by release-please (see [AGENTS.md](AGENTS.md#releases--versioning) and the [releases page](https://github.com/RantAI-dev/rantai-page/releases)).
 4. Include screenshots for visual changes, and call out any database, auth, environment or deployment impact.
 
 ## Deployment
