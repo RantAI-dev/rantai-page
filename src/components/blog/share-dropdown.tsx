@@ -79,7 +79,10 @@ export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-44">
+      <DropdownMenuContent
+        align="end"
+        className="min-w-44 pointer-coarse:min-w-52 pointer-coarse:[&_[role=menuitem]]:py-2.5"
+      >
         <DropdownMenuItem onClick={copyLink}>
           <Link2 />
           {t("copyLink")}

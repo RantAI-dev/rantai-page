@@ -64,10 +64,10 @@ export function DefineVisual({ active = true, done = false }: VisualProps) {
     <div className="flex size-full items-center justify-center p-5 sm:p-6">
       <div className="relative w-full max-w-md">
         {/* Axis labels */}
-        <span className="absolute top-1/2 -left-1 origin-left -translate-y-1/2 -rotate-90 text-[9px] tracking-[0.14em] text-white/35 uppercase">
+        <span className="absolute top-1/2 -left-1 origin-left -translate-y-1/2 -rotate-90 text-[9px] tracking-[0.14em] text-white/35 uppercase max-md:-left-2 max-md:text-[11px] max-md:tracking-[0.1em]">
           {t("impact")}
         </span>
-        <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] tracking-[0.14em] text-white/35 uppercase">
+        <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] tracking-[0.14em] text-white/35 uppercase max-md:-bottom-5 max-md:text-[11px] max-md:tracking-[0.1em]">
           {t("effort")}
         </span>
 
@@ -83,7 +83,7 @@ export function DefineVisual({ active = true, done = false }: VisualProps) {
               }}
             >
               <span
-                className="block p-2 text-[9px] tracking-[0.12em] uppercase transition-colors duration-700"
+                className="block p-2 text-[9px] tracking-[0.12em] uppercase transition-colors duration-700 max-md:text-[11px] max-md:tracking-[0.08em]"
                 style={{ color: picked ? GREEN : "rgb(255 255 255 / 0.4)" }}
               >
                 {t("quickWins")}
@@ -184,7 +184,10 @@ export function DefineVisual({ active = true, done = false }: VisualProps) {
                 {/* The pick's label turns into a pill: no floating badge */}
                 <span
                   className={cn(
-                    "inline-flex items-center gap-1 rounded-full text-[10px] whitespace-nowrap transition-[background-color,color,padding] duration-300",
+                    "inline-flex items-center gap-1 rounded-full text-[10px] whitespace-nowrap transition-[background-color,color,padding] duration-300 max-md:text-[11px]",
+                    // Phones: only the pick is named; the others stay dots,
+                    // so the labels never pile up on a narrow matrix.
+                    !o.pick && "max-md:hidden",
                     chosen
                       ? "bg-white py-0.5 pr-2 pl-1.5 font-medium text-black shadow-[0_6px_20px_-8px_rgb(255_255_255/0.5)]"
                       : "text-white/55"
@@ -258,7 +261,7 @@ function Node({
     <motion.div
       // Always opaque, so lines never show through; "off" is just quieter.
       className={cn(
-        "absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-lg border py-1 pr-2 pl-1 text-[10.5px] whitespace-nowrap transition-colors duration-500",
+        "absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-lg border py-1 pr-2 pl-1 text-[10.5px] whitespace-nowrap transition-colors duration-500 max-md:text-[11px]",
         strong && on
           ? "border-white bg-white text-black"
           : on
@@ -456,7 +459,9 @@ export function RunVisual({ active = true, done = false }: VisualProps) {
           <span className="text-[11px] font-medium text-white/80">
             {t("quality")}
           </span>
-          <span className="text-[10px] text-white/40">{t("period")}</span>
+          <span className="text-[10px] text-white/40 max-md:text-[11px]">
+            {t("period")}
+          </span>
         </div>
         <svg viewBox={`0 0 ${CW} ${CH}`} className="w-full overflow-visible">
           <defs>
@@ -500,6 +505,7 @@ export function RunVisual({ active = true, done = false }: VisualProps) {
             textAnchor="end"
             fill="rgb(255 255 255 / 0.4)"
             fontSize="8"
+            className="max-md:text-[11px]"
           >
             {t("releaseBar")}
           </text>
@@ -527,6 +533,8 @@ export function RunVisual({ active = true, done = false }: VisualProps) {
                   rx="3.5"
                   fill="#141416"
                   stroke="rgb(255 255 255 / 0.16)"
+                  // Phones: the label alone, at a readable size.
+                  className="max-md:hidden"
                 />
                 <text
                   x={cx(r.at)}
@@ -534,7 +542,7 @@ export function RunVisual({ active = true, done = false }: VisualProps) {
                   textAnchor="middle"
                   fill="rgb(255 255 255 / 0.7)"
                   fontSize="7"
-                  className={mono}
+                  className={cn(mono, "max-md:text-[11px]")}
                 >
                   {r.v}
                 </text>

@@ -35,13 +35,13 @@ export async function HomeInsights() {
         </PillLink>
       </MotionInView>
 
-      <MotionInView className="mt-12 grid gap-x-3 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
+      <MotionInView className="mt-10 grid gap-x-3 gap-y-6 sm:mt-12 sm:gap-y-10 md:grid-cols-2 lg:grid-cols-4">
         <FeaturedPostCard
           post={featured}
-          className="lg:col-span-2 lg:row-span-2"
+          className="max-sm:mb-2 max-sm:min-h-[320px] lg:col-span-2 lg:row-span-2"
         />
         {rest.map((post) => (
-          <PostCard key={post.slug} post={post} />
+          <PostCard key={post.slug} post={post} rowOnMobile />
         ))}
       </MotionInView>
     </section>

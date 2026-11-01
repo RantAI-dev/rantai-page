@@ -209,14 +209,14 @@ export async function Footer({ cta: given }: Readonly<{ cta?: FooterCta }>) {
 
           <nav
             aria-label={t("nav")}
-            className="grid grid-cols-2 gap-x-10 gap-y-10 sm:grid-cols-3 lg:gap-x-16"
+            className="grid gap-y-9 sm:grid-cols-3 sm:gap-x-10 sm:gap-y-10 lg:gap-x-16"
           >
             {columns.map((column, i) => (
               <Reveal key={column.title} index={i + 1}>
                 <p className="text-sm font-medium text-foreground">
                   {column.title}
                 </p>
-                <ul className="mt-4 space-y-3">
+                <ul className="mt-2 sm:mt-4 sm:space-y-3">
                   {column.links.map((link) => (
                     <li key={link.label}>
                       <Link
@@ -224,7 +224,7 @@ export async function Footer({ cta: given }: Readonly<{ cta?: FooterCta }>) {
                         {...(link.external
                           ? { target: "_blank", rel: "noopener noreferrer" }
                           : {})}
-                        className={`group inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground ${linkUnderline}`}
+                        className={`group inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground max-sm:min-h-10 max-sm:bg-none max-sm:text-[15px] ${linkUnderline}`}
                       >
                         {productIdFrom(link.label) && (
                           <ProductLogo
@@ -255,16 +255,16 @@ export async function Footer({ cta: given }: Readonly<{ cta?: FooterCta }>) {
           </nav>
         </div>
 
-        <div className="mt-16 flex flex-col gap-4 border-t border-foreground/10 pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-2 border-t border-foreground/10 pt-6 text-sm text-muted-foreground sm:mt-16 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <p suppressHydrationWarning>
             © {new Date().getFullYear()} RantAI
             <span className="mx-1.5 opacity-50">·</span>
             {t("rights")}
           </p>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <div className="flex items-center justify-between gap-x-6 sm:justify-start">
             <a
               href={`mailto:${siteConfig.links.email}`}
-              className={`hover:text-foreground ${linkUnderline}`}
+              className={`hover:text-foreground max-sm:inline-flex max-sm:min-h-10 max-sm:items-center max-sm:bg-none ${linkUnderline}`}
             >
               {siteConfig.links.email}
             </a>

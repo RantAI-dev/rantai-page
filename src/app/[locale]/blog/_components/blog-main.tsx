@@ -117,7 +117,7 @@ export function BlogMain({
           <div
             role="tablist"
             aria-label={t("filterLabel")}
-            className="-mx-5 flex gap-1.5 overflow-x-auto px-5 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden"
+            className="-mx-5 flex snap-x scroll-px-5 gap-1.5 overflow-x-auto px-5 [scrollbar-width:none] max-sm:[mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden"
           >
             {chips.map((c) => {
               const on = tag === c.value
@@ -129,7 +129,7 @@ export function BlogMain({
                   aria-selected={on}
                   onClick={() => setTag(c.value)}
                   className={cn(
-                    "inline-flex h-10 shrink-0 items-center gap-2 rounded-full px-4 text-[14px] font-medium whitespace-nowrap transition-colors duration-200",
+                    "inline-flex h-10 shrink-0 snap-start items-center gap-2 rounded-full px-4 text-[14px] font-medium whitespace-nowrap transition-colors duration-200",
                     on
                       ? "bg-neutral-950 text-white"
                       : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70 hover:text-neutral-950"
@@ -208,7 +208,7 @@ export function BlogMain({
       ) : (
         <div
           className={cn(
-            "flex flex-col gap-14 transition-opacity duration-200 lg:gap-20",
+            "flex flex-col gap-10 transition-opacity duration-200 sm:gap-14 lg:gap-20",
             searching && "opacity-50"
           )}
         >
@@ -221,13 +221,14 @@ export function BlogMain({
           )}
 
           {rest.length > 0 && (
-            <div className="grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-5 gap-y-6 sm:grid-cols-2 sm:gap-y-12 lg:grid-cols-3">
               {rest.map((post) => (
                 <PostCard
                   key={post.slug}
                   post={post}
                   tagColor={tagColors?.[post.tag]}
                   fallbackGradient={gradientForColor(tagColors?.[post.tag])}
+                  rowOnMobile
                 />
               ))}
             </div>

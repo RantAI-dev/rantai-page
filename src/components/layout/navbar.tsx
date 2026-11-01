@@ -91,7 +91,7 @@ export function Navbar() {
             </span>
           </Link>
 
-          <nav aria-label={t("main")} className="hidden md:block">
+          <nav aria-label={t("main")} className="hidden lg:block">
             <ul className="flex items-center gap-1">
               {navItems.map((item) => {
                 const active =
@@ -114,11 +114,11 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <LanguageSwitcher className="hidden md:flex" />
+          <LanguageSwitcher className="hidden lg:flex" />
           <PillLink
             href={`mailto:${siteConfig.links.email}`}
             icon="external"
-            className="h-9 px-4"
+            className="h-10 px-4 lg:h-9"
           >
             {t("contactUs")}
           </PillLink>
@@ -129,12 +129,15 @@ export function Navbar() {
                 variant="ghost"
                 size="icon"
                 aria-label={t("open")}
-                className="md:hidden"
+                className="-mr-2 size-10 lg:hidden"
               >
-                <MenuIcon />
+                <MenuIcon className="size-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent
+              closeLabel={t("close")}
+              className="[&>[data-slot=sheet-close]]:top-2 [&>[data-slot=sheet-close]]:right-2 [&>[data-slot=sheet-close]]:size-10"
+            >
               <SheetHeader className="pr-14">
                 <SheetTitle>{t("sheetTitle")}</SheetTitle>
                 <SheetDescription>{t("sheetDescription")}</SheetDescription>
@@ -147,7 +150,7 @@ export function Navbar() {
                   <SheetClose asChild key={item.href}>
                     <Link
                       href={item.href}
-                      className="border-b border-border py-5 text-lg font-medium"
+                      className="flex min-h-14 items-center border-b border-border text-lg font-medium"
                     >
                       {t(item.key)}
                     </Link>

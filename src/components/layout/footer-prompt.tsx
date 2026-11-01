@@ -156,11 +156,12 @@ export function FooterPrompt({
                   </>
                 ) : (
                   <>
+                    {/* Phones keep the row for the send button */}
                     <Mail
-                      className="size-3.5 shrink-0 text-white/55"
+                      className="size-3.5 shrink-0 text-white/55 max-sm:hidden"
                       aria-hidden="true"
                     />
-                    <span className="text-[11px] whitespace-nowrap sm:text-xs">
+                    <span className="text-xs whitespace-nowrap max-sm:hidden">
                       {email}
                     </span>
                   </>
@@ -196,7 +197,7 @@ export function FooterPrompt({
             key={prompt}
             type="button"
             onClick={() => setValue(prompt)}
-            className="rounded-full border border-white/20 bg-[linear-gradient(180deg,#1c1c1e,#111112)] px-3.5 py-1.5 text-[13px] text-white/85 shadow-[inset_0_1px_0_rgb(255_255_255/0.1),0_8px_24px_-12px_rgb(0_0_0/0.9)] transition-[border-color,color] duration-300 hover:border-white/45 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1"
+            className="max-w-full rounded-full border border-white/20 bg-[linear-gradient(180deg,#1c1c1e,#111112)] px-3.5 py-1.5 text-[13px] text-balance text-white/85 shadow-[inset_0_1px_0_rgb(255_255_255/0.1),0_8px_24px_-12px_rgb(0_0_0/0.9)] transition-[border-color,color] duration-300 hover:border-white/45 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1 max-sm:min-h-10 max-sm:w-full max-sm:rounded-2xl max-sm:px-4 max-sm:py-2 max-sm:text-left"
           >
             {prompt}
           </button>

@@ -138,15 +138,18 @@ function Role({
   return (
     <p
       className={cn(
-        "mt-1 flex items-center gap-2 text-[13px]",
+        "mt-1 flex items-center gap-2 text-[13px] max-md:items-start",
         onPhoto ? "text-white/70" : "text-neutral-500"
       )}
     >
       <span
-        className="size-1.5 shrink-0 rounded-full"
+        className="size-1.5 shrink-0 rounded-full max-md:mt-[calc(0.5lh-3px)]"
         style={{ background: group.tone }}
       />
-      <span className={wrap ? undefined : "truncate"}>{member.role}</span>
+      {/* Phones show the whole role on up to two lines; wider grids truncate. */}
+      <span className={wrap ? undefined : "max-md:line-clamp-2 md:truncate"}>
+        {member.role}
+      </span>
     </p>
   )
 }
@@ -190,12 +193,12 @@ function LeadTile({
         className="aspect-[4/5] h-full w-full"
       />
       {/* A dark scrim so the name reads on the photo */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 rounded-b-xl bg-gradient-to-t from-black/80 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 rounded-b-xl bg-gradient-to-t from-black/80 to-transparent max-md:h-3/5 max-md:from-black/85" />
       <div className="absolute top-2 right-2">
         <Social member={member} onPhoto />
       </div>
       <div className="absolute inset-x-0 bottom-0 p-3.5 text-white">
-        <p className="truncate text-[15px] font-medium tracking-[-0.015em]">
+        <p className="text-[15px] font-medium tracking-[-0.015em] max-md:line-clamp-2 max-md:leading-snug md:truncate">
           {member.name}
         </p>
         <Role member={member} group={group} onPhoto />
@@ -221,7 +224,7 @@ function MemberCard({
           <Social member={member} onPhoto />
         </div>
       </div>
-      <p className="mt-3.5 truncate text-[15px] font-medium tracking-[-0.015em] text-neutral-950">
+      <p className="mt-3.5 text-[15px] font-medium tracking-[-0.015em] text-neutral-950 max-md:line-clamp-2 max-md:leading-snug md:truncate">
         {member.name}
       </p>
       <Role member={member} group={group} />

@@ -47,7 +47,7 @@ function People({
       {photos.map((src, i) => (
         <span
           key={src}
-          className="relative -ml-3 size-14 overflow-hidden rounded-full bg-neutral-800 ring-[3px] ring-neutral-100 transition-[margin] duration-500 ease-out group-hover:ml-1 first:ml-0"
+          className="relative -ml-3 size-9 overflow-hidden rounded-full bg-neutral-800 ring-[3px] ring-neutral-100 transition-[margin] duration-500 ease-out group-hover:ml-1 first:ml-0 sm:size-14"
           style={{ zIndex: 10 - i }}
         >
           <Image
@@ -61,7 +61,7 @@ function People({
         </span>
       ))}
       {extra > 0 && (
-        <span className="relative -ml-3 grid size-14 place-items-center rounded-full bg-white text-[13px] font-medium text-neutral-500 ring-[3px] ring-neutral-100 transition-[margin] duration-500 ease-out group-hover:ml-1">
+        <span className="relative -ml-3 grid size-9 place-items-center rounded-full bg-white text-[11px] font-medium text-neutral-500 ring-[3px] ring-neutral-100 transition-[margin] duration-500 ease-out group-hover:ml-1 max-sm:-ml-1.5 sm:size-14 sm:text-[13px]">
           +{extra}
         </span>
       )}
@@ -77,8 +77,8 @@ function Products() {
         <ProductTile
           key={id}
           id={id}
-          className="size-14 rounded-xl"
-          logoClassName="h-7"
+          className="size-11 rounded-xl sm:size-14"
+          logoClassName="h-5.5 sm:h-7"
         />
       ))}
     </div>
@@ -97,7 +97,7 @@ function Books({ covers }: Readonly<{ covers: string[] }>) {
         <span
           key={src}
           className={cn(
-            "relative -mx-2 aspect-[2/3] w-[68px] origin-bottom overflow-hidden rounded-l-[2px] rounded-r-[4px] bg-neutral-200 shadow-[0_14px_24px_-14px_rgba(0,0,0,0.5)] transition-transform duration-500 ease-out",
+            "relative -mx-2 aspect-[2/3] w-[50px] origin-bottom overflow-hidden rounded-l-[2px] rounded-r-[4px] bg-neutral-200 shadow-[0_14px_24px_-14px_rgba(0,0,0,0.5)] transition-transform duration-500 ease-out sm:w-[68px]",
             tilt[i]
           )}
         >
@@ -115,7 +115,7 @@ function Partners({ logos }: Readonly<{ logos: string[] }>) {
       {logos.slice(0, 3).map((src, i) => (
         <span
           key={src}
-          className="grid h-12 w-[150px] place-items-center rounded-xl ring-1 ring-transparent transition-[background-color,box-shadow,transform] duration-500 ease-out group-hover:bg-white group-hover:shadow-[0_1px_2px_rgba(0,0,0,0.08)] group-hover:ring-black/[0.06]"
+          className="grid h-10 w-[140px] place-items-center rounded-xl ring-1 ring-transparent transition-[background-color,box-shadow,transform] duration-500 ease-out group-hover:bg-white group-hover:shadow-[0_1px_2px_rgba(0,0,0,0.08)] group-hover:ring-black/[0.06] sm:h-12 sm:w-[150px]"
           style={{ transitionDelay: `${i * 80}ms` }}
         >
           <Image
@@ -167,7 +167,7 @@ export function AboutSection({
     <section
       id="who-we-are"
       aria-labelledby="about-heading"
-      className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-24 sm:px-10 lg:px-14 lg:py-32"
+      className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-20 sm:px-10 sm:py-24 lg:px-14 lg:py-32"
     >
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
@@ -183,7 +183,7 @@ export function AboutSection({
         </p>
       </div>
 
-      <ul className="mt-14 grid grid-cols-2 gap-2 lg:grid-cols-4">
+      <ul className="mt-10 grid grid-cols-2 gap-2 sm:mt-14 lg:grid-cols-4">
         {facts.map((f, i) => (
           <motion.li
             key={f.id}
@@ -193,8 +193,10 @@ export function AboutSection({
             transition={{ duration: 0.7, ease, delay: i * 0.08 }}
             className="group flex flex-col rounded-2xl bg-neutral-100 p-3"
           >
-            <div className="grid h-[150px] place-items-center sm:h-[190px]">
-              <div className="scale-[0.68] sm:scale-100">{f.visual}</div>
+            {/* Phones get smaller pieces rather than a scaled-down picture, so
+                the "+10" and the logos stay legible. */}
+            <div className="grid h-[132px] place-items-center sm:h-[190px]">
+              {f.visual}
             </div>
             <div className="px-2 pt-2 pb-1 sm:px-3">
               <p className="text-[clamp(2.25rem,4vw,3.25rem)] leading-none font-medium tracking-[-0.04em] text-neutral-950 tabular-nums">

@@ -398,7 +398,7 @@ function Lifecycle({ hover }: Readonly<Scene>) {
               >
                 <Icon className="size-3.5" strokeWidth={2.2} />
               </motion.span>
-              <span className="text-[10.5px] text-neutral-600">
+              <span className="text-[11px] text-neutral-600 sm:text-[10.5px]">
                 {labels[i]}
               </span>
             </li>
@@ -420,7 +420,7 @@ function OpenStack({ hover }: Readonly<Scene>) {
   const badges = ["OpenAPI", "OpenTelemetry", "PostgreSQL", "Docker"]
   return (
     <div className="flex w-full max-w-md flex-col gap-3">
-      <Rise className="overflow-hidden rounded-2xl border border-white/10 bg-[#0d0f12] p-4 [font-family:ui-monospace,monospace] text-[12.5px] text-white/75 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)]">
+      <Rise className="overflow-hidden rounded-2xl border border-white/10 bg-[#0d0f12] p-3.5 [font-family:ui-monospace,monospace] text-[11px] text-white/75 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)] sm:p-4 sm:text-[12.5px]">
         {commands.map((c, i) => (
           <motion.p
             key={`${run}-${i}`}

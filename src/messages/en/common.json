@@ -10,6 +10,7 @@
     "main": "Main navigation",
     "mobile": "Mobile navigation",
     "open": "Open navigation",
+    "close": "Close navigation",
     "sheetTitle": "Navigation",
     "sheetDescription": "Explore RantAI products and company information."
   },

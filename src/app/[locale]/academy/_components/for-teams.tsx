@@ -20,7 +20,7 @@ function Desk({
   return (
     <div
       aria-hidden="true"
-      className="flex h-[240px] items-center justify-center overflow-hidden rounded-xl"
+      className="flex h-[220px] items-center justify-center overflow-hidden rounded-xl md:h-[240px]"
       style={{
         backgroundColor: `${tone}10`,
         backgroundImage: `radial-gradient(${tone}2e 1.1px, transparent 1.3px)`,
@@ -36,20 +36,20 @@ function Desk({
 function CustomBook() {
   const t = useTranslations("academy.forTeams.visual")
   return (
-    <div className="relative h-[180px] w-[136px] transition-transform duration-500 ease-out [transform-style:preserve-3d] group-hover:-translate-y-1 group-hover:[transform:rotateY(-10deg)]">
+    <div className="relative h-[196px] w-[152px] transition-transform duration-500 ease-out [transform-style:preserve-3d] group-hover:-translate-y-1 group-hover:[transform:rotateY(-10deg)] md:h-[180px] md:w-[136px]">
       <div className="absolute top-[5px] -right-[6px] bottom-[2px] w-[8px] rounded-r-[3px] bg-[repeating-linear-gradient(90deg,#fff_0_1.5px,#dcdad3_1.5px_2.5px)]" />
       <div className="relative flex size-full flex-col justify-between overflow-hidden rounded-l-[3px] rounded-r-[7px] bg-gradient-to-br from-[#7c3aed] to-[#4c1d95] p-3.5 text-white shadow-[0_24px_40px_-20px_rgba(76,29,149,0.7)]">
         <span className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/30 to-transparent" />
-        <span className="pl-1.5 text-[9px] tracking-[0.12em] text-white/70 uppercase">
+        <span className="pl-1.5 text-[11px] tracking-[0.08em] text-white/70 uppercase md:text-[9px] md:tracking-[0.12em]">
           RantAI Academy
         </span>
         <span className="pl-1.5">
-          <span className="block text-[15px] leading-tight font-medium">
+          <span className="block text-[17px] leading-tight font-medium md:text-[15px]">
             {t("bookTitle1")}
             <br />
             {t("bookTitle2")}
           </span>
-          <span className="mt-1.5 block text-[9px] text-white/60">
+          <span className="mt-1.5 block text-[11px] text-white/60 md:text-[9px]">
             {t("bookSub")}
           </span>
         </span>
@@ -66,13 +66,16 @@ function Classes() {
   )
   return (
     <div className="w-[82%] rounded-xl border border-black/[0.07] bg-white p-3.5 shadow-[0_18px_40px_-26px_rgba(0,0,0,0.35)]">
-      <p className="flex items-center gap-1.5 text-[12px] font-medium">
+      <p className="flex items-center gap-1.5 text-[13px] font-medium md:text-[12px]">
         <CalendarDays className="size-3.5 text-[#0ea5e9]" /> {t("cohort")}
       </p>
       <ul className="mt-3 space-y-2">
         {days.map(([d, topic], i) => (
-          <li key={d} className="flex items-center gap-2.5 text-[12px]">
-            <span className="w-8 rounded-md bg-[#0ea5e9]/10 py-0.5 text-center text-[10.5px] font-medium text-[#0369a1]">
+          <li
+            key={d}
+            className="flex items-center gap-2.5 text-[13px] md:text-[12px]"
+          >
+            <span className="w-9 rounded-md bg-[#0ea5e9]/10 py-0.5 text-center text-[11px] font-medium text-[#0369a1] md:w-8 md:text-[10.5px]">
               {d}
             </span>
             <span className="flex-1 text-neutral-700">{topic}</span>
@@ -103,7 +106,7 @@ function Seats() {
   return (
     <div className="w-[82%] rounded-xl border border-black/[0.07] bg-white p-3.5 shadow-[0_18px_40px_-26px_rgba(0,0,0,0.35)]">
       <div className="flex items-center justify-between">
-        <p className="flex items-center gap-1.5 text-[12px] font-medium">
+        <p className="flex items-center gap-1.5 text-[13px] font-medium md:text-[12px]">
           <Users className="size-3.5 text-[#10b981]" /> {t("licence")}
         </p>
         <span className="text-[11px] text-neutral-500 tabular-nums">
@@ -114,11 +117,11 @@ function Seats() {
         {people.map((c, i) => (
           <span
             key={c}
-            className="-ml-1.5 size-7 rounded-full border-2 border-white transition-[margin] duration-300 group-hover:ml-0.5 first:ml-0"
+            className="-ml-1.5 size-8 rounded-full border-2 border-white transition-[margin] duration-300 group-hover:ml-0.5 first:ml-0 md:size-7"
             style={{ background: c, zIndex: 10 - i }}
           />
         ))}
-        <span className="-ml-1.5 grid size-7 place-items-center rounded-full border-2 border-white bg-neutral-100 text-[9px] font-medium text-neutral-500 transition-[margin] duration-300 group-hover:ml-0.5">
+        <span className="-ml-1.5 grid size-8 place-items-center rounded-full border-2 border-white bg-neutral-100 text-[11px] font-medium text-neutral-500 transition-[margin] duration-300 group-hover:ml-0.5 md:size-7 md:text-[9px]">
           +18
         </span>
       </div>
@@ -144,7 +147,7 @@ export function ForTeams() {
     <section
       id="for-teams"
       aria-labelledby="teams-heading"
-      className="mx-auto max-w-[1440px] scroll-mt-20 px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
+      className="mx-auto max-w-[1440px] scroll-mt-20 px-5 pb-20 sm:px-10 sm:pb-24 lg:px-14 lg:pb-32"
     >
       <Eyebrow className="text-neutral-500">{t("eyebrow")}</Eyebrow>
       <SplitReveal
@@ -152,7 +155,7 @@ export function ForTeams() {
         text={t("title")}
         className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-neutral-950"
       />
-      <ul className="mt-14 grid gap-3 md:grid-cols-3">
+      <ul className="mt-10 grid gap-3 sm:mt-14 md:grid-cols-3">
         {offers.map((o, i) => (
           <motion.li
             key={o.id}

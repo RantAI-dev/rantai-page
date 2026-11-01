@@ -114,7 +114,7 @@ export function BookLibrary({ books }: BookLibraryProps) {
                 aria-pressed={viewMode === mode}
                 onClick={() => setViewMode(mode)}
                 className={cn(
-                  "grid size-9 place-items-center rounded-full transition-colors",
+                  "grid size-10 place-items-center rounded-full transition-colors sm:size-9",
                   viewMode === mode
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -140,7 +140,7 @@ export function BookLibrary({ books }: BookLibraryProps) {
       />
 
       {viewMode === "grid" ? (
-        <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-4 xl:grid-cols-5">
           <AnimatePresence mode="popLayout">
             {filteredBooks.map((book, idx) => (
               <motion.a
@@ -161,7 +161,7 @@ export function BookLibrary({ books }: BookLibraryProps) {
                       src={book.imageUrl}
                       alt={book.name}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                       className="object-cover"
                     />
                     {/* Spine shade */}

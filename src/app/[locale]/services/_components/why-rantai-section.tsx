@@ -64,7 +64,7 @@ export function WhyRantAISection({ eyebrow }: Readonly<{ eyebrow?: string }>) {
             >
               <div
                 aria-hidden="true"
-                className="flex h-[260px] items-center justify-center overflow-hidden rounded-xl p-5"
+                className="flex h-[260px] items-center justify-center overflow-hidden rounded-xl p-4 sm:p-5"
                 style={{
                   backgroundColor: `${tone}10`,
                   backgroundImage: `radial-gradient(${tone}2e 1.1px, transparent 1.3px)`,

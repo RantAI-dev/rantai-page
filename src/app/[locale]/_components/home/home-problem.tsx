@@ -44,6 +44,9 @@ const scattered: {
   color: string
   dx: number
   dy: number
+  /** Phone layout: right-hand chips anchor to the right edge so they never
+      run past the card. */
+  m: { left?: string; right?: string; top: string }
 }[] = [
   {
     icon: FileText,
@@ -54,6 +57,7 @@ const scattered: {
     color: "#d9868a",
     dx: -1,
     dy: -1,
+    m: { left: "0%", top: "6%" },
   },
   {
     icon: FileSpreadsheet,
@@ -64,6 +68,7 @@ const scattered: {
     color: "#5fc29a",
     dx: 1,
     dy: -1,
+    m: { right: "0%", top: "0%" },
   },
   {
     icon: Mail,
@@ -74,6 +79,7 @@ const scattered: {
     color: "#d99a6c",
     dx: 1,
     dy: 0.3,
+    m: { right: "0%", top: "50%" },
   },
   {
     icon: MessageSquare,
@@ -84,6 +90,7 @@ const scattered: {
     color: "#a99be6",
     dx: -1,
     dy: 0.4,
+    m: { left: "2%", top: "62%" },
   },
   {
     icon: Database,
@@ -94,6 +101,7 @@ const scattered: {
     color: "#4fb3c9",
     dx: 0.2,
     dy: 1,
+    m: { left: "30%", top: "76%" },
   },
   {
     icon: FileText,
@@ -104,6 +112,7 @@ const scattered: {
     color: "#7aa2e3",
     dx: -0.3,
     dy: -0.4,
+    m: { left: "18%", top: "30%" },
   },
 ]
 
@@ -112,22 +121,31 @@ function Chip({
   index,
   reduce,
   progress,
+  compact = false,
 }: Readonly<{
   item: (typeof scattered)[number]
   index: number
   reduce: boolean
   progress: MotionValue<number>
+  compact?: boolean
 }>) {
   const t = useTranslations("home.problem.scattered")
   const Icon = item.icon
-  // Scrolling pushes the pieces further apart: the scatter grows.
-  const x = useTransform(progress, (p) => item.dx * p * 28)
-  const y = useTransform(progress, (p) => item.dy * p * 22)
+  // Scrolling pushes the pieces further apart: the scatter grows (less on
+  // phones, where the card has no room to spare).
+  const spread = compact ? 0.4 : 1
+  const x = useTransform(progress, (p) => item.dx * p * 28 * spread)
+  const y = useTransform(progress, (p) => item.dy * p * 22 * spread)
   const rotate = useTransform(progress, (p) => item.r * (1 + p * 0.8))
   return (
     <motion.div
       className="absolute"
-      style={{ left: item.x, top: item.y, x, y, rotate }}
+      style={{
+        ...(compact ? item.m : { left: item.x, top: item.y }),
+        x,
+        y,
+        rotate,
+      }}
     >
       <motion.div
         className="flex items-center gap-2 rounded-xl border border-neutral-200/80 bg-white py-2 pr-3.5 pl-2 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.18)]"
@@ -160,7 +178,12 @@ function Chip({
 function ScatteredVisual({
   reduce,
   progress,
-}: Readonly<{ reduce: boolean; progress: MotionValue<number> }>) {
+  compact = false,
+}: Readonly<{
+  reduce: boolean
+  progress: MotionValue<number>
+  compact?: boolean
+}>) {
   return (
     <div className="relative h-full w-full">
       {scattered.map((item, index) => (
@@ -170,6 +193,7 @@ function ScatteredVisual({
           index={index}
           reduce={reduce}
           progress={progress}
+          compact={compact}
         />
       ))}
     </div>
@@ -229,7 +253,7 @@ function StalledVisual({
           </span>
           <span
             className={cn(
-              "rounded-full border px-2 py-0.5 text-[10px] font-medium transition-colors duration-500",
+              "rounded-full border px-2 py-0.5 text-[10px] font-medium transition-colors duration-500 max-lg:text-[11px]",
               isStalled
                 ? "border-amber-300 bg-amber-50 text-amber-800"
                 : "border-emerald-200 bg-emerald-50 text-emerald-700"
@@ -245,7 +269,11 @@ function StalledVisual({
             {months.map((m, i) => (
               <span
                 key={m}
-                className="absolute top-0 text-[10px] text-neutral-400"
+                className={cn(
+                  "absolute top-0 text-[10px] text-neutral-400 max-lg:text-[11px]",
+                  // Phones: every other month, so the labels stay legible.
+                  i % 2 === 1 && "max-lg:hidden"
+                )}
                 style={{ left: col(i) }}
               >
                 {m}
@@ -267,7 +295,7 @@ function StalledVisual({
               className="absolute -top-1 -bottom-1 w-px border-l border-dashed border-[#dc5b62]/70"
               style={{ left: col(DEADLINE) }}
             >
-              <span className="absolute top-full mt-1 -translate-x-1/2 rounded bg-[#dc5b62]/10 px-1 text-[9px] font-medium whitespace-nowrap text-[#c94a51]">
+              <span className="absolute top-full mt-1 -translate-x-1/2 rounded bg-[#dc5b62]/10 px-1 text-[9px] font-medium whitespace-nowrap text-[#c94a51] max-lg:text-[11px]">
                 {t("deadline")}
               </span>
             </span>
@@ -292,7 +320,7 @@ function StalledVisual({
                   {t("pilot")}
                 </span>
                 <motion.span
-                  className="absolute top-1.5 flex h-4 items-center justify-end overflow-hidden rounded-md pr-1.5 transition-[background-color] duration-300"
+                  className="absolute top-1.5 flex h-4 items-center justify-end overflow-hidden rounded-md pr-1.5 transition-[background-color] duration-300 max-lg:top-1 max-lg:h-5"
                   style={{
                     left: col(2),
                     width: pilotWidth,
@@ -303,7 +331,7 @@ function StalledVisual({
                   }}
                 >
                   <motion.span
-                    className="text-[9px] font-medium whitespace-nowrap text-white tabular-nums"
+                    className="text-[9px] font-medium whitespace-nowrap text-white tabular-nums max-lg:text-[11px]"
                     style={{ opacity: daysOpacity }}
                   >
                     {days}
@@ -315,7 +343,7 @@ function StalledVisual({
                   {t("production")}
                 </span>
                 <span
-                  className="absolute top-1.5 flex h-4 items-center rounded-md border border-dashed border-neutral-300 bg-neutral-50 px-1.5 text-[9px] whitespace-nowrap text-neutral-400 italic"
+                  className="absolute top-1.5 flex h-4 items-center rounded-md border border-dashed border-neutral-300 bg-neutral-50 px-1.5 text-[9px] whitespace-nowrap text-neutral-400 italic max-lg:top-1 max-lg:h-5 max-lg:text-[11px]"
                   style={{
                     left: col(DEADLINE + 0.15),
                     right: 0,
@@ -545,6 +573,58 @@ const tints = [
   "radial-gradient(ellipse at 50% 0%, rgb(95 194 154 / 0.16), transparent 60%), radial-gradient(ellipse at 0% 100%, rgb(79 179 201 / 0.12), transparent 55%)",
 ]
 
+/**
+ * Phones and tablets: the three problems stacked, no pinning. Each visual
+ * plays as its card scrolls up through the screen.
+ */
+function ProblemCard({
+  item,
+  index,
+  total,
+  reduce,
+}: Readonly<{ item: Problem; index: number; total: number; reduce: boolean }>) {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 0.95", "end 0.5"],
+  })
+  const done = useMotionValue(1)
+  const progress = reduce ? done : scrollYProgress
+
+  return (
+    <li>
+      <div
+        ref={ref}
+        aria-hidden="true"
+        className="overflow-hidden rounded-3xl bg-neutral-100 p-4 sm:p-6"
+        style={{ backgroundImage: tints[index] }}
+      >
+        {index === 0 && (
+          <div className="relative mx-auto h-64 max-w-md">
+            <ScatteredVisual reduce={reduce} progress={progress} compact />
+          </div>
+        )}
+        {index === 1 && <StalledVisual progress={progress} />}
+        {index === 2 && <BoundaryVisual progress={progress} />}
+      </div>
+      <p
+        className="mt-6 text-xs text-neutral-500 tabular-nums"
+        aria-hidden="true"
+      >
+        <span className="text-neutral-950">0{index + 1}</span> / 0{total}
+      </p>
+      <SplitReveal
+        as="p"
+        text={item.title}
+        className="mt-2 text-[2rem] leading-[1.02] font-medium tracking-[-0.04em] text-balance text-neutral-950 sm:text-[2.5rem]"
+      />
+      <p className="mt-3 max-w-md text-base leading-relaxed text-pretty text-neutral-600">
+        {item.body}
+      </p>
+    </li>
+  )
+}
+
 export function HomeProblem() {
   const t = useTranslations("home.problem")
   const problems = t.raw("items") as Problem[]
@@ -575,12 +655,23 @@ export function HomeProblem() {
       ref={ref}
       id="problem"
       aria-labelledby="problem-heading"
-      className="relative h-[420svh]"
+      className="relative lg:h-[420svh]"
     >
       <h2 id="problem-heading" className="sr-only">
         {t("heading")}
       </h2>
-      <div className="sticky top-16 flex h-[calc(100svh-4rem)] items-center">
+      <ol className="mx-auto grid max-w-2xl gap-16 px-5 pt-16 pb-6 sm:px-10 sm:pt-20 sm:pb-10 lg:hidden">
+        {problems.map((item, i) => (
+          <ProblemCard
+            key={item.title}
+            item={item}
+            index={i}
+            total={problems.length}
+            reduce={reduce}
+          />
+        ))}
+      </ol>
+      <div className="sticky top-16 hidden h-[calc(100svh-4rem)] items-center lg:flex">
         <div className="mx-auto grid w-full max-w-[1440px] items-center gap-8 px-5 sm:px-10 lg:grid-cols-2 lg:gap-16 lg:px-14">
           <div className="order-2 lg:order-1">
             <div className="grid min-h-[11rem] sm:min-h-[14rem]">

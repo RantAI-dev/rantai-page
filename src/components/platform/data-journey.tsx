@@ -94,7 +94,7 @@ function OpenApp({ stop }: Readonly<{ stop: Stop }>) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white py-1.5 pr-3 pl-2 text-[13px] font-medium text-neutral-700 transition-colors hover:text-neutral-950"
+      className="group inline-flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white py-1.5 pr-3 pl-2 text-[13px] font-medium text-neutral-700 transition-colors hover:text-neutral-950 max-lg:py-2.5"
     >
       <span
         className="grid size-5 place-items-center rounded-full text-white ring-1 ring-black/5"
@@ -181,9 +181,12 @@ function SourcesScene() {
             <span className="block text-[14px] font-medium">{it.label}</span>
             <span className="block text-[12px] text-neutral-500">
               {it.meta}
+              {/* Phones: the status joins this line, so the name keeps
+                  the card's width instead of wrapping beside a pill. */}
+              <span className="sm:hidden"> · {t("notConnected")}</span>
             </span>
           </span>
-          <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] text-neutral-500">
+          <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] text-neutral-500 max-sm:hidden">
             {t("notConnected")}
           </span>
         </Rise>
@@ -630,7 +633,7 @@ function StackedJourney() {
                 </span>
               </div>
               <div
-                className="mt-5 flex justify-center rounded-[24px] p-5 sm:p-8"
+                className="mt-5 flex justify-center rounded-[24px] p-4 sm:p-8"
                 style={{ background: `${s.tone}12` }}
               >
                 <Scene />
