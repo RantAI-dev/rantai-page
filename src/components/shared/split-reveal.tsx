@@ -85,14 +85,19 @@ export function SplitReveal({
                 className="inline-block whitespace-nowrap"
               >
                 {by === "word" ? (
-                  <motion.span className="inline-block" variants={unitVariants}>
+                  <motion.span
+                    // Blurring every word is heavy for phone GPUs: there the
+                    // words only fade and rise.
+                    className="inline-block max-md:filter-none!"
+                    variants={unitVariants}
+                  >
                     {word}
                   </motion.span>
                 ) : (
                   Array.from(word).map((char, charIndex) => (
                     <motion.span
                       key={`${char}-${charIndex}`}
-                      className="inline-block"
+                      className="inline-block max-md:filter-none!"
                       variants={unitVariants}
                     >
                       {char}

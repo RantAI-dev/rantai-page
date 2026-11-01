@@ -203,7 +203,13 @@ function ModelRow({
   })
   return (
     <div className="overflow-hidden">
-      <motion.div ref={trackRef} className="flex w-max py-1" style={{ x }}>
+      <motion.div
+        ref={trackRef}
+        // Its own GPU layer: moving it every frame then needs no repaint (the
+        // masked tile around it was being redrawn every frame on phones).
+        className="flex w-max py-1 will-change-transform"
+        style={{ x }}
+      >
         {[0, 1].map((copy) => (
           <div key={copy} className="flex gap-2.5 pr-2.5">
             {row.map((m) => (

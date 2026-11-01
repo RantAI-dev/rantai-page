@@ -326,6 +326,7 @@ function InlineGroup({
 }>) {
   const tiles = inlineTiles[kind]
   const fullWidth = GAP + TILE * tiles.length - OVERLAP * (tiles.length - 1)
+
   const growTarget = useTransform(
     progress,
     [appearAt - UNIT * 0.1, appearAt + UNIT * 0.25],
@@ -340,8 +341,17 @@ function InlineGroup({
   return (
     <motion.span
       aria-hidden="true"
-      className="group/tiles pointer-events-auto inline-flex justify-end align-[0.1em]"
-      style={{ width: reduce ? `${fullWidth}em` : width }}
+      // On phones the sentence wraps over many lines: growing the gap would
+      // push words to the next line again and again. There the space is kept
+      // from the start (CSS, so server and client render alike) and the
+      // tiles just pop into it.
+      className="group/tiles pointer-events-auto inline-flex w-(--w) justify-end align-[0.1em] max-md:w-(--full)"
+      style={
+        {
+          "--w": reduce ? `${fullWidth}em` : width,
+          "--full": `${fullWidth}em`,
+        } as React.CSSProperties
+      }
     >
       {tiles.map((spec, index) => (
         <Tile
