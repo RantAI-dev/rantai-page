@@ -1,7 +1,9 @@
-import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
+import { siteConfig } from "@/lib/config"
+import { pageMetadata } from "@/lib/seo"
+import { JsonLd } from "@/components/shared/json-ld"
 import { CapabilityMarquee } from "@/components/shared/capability-marquee"
 import { HomeHero } from "./_components/home/home-hero"
 import { HomeInsights } from "./_components/home/home-insights"
@@ -13,13 +15,24 @@ import { PlatformReel } from "@/components/platform/platform-reel"
 import { SectionNav } from "@/components/layout/section-nav"
 import { SiteShell } from "@/components/layout/site-shell"
 
-export const metadata: Metadata = {
-  title: "Enterprise AI Products & Engineering",
+export const metadata = pageMetadata({
+  title: "RantAI: AI systems for real-world operations",
   description:
     "RantAI builds production-grade agentic AI, intelligent data platforms, and automation systems for government and enterprise.",
-  alternates: {
-    canonical: "/",
-  },
+  path: "/",
+  absoluteTitle: true,
+})
+
+// Who RantAI is, for search engines (shown in knowledge panels).
+const organization = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: siteConfig.name,
+  url: siteConfig.url,
+  logo: `${siteConfig.url}/rant-ai.png`,
+  email: siteConfig.links.email,
+  description: siteConfig.description,
+  sameAs: [siteConfig.links.github, siteConfig.links.linkedin],
 }
 
 function Announcement() {
@@ -48,6 +61,7 @@ function Announcement() {
 export default function Page() {
   return (
     <SiteShell announcement={<Announcement />}>
+      <JsonLd data={organization} />
       <HomeHero />
       <HomeProblem />
       <HomeSolution />

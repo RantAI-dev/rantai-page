@@ -1,5 +1,6 @@
 import { asc } from "drizzle-orm"
 
+import { pageMetadata } from "@/lib/seo"
 import { db } from "@/lib/db"
 import { books as booksTable } from "@/lib/db/schema"
 import { BooksVisual } from "@/components/shared/hero-visuals"
@@ -10,11 +11,12 @@ import { ForTeams } from "./_components/for-teams"
 import { SiteShell } from "@/components/layout/site-shell"
 import { BookLibrary } from "./_components/book-library"
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "Academy",
   description:
-    "Books, classes, and resources built for scientists and engineers.",
-}
+    "Books, classes, and resources for scientists and engineers building with AI.",
+  path: "/academy",
+})
 
 export default async function AcademyPage() {
   const booksFromDb = await db

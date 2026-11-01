@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 
+import { pageMetadata } from "@/lib/seo"
 import { CapabilityMarquee } from "@/components/shared/capability-marquee"
 import { siteConfig } from "@/lib/config"
 import { ProductsHeroVisual } from "./_components/products-bento"
@@ -12,11 +12,12 @@ import { ServicesOverview } from "./_components/services-overview"
 import { SectionNav } from "@/components/layout/section-nav"
 import { SiteShell } from "@/components/layout/site-shell"
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Products",
   description:
     "RantAI Agents, RantAI Claw, RantAI LLMOps, and RantAI Lakehouse: AI products built to run on your own infrastructure.",
-}
+  path: "/products",
+})
 
 export default function ProductsPage() {
   return (

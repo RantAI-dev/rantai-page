@@ -209,3 +209,13 @@ export async function getNextPost(
     .limit(1)
   return newest && newest.id !== post.id ? toListItem(newest) : null
 }
+
+/** Every live post, newest first: for the sitemap and the RSS feed. */
+export async function getAllPosts(): Promise<PostListItem[]> {
+  const rows = await db
+    .select()
+    .from(blogPosts)
+    .where(livePostCondition())
+    .orderBy(desc(postingDateExpression), desc(blogPosts.id))
+  return rows.map(toListItem)
+}
