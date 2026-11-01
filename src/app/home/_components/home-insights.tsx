@@ -32,7 +32,7 @@ export async function HomeInsights() {
         </PillLink>
       </MotionInView>
 
-      <MotionInView className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <MotionInView className="mt-12 grid gap-x-3 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
         <FeaturedPostCard
           post={featured}
           className="lg:col-span-2 lg:row-span-2"

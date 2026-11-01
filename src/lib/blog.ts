@@ -80,13 +80,16 @@ function decodeCursor(
 export async function getPosts({
   cursor,
   query,
+  tag,
   limit = POSTS_PER_PAGE,
 }: {
   cursor?: string
   query?: string
+  tag?: string
   limit?: number
 } = {}): Promise<PostsPage> {
   const conditions = [livePostCondition()]
+  if (tag) conditions.push(eq(blogPosts.tag, tag))
 
   const decoded = cursor ? decodeCursor(cursor) : null
   if (decoded) {
@@ -164,4 +167,45 @@ export async function getAllPostSlugs(): Promise<
     .from(blogPosts)
     .where(livePostCondition())
   return posts.map((p) => ({ params: { slug: p.slug } }))
+}
+
+/** Tags used by live posts, most used first. */
+export async function getPostTags(): Promise<string[]> {
+  const rows = await db
+    .select({ tag: blogPosts.tag, n: sql<number>`count(*)` })
+    .from(blogPosts)
+    .where(livePostCondition())
+    .groupBy(blogPosts.tag)
+    .orderBy(desc(sql`count(*)`), blogPosts.tag)
+  return rows.map((r) => r.tag).filter(Boolean)
+}
+
+/** The post to read after this one: the next older post, else the newest. */
+export async function getNextPost(
+  post: Pick<BlogPost, "id" | "date">
+): Promise<PostListItem | null> {
+  const date = new Date(post.date)
+  const [older] = await db
+    .select()
+    .from(blogPosts)
+    .where(
+      and(
+        livePostCondition(),
+        or(
+          lt(postingDateExpression, date),
+          and(eq(postingDateExpression, date), lt(blogPosts.id, post.id))
+        )
+      )
+    )
+    .orderBy(desc(postingDateExpression), desc(blogPosts.id))
+    .limit(1)
+  if (older) return toListItem(older)
+
+  const [newest] = await db
+    .select()
+    .from(blogPosts)
+    .where(livePostCondition())
+    .orderBy(desc(postingDateExpression), desc(blogPosts.id))
+    .limit(1)
+  return newest && newest.id !== post.id ? toListItem(newest) : null
 }

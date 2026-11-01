@@ -174,3 +174,42 @@
     @apply font-sans;
   }
 }
+
+/* Reading page: code frames and heading links (markup from lib/article-html) */
+@layer components {
+  .code-frame {
+    @apply my-8 overflow-hidden rounded-xl bg-neutral-950 text-neutral-100;
+  }
+  .code-frame .code-head {
+    @apply flex h-10 items-center justify-between border-b border-white/[0.08] pr-2 pl-4 text-[12px] text-neutral-400;
+  }
+  .code-frame .code-copy {
+    @apply rounded-md px-2.5 py-1 text-[12px] font-medium text-neutral-400 transition-colors hover:bg-white/10 hover:text-white;
+  }
+  .code-frame .code-copy[data-copied] {
+    @apply text-emerald-400;
+  }
+  .code-frame pre {
+    @apply m-0 overflow-x-auto bg-transparent p-4 text-[14px] leading-[1.7];
+  }
+  .code-frame pre code {
+    @apply bg-transparent p-0 text-inherit;
+    font-family:
+      ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+      monospace;
+    font-size: 13.5px;
+  }
+  .heading-anchor {
+    @apply ml-2 font-normal transition-opacity duration-200;
+    opacity: 0 !important;
+    color: var(--color-neutral-300) !important;
+    text-decoration: none !important;
+  }
+  :is(h2, h3):hover > .heading-anchor,
+  .heading-anchor:focus-visible {
+    opacity: 1 !important;
+  }
+  .heading-anchor:hover {
+    color: var(--color-neutral-500) !important;
+  }
+}

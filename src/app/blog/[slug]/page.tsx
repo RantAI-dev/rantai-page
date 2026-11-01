@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 
-import { getAllPostSlugs, getPostBySlug } from "@/lib/blog"
+import { getAllPostSlugs, getNextPost, getPostBySlug } from "@/lib/blog"
 import { siteConfig } from "@/lib/config"
 import { BlogPostView } from "@/components/blog-post-view"
 
@@ -51,5 +51,7 @@ export default async function BlogPostPage({
 
   if (!post) notFound()
 
-  return <BlogPostView post={post} />
+  const next = await getNextPost(post)
+
+  return <BlogPostView post={post} next={next} />
 }
