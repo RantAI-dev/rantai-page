@@ -1,12 +1,13 @@
 import { asc } from "drizzle-orm"
 
 import { db } from "@/lib/db"
-import { teamMembers } from "@/lib/db/schema"
+import { books, teamMembers } from "@/lib/db/schema"
 import { PeopleVisual } from "@/components/hero-visuals"
-import { MotionInView } from "@/components/motion-in-view"
 import { PageHero } from "@/components/page-hero"
 import { SectionNav } from "@/components/section-nav"
 import { SiteShell } from "@/components/site-shell"
+import { partners } from "@/app/services/data"
+import { AboutSection } from "./_components/about-section"
 import { OurTeamGrid } from "./_components/team-grid"
 
 export const metadata = {
@@ -15,13 +16,25 @@ export const metadata = {
 }
 
 export default async function OurTeamPage() {
-  const members = await db
-    .select()
-    .from(teamMembers)
-    .orderBy(asc(teamMembers.orderIndex))
+  const [members, bookRows] = await Promise.all([
+    db.select().from(teamMembers).orderBy(asc(teamMembers.orderIndex)),
+    db
+      .select({ imageUrl: books.imageUrl })
+      .from(books)
+      .orderBy(asc(books.orderIndex)),
+  ])
+  const photos = members.flatMap((m) => (m.imageUrl ? [m.imageUrl] : []))
 
   return (
-    <SiteShell>
+    <SiteShell
+      cta={{
+        title: "Build with us.",
+        description:
+          "We're always glad to meet engineers, researchers, and writers who like to ship.",
+        label: "Join the team",
+        subject: "Joining RantAI",
+      }}
+    >
       <PageHero
         tone="white"
         eyebrow="Company"
@@ -37,15 +50,26 @@ export default async function OurTeamPage() {
           />
         }
       />
+      <AboutSection
+        people={members.length}
+        photos={photos}
+        bookCount={bookRows.length}
+        covers={bookRows.flatMap((b) => (b.imageUrl ? [b.imageUrl] : []))}
+        partnerLogos={partners.map((p) => p.logo)}
+      />
       <section
         id="team"
+        aria-labelledby="team-heading"
         className="mx-auto max-w-[1440px] scroll-mt-20 px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
       >
-        <MotionInView className="pt-16 lg:pt-20">
-          <OurTeamGrid members={members} />
-        </MotionInView>
+        <OurTeamGrid members={members} />
       </section>
-      <SectionNav sections={[{ id: "team", label: "Team" }]} />
+      <SectionNav
+        sections={[
+          { id: "who-we-are", label: "Who we are" },
+          { id: "team", label: "Team" },
+        ]}
+      />
     </SiteShell>
   )
 }
