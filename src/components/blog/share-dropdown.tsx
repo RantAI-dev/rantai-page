@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react"
 import { Link2 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import {
   DropdownMenu,
@@ -29,6 +30,7 @@ export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
   // Radix gives the menu generated ids that can differ between the server
   // and the browser, which breaks hydration. The server sends the plain
   // button; the menu attaches once the page is running in the browser.
+  const t = useTranslations("blog.share")
   const mounted = useSyncExternalStore(
     subscribe,
     () => true,
@@ -69,7 +71,7 @@ export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
 
   async function copyLink() {
     await navigator.clipboard.writeText(url)
-    toast.success("Link copied!")
+    toast.success(t("copied"))
   }
 
   if (!mounted) return children
@@ -80,24 +82,24 @@ export function ShareDropdown({ url, title, children }: ShareDropdownProps) {
       <DropdownMenuContent align="end" className="min-w-44">
         <DropdownMenuItem onClick={copyLink}>
           <Link2 />
-          Copy Link
+          {t("copyLink")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={shareX}>
           <XIcon />
-          Share on X
+          {t("x")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={shareLinkedIn}>
           <LinkedInIcon />
-          Share on LinkedIn
+          {t("linkedin")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={shareThreads}>
           <ThreadsIcon />
-          Share on Threads
+          {t("threads")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={shareFacebook}>
           <FacebookIcon />
-          Share on Facebook
+          {t("facebook")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

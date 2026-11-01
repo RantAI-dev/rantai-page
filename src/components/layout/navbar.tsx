@@ -1,10 +1,12 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { MenuIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
+
+import { Link, usePathname } from "@/i18n/navigation"
+import { LanguageSwitcher } from "@/components/layout/language-switcher"
 
 import { PillLink } from "@/components/shared/pill-link"
 import { Button } from "@/components/ui/button"
@@ -21,14 +23,15 @@ import { siteConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { href: "/products", label: "Products" },
-  { href: "/services", label: "Services" },
-  { href: "/academy", label: "Academy" },
-  { href: "/blog", label: "Insights" },
-  { href: "/our-team", label: "Company" },
+  { href: "/products", key: "products" },
+  { href: "/services", key: "services" },
+  { href: "/academy", key: "academy" },
+  { href: "/blog", key: "insights" },
+  { href: "/our-team", key: "company" },
 ] as const
 
 export function Navbar() {
+  const t = useTranslations("common.nav")
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [overDark, setOverDark] = useState(false)
@@ -69,7 +72,7 @@ export function Navbar() {
         <div className="flex min-w-0 items-center gap-10">
           <Link
             href="/"
-            aria-label="RantAI home"
+            aria-label={t("home")}
             className="flex shrink-0 items-center gap-2.5 text-foreground transition-opacity hover:opacity-75"
           >
             <Image
@@ -88,7 +91,7 @@ export function Navbar() {
             </span>
           </Link>
 
-          <nav aria-label="Main navigation" className="hidden md:block">
+          <nav aria-label={t("main")} className="hidden md:block">
             <ul className="flex items-center gap-1">
               {navItems.map((item) => {
                 const active =
@@ -101,7 +104,7 @@ export function Navbar() {
                       aria-current={active ? "page" : undefined}
                       className="rounded-full px-3.5 py-2 text-sm text-foreground/70 transition-colors hover:bg-muted hover:text-foreground aria-[current=page]:bg-muted aria-[current=page]:text-foreground"
                     >
-                      {item.label}
+                      {t(item.key)}
                     </Link>
                   </li>
                 )
@@ -111,12 +114,13 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitcher className="hidden md:flex" />
           <PillLink
             href={`mailto:${siteConfig.links.email}`}
             icon="external"
             className="h-9 px-4"
           >
-            Contact us
+            {t("contactUs")}
           </PillLink>
           <Sheet>
             <SheetTrigger asChild>
@@ -124,7 +128,7 @@ export function Navbar() {
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label="Open navigation"
+                aria-label={t("open")}
                 className="md:hidden"
               >
                 <MenuIcon />
@@ -132,13 +136,11 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent>
               <SheetHeader className="pr-14">
-                <SheetTitle>Navigation</SheetTitle>
-                <SheetDescription>
-                  Explore RantAI products and company information.
-                </SheetDescription>
+                <SheetTitle>{t("sheetTitle")}</SheetTitle>
+                <SheetDescription>{t("sheetDescription")}</SheetDescription>
               </SheetHeader>
               <nav
-                aria-label="Mobile navigation"
+                aria-label={t("mobile")}
                 className="flex flex-1 flex-col px-4"
               >
                 {navItems.map((item) => (
@@ -147,10 +149,11 @@ export function Navbar() {
                       href={item.href}
                       className="border-b border-border py-5 text-lg font-medium"
                     >
-                      {item.label}
+                      {t(item.key)}
                     </Link>
                   </SheetClose>
                 ))}
+                <LanguageSwitcher size="lg" className="mt-8 self-start" />
               </nav>
             </SheetContent>
           </Sheet>

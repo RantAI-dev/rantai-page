@@ -9,6 +9,7 @@ The website and CMS for [RantAI](https://www.rantai.dev): AI products, engineeri
 ## Features
 
 - **Public pages:** Home, Products, Services, Academy, Insights (blog) and Company, with scroll-driven animation that stays light and stable on phones.
+- **English and Indonesian:** English at `/`, Indonesian at `/id`, with a language switch and hreflang for search engines (next-intl).
 - **CMS** at `/admin`:
   - posts with a Tiptap editor and scheduled publishing
   - Academy books
@@ -43,6 +44,7 @@ The website and CMS for [RantAI](https://www.rantai.dev): AI products, engineeri
 | Area | Technology |
 |---|---|
 | Framework | Next.js 16 (App Router), React 19, TypeScript |
+| i18n | next-intl (English, Indonesian) |
 | Database | Neon PostgreSQL + Drizzle ORM |
 | UI | Tailwind CSS v4, shadcn/ui, Motion, Lenis |
 | Editor | Tiptap |
@@ -94,7 +96,8 @@ Every variable is described in [`.env.example`](.env.example):
 
 ```
 src/
-  app/          routes; components used by one page live in app/<route>/_components
+  app/          [locale]/ = public site (en at /, id at /id); (cms)/ = admin and login
+  messages/     UI text per language: messages/<locale>/<namespace>.json
   components/   shared components: layout, shared, blog, platform, effects, ui, admin
   hooks/        React hooks
   lib/          non-UI code: blog, auth, db, data-table, seo, revalidate, ...

@@ -1,0 +1,42 @@
+{
+  "hero": {
+    "eyebrow": "Company",
+    "title": "The people\nbehind RantAI.",
+    "description": "Engineers, researchers, and builders dedicated to advancing enterprise AI."
+  },
+  "cta": {
+    "title": "Build with us.",
+    "description": "We're always glad to meet engineers, researchers, and writers who like to ship.",
+    "label": "Join the team",
+    "subject": "Joining RantAI"
+  },
+  "sections": {
+    "whoWeAre": "Who we are",
+    "team": "Team"
+  },
+  "about": {
+    "eyebrow": "Who we are",
+    "title": "Small team.\nSerious systems.",
+    "body": "An AI company from Indonesia. We build the products, the systems, and the books, so teams can run AI in production.",
+    "facts": {
+      "people": "People building",
+      "products": "Products we run",
+      "books": "Books written",
+      "partners": "Teams we've built with"
+    }
+  },
+  "team": {
+    "eyebrow": "The team",
+    "title": "Meet the people\nwho ship it.",
+    "filterLabel": "Team groups",
+    "everyone": "Everyone",
+    "groups": {
+      "leadership": "Leadership",
+      "research": "Research & Data",
+      "engineering": "Engineering",
+      "writingOps": "Writing & Ops"
+    },
+    "onProfile": "{name} on {network}",
+    "notAdded": "{network} not added yet"
+  }
+}

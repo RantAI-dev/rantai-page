@@ -1,0 +1,56 @@
+{
+  "home": {
+    "title": "RantAI: Sistem AI untuk operasional nyata",
+    "description": "RantAI membangun agentic AI, platform data cerdas, dan sistem otomasi yang siap produksi untuk pemerintah dan enterprise."
+  },
+  "products": {
+    "title": "Produk",
+    "description": "RantAI Agents, RantAI Claw, RantAI LLMOps, dan RantAI Lakehouse: produk AI yang berjalan di infrastruktur Anda sendiri."
+  },
+  "services": {
+    "title": "Layanan",
+    "description": "Software dan AI engineering dari arsitektur hingga produksi, dikerjakan engineer RantAI yang bergabung langsung di tim Anda."
+  },
+  "academy": {
+    "title": "Academy",
+    "description": "Buku, kelas, dan materi bagi ilmuwan dan engineer yang bekerja dengan AI."
+  },
+  "blog": {
+    "title": "Insights",
+    "description": "Kabar, rilis, dan insights seputar membangun AI yang andal di produksi."
+  },
+  "company": {
+    "title": "Perusahaan",
+    "description": "Kenali para engineer, peneliti, dan builder di balik RantAI, perusahaan AI dari Indonesia."
+  },
+  "notFound": {
+    "title": "Halaman tidak ditemukan",
+    "description": "Halaman yang Anda cari tidak ada atau sudah pindah."
+  },
+  "og": {
+    "home": {
+      "eyebrow": "Enterprise AI",
+      "title": "Sistem AI untuk\noperasional nyata."
+    },
+    "products": {
+      "eyebrow": "Produk",
+      "title": "Produk AI untuk\noperasional nyata."
+    },
+    "services": {
+      "eyebrow": "Layanan",
+      "title": "Software andal,\nrilis cepat."
+    },
+    "academy": {
+      "eyebrow": "Academy",
+      "title": "Belajar membangun\ndengan AI."
+    },
+    "blog": {
+      "eyebrow": "Insights",
+      "title": "Catatan dari\ntim RantAI."
+    },
+    "company": {
+      "eyebrow": "Perusahaan",
+      "title": "Orang-orang\ndi balik RantAI."
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "eyebrow": "Error 404",
+  "title": "This page took\na wrong turn.",
+  "description": "The link may be old, or the page has moved. These are the places people usually look for.",
+  "home": "Back to home",
+  "browse": "Browse insights",
+  "tryThese": "Try one of these",
+  "destinations": {
+    "products": {
+      "label": "Products",
+      "line": "Agents, Claw, LLMOps, Lakehouse"
+    },
+    "services": {
+      "label": "Services",
+      "line": "Engineering, from scope to production"
+    },
+    "academy": {
+      "label": "Academy",
+      "line": "Books and classes on building with AI"
+    },
+    "blog": {
+      "label": "Insights",
+      "line": "Notes from the RantAI team"
+    },
+    "company": {
+      "label": "Company",
+      "line": "The people behind RantAI"
+    }
+  }
+}

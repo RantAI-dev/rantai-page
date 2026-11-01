@@ -1,0 +1,60 @@
+{
+  "sections": {
+    "howItFits": "Alur kerja",
+    "platform": "Produk",
+    "capabilities": "Kapabilitas",
+    "services": "Engineer"
+  },
+  "cta": {
+    "title": "Mulai bersama RantAI hari ini.",
+    "description": "Luncurkan produk AI pertama Anda dalam dua minggu, tanpa proses pengadaan berbelit.",
+    "label": "Minta demo",
+    "subject": "Demo produk RantAI",
+    "prompts": [
+      "Agent yang menjawab dari dokumen internal kami",
+      "Jalankan model AI di server kami sendiri",
+      "Satukan semua data kami agar mudah dicari"
+    ]
+  },
+  "hero": {
+    "eyebrow": "Produk",
+    "title": "Produk AI untuk\noperasional nyata.",
+    "description": "Empat produk terpadu, dari data Anda hingga agent yang bekerja dengannya.",
+    "demo": "Minta demo",
+    "demoSubject": "Demo produk RantAI",
+    "seeInAction": "Lihat cara kerjanya"
+  },
+  "reel": {
+    "eyebrow": "Demo langsung",
+    "title": "Coba tiap produk."
+  },
+  "bento": {
+    "afterFineTuning": "setelah fine-tuning",
+    "infraTitle": "Di infrastruktur Anda",
+    "infra": ["On-prem", "Private cloud", "Air-gapped"]
+  },
+  "overview": {
+    "eyebrow": "Layanan engineering",
+    "title": "Perlu lebih?\nAjak engineer kami.",
+    "fde": {
+      "line": "Engineer kami, menyatu dengan tim Anda.",
+      "details": ["Di lokasi", "Lingkungan Anda", "Serah terima"],
+      "badge": "Baru",
+      "joined": "<b>{name}</b> bergabung dari RantAI",
+      "pilotLive": "Pilot sudah live di VPC Anda 🚀"
+    },
+    "software": {
+      "line": "Produk utuh, dari arsitektur hingga deploy.",
+      "details": ["Web dan mobile", "API", "Deploy ke cloud"],
+      "deploying": "Sedang deploy…",
+      "deployed": "Live di produksi"
+    },
+    "ai": {
+      "line": "AI untuk produksi, bukan sekadar notebook.",
+      "details": ["RAG", "Fine-tuning", "MLOps"],
+      "accuracy": "Akurasi model",
+      "reached": "Target tercapai di test set Anda",
+      "training": "Melatih dengan data Anda…"
+    }
+  }
+}

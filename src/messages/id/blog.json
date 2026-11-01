@@ -1,0 +1,61 @@
+{
+  "hero": {
+    "eyebrow": "Insights",
+    "title": "Catatan dari\ntim RantAI.",
+    "description": "Kabar, rilis, dan insights seputar membangun AI yang andal di produksi."
+  },
+  "sections": {
+    "posts": "Artikel"
+  },
+  "list": {
+    "filterLabel": "Filter topik",
+    "all": "Semua",
+    "searchPlaceholder": "Cari insights",
+    "searchLabel": "Cari insights",
+    "clearSearch": "Hapus pencarian",
+    "results": "{count}{more} hasil",
+    "articles": "{count}{more} artikel",
+    "emptySearch": "Tidak ada artikel untuk “{query}”.",
+    "empty": "Belum ada artikel yang diterbitkan.",
+    "loading": "Memuat",
+    "loadMore": "Muat lebih banyak"
+  },
+  "card": {
+    "readArticle": "Baca artikel"
+  },
+  "article": {
+    "back": "Semua insights",
+    "minRead": "{count} menit baca",
+    "share": "Bagikan",
+    "nextArticle": "Artikel berikutnya",
+    "onThisPage": "Di halaman ini",
+    "copy": "Salin",
+    "copied": "Tersalin",
+    "linkToSection": "Tautan ke bagian ini",
+    "cta": {
+      "title": "Ingin tahu lebih lanjut?",
+      "description": "Hubungi tim kami dan diskusikan peluang AI untuk bisnis Anda.",
+      "label": "Hubungi kami",
+      "subject": "Tentang: {title}"
+    }
+  },
+  "share": {
+    "copyLink": "Salin tautan",
+    "copied": "Tautan disalin!",
+    "x": "Bagikan di X",
+    "linkedin": "Bagikan di LinkedIn",
+    "threads": "Bagikan di Threads",
+    "facebook": "Bagikan di Facebook"
+  },
+  "notFound": {
+    "title": "Artikel tidak ditemukan",
+    "description": "Artikel ini mungkin berganti judul, pindah, atau dihapus.",
+    "browse": "Lihat insights",
+    "home": "Kembali ke beranda"
+  },
+  "visual": {
+    "openFolder": "Buka folder",
+    "closeFolder": "Tutup folder",
+    "latest": "Terbaru dari tim kami"
+  }
+}

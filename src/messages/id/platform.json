@@ -1,0 +1,214 @@
+{
+  "reel": {
+    "eyebrow": "Platform",
+    "title": "Produk yang siap untuk produksi.",
+    "visit": "Kunjungi {name}",
+    "rail": "Produk"
+  },
+  "products": {
+    "imageAlt": "Antarmuka {name}",
+    "agents": {
+      "layer": "Aplikasi",
+      "tagline": "Deploy AI agent untuk kerja nyata, bukan sekadar demo.",
+      "features": [
+        "Knowledge base & RAG",
+        "Agent builder",
+        "Artifacts",
+        "Skills"
+      ]
+    },
+    "claw": {
+      "layer": "Runtime",
+      "tagline": "Runtime multi-agent ringan, dibangun dengan Rust.",
+      "features": ["Terminal UI", "Web control UI", "Skills & ClawHub"]
+    },
+    "llmops": {
+      "layer": "Model",
+      "tagline": "Fine-tune, evaluasi, dan serving model di hardware milik Anda.",
+      "features": [
+        "Fine-tune lewat UI",
+        "Evaluasi dengan test set Anda",
+        "API kompatibel OpenAI"
+      ],
+      "flow": ["Dataset", "Fine-tune", "Evaluasi", "Serving"]
+    },
+    "lake": {
+      "layer": "Data",
+      "tagline": "Lakehouse AI-native milik Anda, dari data mentah ke insight siap BI.",
+      "features": ["Di infrastruktur Anda", "AI-native", "Output siap BI"],
+      "flow": ["Data mentah", "Lakehouse", "Insight siap BI"]
+    }
+  },
+  "demos": {
+    "agents": {
+      "knowledge": "Pengetahuan",
+      "assistant": "Asisten HR",
+      "searching": "Mencari di {count} sumber…",
+      "placeholder": "Tanyakan apa saja tentang dokumen Anda…",
+      "artifact": "Artifact",
+      "prompts": [
+        {
+          "chip": "Kebijakan cuti",
+          "q": "Berapa hari cuti untuk karyawan baru?",
+          "a": "Karyawan baru mendapat 12 hari cuti tahunan di tahun pertama, lalu 15 hari setelah dua tahun bekerja.",
+          "cite": "Kebijakan HR 2026 · hlm. 4"
+        },
+        {
+          "chip": "Pengadaan",
+          "q": "Rangkum permintaan pengadaan bulan ini",
+          "a": "42 permintaan bulan ini: 31 disetujui, 8 menunggu review anggaran, 3 dikembalikan karena penawaran kurang.",
+          "cite": "Log pengadaan · Okt"
+        },
+        {
+          "chip": "Balasan vendor",
+          "q": "Draf balasan ke vendor soal pengiriman terlambat",
+          "a": "Draf sudah siap: merujuk pasal 7.2 soal ketentuan pengiriman dan mengusulkan tanggal baru 14 November.",
+          "cite": "Kontrak vendor · §7.2"
+        }
+      ]
+    },
+    "claw": {
+      "schedule": "Jadwal",
+      "channels": "Channel",
+      "connected": "Terhubung",
+      "schedules": ["Hari kerja · 08.00", "Setiap jam", "Jumat · 16.00"]
+    },
+    "lake": {
+      "sql": "SQL otomatis",
+      "unit": "Pengunjung (juta)",
+      "value": "{v, number, ::.0}",
+      "lineage": "Lineage",
+      "asks": [
+        {
+          "chip": "Negara teratas",
+          "q": "Dari negara mana pengunjung terbanyak pada 2024?",
+          "title": "Negara asal teratas · 2024",
+          "labels": ["Malaysia", "Singapura", "Australia", "Tiongkok", "Jepang"]
+        },
+        {
+          "chip": "Bulan tersibuk",
+          "q": "Bulan apa yang paling ramai pengunjung tahun lalu?",
+          "title": "Bulan tersibuk · 2024",
+          "labels": ["Agustus", "Juli", "Desember", "Juni", "Oktober"]
+        }
+      ]
+    },
+    "llmops": {
+      "run": "Run · {name}",
+      "steps": ["Muat dataset", "Fine-tune", "Evaluasi", "Serving"],
+      "rows": "{count, number} baris",
+      "loss": "Training loss",
+      "done": "Selesai · {count} epoch",
+      "epoch": "Epoch {n} / {total}",
+      "eval": "Eval · test set Anda",
+      "base": "Model dasar",
+      "tuned": "Fine-tuned",
+      "percent": "{v, number, percent}",
+      "endpoint": "Endpoint",
+      "live": "Live",
+      "compat": "Kompatibel OpenAI · di GPU Anda"
+    }
+  },
+  "journey": {
+    "eyebrow": "Saling terhubung",
+    "title": "Satu alur, empat produk.",
+    "open": "Buka {name}",
+    "stops": {
+      "sources": {
+        "name": "Data Anda",
+        "line": "Data pengunjung tersebar di tiga sistem."
+      },
+      "lake": {
+        "name": "RantAI Lakehouse",
+        "line": "Lakehouse merapikannya jadi satu tabel."
+      },
+      "llmops": {
+        "name": "RantAI LLMOps",
+        "line": "LLMOps melatih model dengan data Anda."
+      },
+      "claw": {
+        "name": "RantAI Claw",
+        "line": "Claw menyusun laporan tiap bulan."
+      },
+      "agents": {
+        "name": "RantAI Agents",
+        "line": "Agents menjawab tim Anda seketika."
+      }
+    },
+    "scenes": {
+      "sources": {
+        "hotel": "Pemesanan hotel",
+        "notConnected": "Belum terhubung"
+      },
+      "lake": {
+        "countries": ["Malaysia", "Singapura", "Australia", "Tiongkok"],
+        "value": "{v, number, ::.00} jt",
+        "merged": "{count} sumber digabung"
+      },
+      "llmops": {
+        "loss": "Training loss",
+        "accuracy": "Akurasi",
+        "percent": "{v, number, percent}",
+        "testSet": "di test set Anda"
+      },
+      "claw": {
+        "schedule": "Setiap tgl 1 · 07.00"
+      },
+      "agents": {
+        "question": "Bagaimana tren pengunjung bulan ini?",
+        "answer": "Naik <b>12%</b> dari bulan lalu, didorong Malaysia dan Singapura."
+      }
+    }
+  },
+  "capabilities": {
+    "eyebrow": "Kapabilitas",
+    "title": "Bangun apa saja dengan RantAI.",
+    "items": {
+      "rag": {
+        "title": "Knowledge Base & RAG",
+        "body": "Jawaban berdasarkan dokumen dan data Anda",
+        "product": "RantAI Agents"
+      },
+      "builder": {
+        "title": "Agent Builder",
+        "body": "Peran, tools, dan guardrail tiap agent",
+        "product": "RantAI Agents"
+      },
+      "artifacts": {
+        "title": "Artifacts",
+        "body": "Laporan, dokumen, dan kode dari percakapan",
+        "product": "RantAI Agents"
+      },
+      "skills": {
+        "title": "Skills",
+        "body": "Kemampuan siap pakai untuk semua agent",
+        "product": "RantAI Agents"
+      },
+      "fde": {
+        "title": "Forward Deployed Engineering",
+        "body": "Engineer kami bekerja di lingkungan Anda",
+        "product": "Layanan"
+      },
+      "tui": {
+        "title": "Terminal UI",
+        "body": "Sesi berbasis keyboard, tanpa browser",
+        "product": "RantAI Claw"
+      },
+      "webui": {
+        "title": "Web Control UI",
+        "body": "Sesi, channel, dan memori dalam satu tampilan",
+        "product": "RantAI Claw"
+      },
+      "clawhub": {
+        "title": "Skill ClawHub",
+        "body": "Skill siap pasang dari katalog bersama",
+        "product": "RantAI Claw"
+      },
+      "selfHosted": {
+        "title": "Runtime self-hosted",
+        "body": "Di infrastruktur milik Anda",
+        "product": "RantAI Claw"
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "sections": {
+    "howItFits": "How it fits",
+    "platform": "Products",
+    "capabilities": "Capabilities",
+    "services": "Engineers"
+  },
+  "cta": {
+    "title": "Start building with RantAI today.",
+    "description": "Deploy your first AI product in under two weeks — no long procurement cycles required.",
+    "label": "Request a demo",
+    "subject": "RantAI product demo",
+    "prompts": [
+      "An agent that answers from our internal documents",
+      "Run AI models on our own infrastructure",
+      "Bring our data into one searchable place"
+    ]
+  },
+  "hero": {
+    "eyebrow": "Products",
+    "title": "AI products built\nfor real operations.",
+    "description": "Four products that work together, from your data to the agents that act on it.",
+    "demo": "Request a demo",
+    "demoSubject": "RantAI product demo",
+    "seeInAction": "See them in action"
+  },
+  "reel": {
+    "eyebrow": "In action",
+    "title": "Try each product."
+  },
+  "bento": {
+    "afterFineTuning": "after fine-tuning",
+    "infraTitle": "Runs on your infrastructure",
+    "infra": ["On-prem", "Private cloud", "Air-gapped"]
+  },
+  "overview": {
+    "eyebrow": "Engineering services",
+    "title": "Need more?\nBring our engineers.",
+    "fde": {
+      "line": "Our engineers, embedded with your team.",
+      "details": ["On site", "Your environment", "Full handover"],
+      "badge": "New",
+      "joined": "<b>{name}</b> joined from RantAI",
+      "pilotLive": "Pilot is live in your VPC 🚀"
+    },
+    "software": {
+      "line": "Full products, from architecture to deploy.",
+      "details": ["Web and mobile", "APIs", "Cloud deploys"],
+      "deploying": "Deploying…",
+      "deployed": "Deployed to production"
+    },
+    "ai": {
+      "line": "AI that runs in production, not a notebook.",
+      "details": ["RAG", "Fine-tuning", "MLOps"],
+      "accuracy": "Model accuracy",
+      "reached": "Target reached on your test set",
+      "training": "Training on your data…"
+    }
+  }
+}

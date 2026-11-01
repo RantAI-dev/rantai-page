@@ -18,6 +18,7 @@ import {
   Sparkles,
   Table2,
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { ProductLogo, ProductTile } from "@/components/shared/product-logo"
 import { cn } from "@/lib/utils"
@@ -300,44 +301,37 @@ function Step({
 /*  RantAI Agents: ask, retrieve, answer with a citation, artifact     */
 /* ------------------------------------------------------------------ */
 
-const agentPrompts = [
+// File names stay as they are in every language; the rest comes from
+// messages (platform.demos.agents.prompts, same order).
+const agentFiles = [
   {
-    chip: "Leave policy",
-    q: "How many leave days do new staff get?",
     sources: ["HR Policy 2026.pdf", "Leave SOP v3.docx", "Benefits.xlsx"],
-    a: "New staff get 12 days of annual leave in their first year, rising to 15 days after two years of service.",
-    cite: "HR Policy 2026 · p.4",
     artifact: "Leave summary.docx",
   },
   {
-    chip: "Procurement",
-    q: "Summarise this month's procurement requests",
     sources: [
       "Procurement log.xlsx",
       "Approval matrix.pdf",
       "Vendor list.xlsx",
     ],
-    a: "42 requests this month: 31 approved, 8 waiting on budget review, and 3 sent back for missing quotes.",
-    cite: "Procurement log · Oct",
     artifact: "Procurement brief.pdf",
   },
   {
-    chip: "Vendor reply",
-    q: "Draft a reply to the vendor about the late delivery",
     sources: ["Vendor contract.pdf", "Delivery tracker.xlsx", "Email thread"],
-    a: "Drafted a reply citing clause 7.2 on delivery terms and proposing a revised date of 14 November.",
-    cite: "Vendor contract · §7.2",
     artifact: "Reply draft.eml",
   },
 ]
+type AgentPrompt = { chip: string; q: string; a: string; cite: string }
 const agentTiming = [1500, 1700, 2600]
 
 export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
   const { ref, playing, reduce, compact } = usePlaying(active)
+  const t = useTranslations("platform.demos.agents")
+  const prompts = t.raw("prompts") as AgentPrompt[]
   const [pick, setPick] = useState(0)
-  const p = agentPrompts[pick]
+  const p = { ...prompts[pick], ...agentFiles[pick] }
   const step = useScript(agentTiming, playing, `${pick}`, () =>
-    setPick((v) => (v + 1) % agentPrompts.length)
+    setPick((v) => (v + 1) % agentFiles.length)
   )
   const s = reduce ? 3 : step
   const sourceIcons = [FileText, FileText, FileSpreadsheet]
@@ -347,7 +341,9 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
       <Stage desk="agents" compact={compact}>
         {/* Knowledge */}
         <Card className="top-16 left-8 w-[220px] p-4" show={!compact && s >= 1}>
-          <p className="text-[12px] font-medium text-neutral-500">Knowledge</p>
+          <p className="text-[12px] font-medium text-neutral-500">
+            {t("knowledge")}
+          </p>
           <ul className="mt-3 space-y-2.5">
             {p.sources.map((src, i) => {
               const Icon = sourceIcons[i] ?? MessageSquare
@@ -391,7 +387,7 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
         >
           <div className="flex items-center gap-2 border-b border-black/[0.06] px-4 py-3 text-[13px] font-medium">
             <ProductTile id="agents" />
-            HR Assistant
+            {t("assistant")}
           </div>
           <div className="flex-1 space-y-3 p-4">
             <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-neutral-100 px-3.5 py-2.5 text-[13px]">
@@ -405,8 +401,8 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
               >
                 {s === 1 ? (
                   <span className="inline-flex items-center gap-2 text-neutral-500">
-                    <Loader2 className="size-3.5 animate-spin" /> Searching 3
-                    sources…
+                    <Loader2 className="size-3.5 animate-spin" />{" "}
+                    {t("searching", { count: p.sources.length })}
                   </span>
                 ) : (
                   <>
@@ -426,7 +422,7 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
             )}
           </div>
           <div className="mx-4 mb-4 flex items-center justify-between rounded-xl border border-black/[0.08] px-3 py-2 text-[12px] text-neutral-400">
-            Ask anything about your documents…
+            {t("placeholder")}
             <span className="grid size-6 place-items-center rounded-full bg-neutral-900 text-white">
               <ArrowUp className="size-3" />
             </span>
@@ -442,7 +438,9 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
             <FileText className="size-4" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[11px] text-neutral-500">Artifact</span>
+            <span className="block text-[11px] text-neutral-500">
+              {t("artifact")}
+            </span>
             <span className="block truncate text-[13px] font-medium">
               {p.artifact}
             </span>
@@ -452,7 +450,9 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           className="top-[190px] right-8 w-[190px] p-4"
           show={!compact && s >= 3}
         >
-          <p className="text-[12px] font-medium text-neutral-500">Artifact</p>
+          <p className="text-[12px] font-medium text-neutral-500">
+            {t("artifact")}
+          </p>
           <div className="mt-3 rounded-xl border border-black/[0.07] bg-neutral-50 p-3">
             <span className="grid size-8 place-items-center rounded-lg bg-[#8b5cf6]/12 text-[#8b5cf6]">
               <FileText className="size-4" />
@@ -467,7 +467,7 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
         </Card>
 
         <Chips
-          options={agentPrompts.map((a) => a.chip)}
+          options={prompts.map((a) => a.chip)}
           value={pick}
           onPick={setPick}
         />
@@ -480,6 +480,8 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
 /*  RantAI Claw: a scheduled skill runs in the terminal                 */
 /* ------------------------------------------------------------------ */
 
+// Terminal output stays in English; schedules come from messages
+// (platform.demos.claw.schedules, same order).
 const clawRuns = [
   {
     chip: "daily-brief",
@@ -492,7 +494,6 @@ const clawRuns = [
       "✓ 6 meetings · 14 emails read",
       "✓ brief posted to #ops",
     ],
-    schedule: "Weekdays · 08:00",
   },
   {
     chip: "triage-inbox",
@@ -505,7 +506,6 @@ const clawRuns = [
       "✓ 5 flagged as urgent",
       "✓ summary sent to Telegram",
     ],
-    schedule: "Every hour",
   },
   {
     chip: "weekly-report",
@@ -518,12 +518,13 @@ const clawRuns = [
       "✓ report.pdf generated",
       "✓ shared with #leadership",
     ],
-    schedule: "Fridays · 16:00",
   },
 ]
 
 export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
   const { ref, playing, reduce, compact } = usePlaying(active)
+  const t = useTranslations("platform.demos.claw")
+  const schedules = t.raw("schedules") as string[]
   const [pick, setPick] = useState(0)
   const run = clawRuns[pick]
   const timing = run.lines.map((_, i) => (i === 0 ? 900 : 520))
@@ -595,9 +596,11 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
           )}
           key={`sched-${pick}`}
         >
-          <p className="text-[12px] font-medium text-neutral-500">Schedule</p>
+          <p className="text-[12px] font-medium text-neutral-500">
+            {t("schedule")}
+          </p>
           <p className="mt-2 text-[15px] font-medium">{run.chip}</p>
-          <p className="mt-1 text-[12px] text-neutral-500">{run.schedule}</p>
+          <p className="mt-1 text-[12px] text-neutral-500">{schedules[pick]}</p>
           <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-neutral-100">
             <motion.div
               className="h-full rounded-full bg-[#f97316]"
@@ -608,14 +611,16 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
         </Card>
 
         <Card className="right-8 bottom-24 w-[230px] p-4" show={!compact}>
-          <p className="text-[12px] font-medium text-neutral-500">Channels</p>
+          <p className="text-[12px] font-medium text-neutral-500">
+            {t("channels")}
+          </p>
           <ul className="mt-3 space-y-2 text-[13px]">
             {["Telegram", "Slack", "Email"].map((c) => (
               <li key={c} className="flex items-center justify-between">
                 {c}
                 <span className="flex items-center gap-1.5 text-[11px] text-[#10b981]">
                   <span className="size-1.5 rounded-full bg-[#10b981]" />{" "}
-                  Connected
+                  {t("connected")}
                 </span>
               </li>
             ))}
@@ -636,40 +641,33 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
 /*  RantAI Lakehouse: ask in plain language, see the SQL, get a chart       */
 /* ------------------------------------------------------------------ */
 
+// SQL and values stay in code; questions, titles and bar labels come from
+// messages (platform.demos.lake.asks, same order).
 const lakeAsks = [
   {
-    chip: "Top countries",
-    q: "Which countries sent the most visitors in 2024?",
     sql: "SELECT country, SUM(visitors)\nFROM visitors_clean\nWHERE year = 2024\nGROUP BY country ORDER BY 2 DESC LIMIT 5;",
-    title: "Top source countries · 2024",
-    bars: [
-      ["Malaysia", 1.6],
-      ["Singapore", 1.5],
-      ["Australia", 1.2],
-      ["China", 1.0],
-      ["Japan", 0.7],
-    ] as [string, number][],
+    values: [1.6, 1.5, 1.2, 1.0, 0.7],
   },
   {
-    chip: "Busiest months",
-    q: "Which months had the most visitors last year?",
     sql: "SELECT month, SUM(visitors)\nFROM visitors_clean\nWHERE year = 2024\nGROUP BY month ORDER BY 2 DESC LIMIT 5;",
-    title: "Busiest months · 2024",
-    bars: [
-      ["August", 1.4],
-      ["July", 1.3],
-      ["December", 1.2],
-      ["June", 1.0],
-      ["October", 0.9],
-    ] as [string, number][],
+    values: [1.4, 1.3, 1.2, 1.0, 0.9],
   },
 ]
+type LakeAsk = { chip: string; q: string; title: string; labels: string[] }
 const lakeTiming = [1700, 1900, 600]
 
 export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
   const { ref, playing, reduce, compact } = usePlaying(active)
+  const t = useTranslations("platform.demos.lake")
+  const asks = t.raw("asks") as LakeAsk[]
   const [pick, setPick] = useState(0)
-  const a = lakeAsks[pick]
+  const a = {
+    ...asks[pick],
+    sql: lakeAsks[pick].sql,
+    bars: lakeAsks[pick].values.map(
+      (v, i) => [asks[pick].labels[i], v] as [string, number]
+    ),
+  }
   const step = useScript(lakeTiming, playing, `${pick}`, () =>
     setPick((v) => (v + 1) % lakeAsks.length)
   )
@@ -710,7 +708,7 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
           key={`sql-${pick}`}
         >
           <div className="flex items-center justify-between border-b border-black/[0.06] px-4 py-2.5 text-[12px] font-medium text-neutral-500">
-            Generated SQL
+            {t("sql")}
             {s === 1 ? (
               <Loader2 className="size-3.5 animate-spin" />
             ) : (
@@ -732,7 +730,7 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
           key={`chart-${pick}`}
         >
           <p className="text-[14px] font-medium">{a.title}</p>
-          <p className="text-[11px] text-neutral-500">Visitors (millions)</p>
+          <p className="text-[11px] text-neutral-500">{t("unit")}</p>
           <ul className="mt-4 space-y-2.5">
             {a.bars.map(([label, v], i) => (
               <li
@@ -749,7 +747,7 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
                   />
                 </span>
                 <span className="text-right text-neutral-500 tabular-nums">
-                  {v.toFixed(1)}M
+                  {t("value", { v })}
                 </span>
               </li>
             ))}
@@ -764,7 +762,9 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
           )}
           show={s >= 3}
         >
-          <p className="text-[12px] font-medium text-neutral-500">Lineage</p>
+          <p className="text-[12px] font-medium text-neutral-500">
+            {t("lineage")}
+          </p>
           <div className="mt-3 flex items-center gap-2 text-[11px]">
             {[
               [Database, "raw"],
@@ -785,7 +785,7 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
         </Card>
 
         <Chips
-          options={lakeAsks.map((x) => x.chip)}
+          options={asks.map((x) => x.chip)}
           value={pick}
           onPick={setPick}
         />
@@ -802,14 +802,14 @@ const llmRuns = [
   {
     chip: "support-assistant",
     data: "support-tickets.jsonl",
-    rows: "12,480 rows",
+    rows: 12480,
     base: 71,
     tuned: 89,
   },
   {
     chip: "contract-classifier",
     data: "contracts-labelled.jsonl",
-    rows: "8,215 rows",
+    rows: 8215,
     base: 64,
     tuned: 92,
   },
@@ -818,6 +818,8 @@ const llmTiming = [900, 2600, 1300, 900]
 
 export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
   const { ref, playing, reduce, compact } = usePlaying(active)
+  const t = useTranslations("platform.demos.llmops")
+  const steps = t.raw("steps") as string[]
   const [pick, setPick] = useState(0)
   const r = llmRuns[pick]
   const step = useScript(llmTiming, playing, `${pick}`, () =>
@@ -838,10 +840,10 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
         >
           <p className="flex items-center gap-2 text-[12px] font-medium text-neutral-500">
             <ProductTile id="llmops" className="size-5" logoClassName="h-3" />
-            Run · {r.chip}
+            {t("run", { name: r.chip })}
           </p>
           <ul className="mt-3 space-y-3">
-            {["Load dataset", "Fine-tune", "Evaluate", "Serve"].map((l, i) => (
+            {steps.map((l, i) => (
               <Step
                 key={l}
                 label={l}
@@ -858,7 +860,9 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           >
             <FileText className="size-3.5 text-[#8b5cf6]" />
             <span className="flex-1 truncate">{r.data}</span>
-            <span className="text-neutral-400">{r.rows}</span>
+            <span className="text-neutral-400">
+              {t("rows", { count: r.rows })}
+            </span>
           </div>
         </Card>
 
@@ -871,9 +875,11 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           key={`train-${pick}`}
         >
           <div className="flex items-baseline justify-between">
-            <p className="text-[14px] font-medium">Training loss</p>
+            <p className="text-[14px] font-medium">{t("loss")}</p>
             <p className="text-[11px] text-neutral-500">
-              {s >= 3 ? "Done · 3 epochs" : "Epoch 2 / 3"}
+              {s >= 3
+                ? t("done", { count: 3 })
+                : t("epoch", { n: 2, total: 3 })}
             </p>
           </div>
           <svg
@@ -917,16 +923,18 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           key={`eval-${pick}`}
         >
           <p className="text-[12px] font-medium text-neutral-500">
-            Eval · your test set
+            {t("eval")}
           </p>
           {[
-            ["Base model", r.base, "#cbd5e1"],
-            ["Fine-tuned", r.tuned, "#10b981"],
+            [t("base"), r.base, "#cbd5e1"],
+            [t("tuned"), r.tuned, "#10b981"],
           ].map(([l, v, c]) => (
             <div key={l as string} className="mt-3">
               <div className="flex justify-between text-[12px]">
                 <span>{l as string}</span>
-                <span className="tabular-nums">{v as number}%</span>
+                <span className="tabular-nums">
+                  {t("percent", { v: (v as number) / 100 })}
+                </span>
               </div>
               <div className="mt-1 h-2 overflow-hidden rounded-full bg-neutral-100">
                 <motion.div
@@ -949,10 +957,12 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           show={s >= 4}
         >
           <div className="flex items-center justify-between">
-            <p className="text-[12px] font-medium text-neutral-500">Endpoint</p>
+            <p className="text-[12px] font-medium text-neutral-500">
+              {t("endpoint")}
+            </p>
             <span className="flex items-center gap-1.5 text-[11px] text-[#10b981]">
               <span className="size-1.5 animate-pulse rounded-full bg-[#10b981]" />{" "}
-              Live
+              {t("live")}
             </span>
           </div>
           <p className="mt-2 rounded-lg bg-neutral-50 px-2.5 py-2 [font-family:ui-monospace,monospace] text-[11px] text-neutral-700">
@@ -964,7 +974,7 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
               compact && "hidden"
             )}
           >
-            OpenAI-compatible · on your GPUs
+            {t("compat")}
           </p>
         </Card>
 

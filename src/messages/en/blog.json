@@ -1,0 +1,61 @@
+{
+  "hero": {
+    "eyebrow": "Insights",
+    "title": "Notes from the\nRantAI team.",
+    "description": "Updates, releases, and insights on building AI that works in production."
+  },
+  "sections": {
+    "posts": "Posts"
+  },
+  "list": {
+    "filterLabel": "Filter by topic",
+    "all": "All",
+    "searchPlaceholder": "Search insights",
+    "searchLabel": "Search insights",
+    "clearSearch": "Clear search",
+    "results": "{count, plural, one {#{more} result} other {#{more} results}}",
+    "articles": "{count, plural, one {#{more} article} other {#{more} articles}}",
+    "emptySearch": "No articles found for “{query}”.",
+    "empty": "No articles published yet.",
+    "loading": "Loading",
+    "loadMore": "Load more"
+  },
+  "card": {
+    "readArticle": "Read article"
+  },
+  "article": {
+    "back": "All insights",
+    "minRead": "{count} min read",
+    "share": "Share",
+    "nextArticle": "Next article",
+    "onThisPage": "On this page",
+    "copy": "Copy",
+    "copied": "Copied",
+    "linkToSection": "Link to this section",
+    "cta": {
+      "title": "Want to learn more?",
+      "description": "Connect with our team to discuss how AI can transform your enterprise.",
+      "label": "Contact us",
+      "subject": "About: {title}"
+    }
+  },
+  "share": {
+    "copyLink": "Copy Link",
+    "copied": "Link copied!",
+    "x": "Share on X",
+    "linkedin": "Share on LinkedIn",
+    "threads": "Share on Threads",
+    "facebook": "Share on Facebook"
+  },
+  "notFound": {
+    "title": "Article not found",
+    "description": "This article may have been renamed, moved, or deleted.",
+    "browse": "Browse insights",
+    "home": "Back to home"
+  },
+  "visual": {
+    "openFolder": "Open folder",
+    "closeFolder": "Close folder",
+    "latest": "Latest from the team"
+  }
+}

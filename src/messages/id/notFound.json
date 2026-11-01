@@ -1,0 +1,30 @@
+{
+  "eyebrow": "Error 404",
+  "title": "Halaman ini\ntersesat.",
+  "description": "Tautannya mungkin usang atau halamannya sudah pindah. Biasanya yang dicari ada di sini.",
+  "home": "Kembali ke beranda",
+  "browse": "Lihat insights",
+  "tryThese": "Coba halaman ini",
+  "destinations": {
+    "products": {
+      "label": "Produk",
+      "line": "Agents, Claw, LLMOps, Lakehouse"
+    },
+    "services": {
+      "label": "Layanan",
+      "line": "Engineering dari awal hingga produksi"
+    },
+    "academy": {
+      "label": "Academy",
+      "line": "Buku dan kelas seputar pengembangan AI"
+    },
+    "blog": {
+      "label": "Insights",
+      "line": "Catatan dari tim RantAI"
+    },
+    "company": {
+      "label": "Perusahaan",
+      "line": "Orang-orang di balik RantAI"
+    }
+  }
+}

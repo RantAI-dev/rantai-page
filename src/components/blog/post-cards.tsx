@@ -1,17 +1,26 @@
 import Image from "next/image"
-import Link from "next/link"
+import { useLocale, useTranslations } from "next-intl"
+
+import { Link } from "@/i18n/navigation"
 
 import type { PostListItem } from "@/lib/blog/posts"
 import { cn } from "@/lib/utils"
 
-type PostCardData = Pick<PostListItem, "slug" | "title" | "tag" | "thumbnail" | "excerpt" | "date">
+type PostCardData = Pick<
+  PostListItem,
+  "slug" | "title" | "tag" | "thumbnail" | "excerpt" | "date"
+>
 
-export function formatPostDate(date: string) {
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  })
+/** "Oct 27, 2026" in English, "27 Okt 2026" in Indonesian. */
+export function formatPostDate(date: string, locale: string) {
+  return new Date(date).toLocaleDateString(
+    locale === "id" ? "id-ID" : "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  )
 }
 
 // Dot colour per tag colour preset (see lib/tag-colors).
@@ -28,7 +37,10 @@ export function tagDot(color?: string | null) {
   return (color && TAG_DOT[color]) || "#5cb6f9"
 }
 
-function TagLabel({ tag, className }: Readonly<{ tag: string; className?: string }>) {
+function TagLabel({
+  tag,
+  className,
+}: Readonly<{ tag: string; className?: string }>) {
   return (
     <span
       className={cn(
@@ -36,7 +48,11 @@ function TagLabel({ tag, className }: Readonly<{ tag: string; className?: string
         className
       )}
     >
-      <svg aria-hidden="true" viewBox="0 0 10 10" className="size-2 text-brand-1">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 10 10"
+        className="size-2 text-brand-1"
+      >
         <path d="M0 0h10v10z" fill="currentColor" />
       </svg>
       {tag}
@@ -50,12 +66,21 @@ function Meta({
   tagColor,
   className,
 }: Readonly<{ post: PostCardData; tagColor?: string; className?: string }>) {
+  const locale = useLocale()
   return (
-    <p className={cn("flex items-center gap-2 text-[13px] text-neutral-500", className)}>
-      <span className="size-1.5 shrink-0 rounded-full" style={{ background: tagDot(tagColor) }} />
+    <p
+      className={cn(
+        "flex items-center gap-2 text-[13px] text-neutral-500",
+        className
+      )}
+    >
+      <span
+        className="size-1.5 shrink-0 rounded-full"
+        style={{ background: tagDot(tagColor) }}
+      />
       <span className="font-medium text-neutral-700">{post.tag}</span>
       <span aria-hidden="true">·</span>
-      <time dateTime={post.date}>{formatPostDate(post.date)}</time>
+      <time dateTime={post.date}>{formatPostDate(post.date, locale)}</time>
     </p>
   )
 }
@@ -85,7 +110,9 @@ function Thumb({
           className="object-cover"
         />
       ) : (
-        <div className={cn("absolute inset-0 bg-gradient-to-br", fallbackGradient)} />
+        <div
+          className={cn("absolute inset-0 bg-gradient-to-br", fallbackGradient)}
+        />
       )}
       {/* A soft veil on hover, instead of zooming the image */}
       <span className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/[0.06]" />
@@ -98,7 +125,12 @@ export function FeaturedPostCard({
   post,
   showExcerpt = false,
   className,
-}: Readonly<{ post: PostCardData; showExcerpt?: boolean; className?: string }>) {
+}: Readonly<{
+  post: PostCardData
+  showExcerpt?: boolean
+  className?: string
+}>) {
+  const locale = useLocale()
   return (
     <Link
       href={`/blog/${post.slug}`}
@@ -130,7 +162,7 @@ export function FeaturedPostCard({
           </p>
         )}
         <p className="mt-4 text-xs font-medium tracking-[0.08em] text-white/50 uppercase">
-          {formatPostDate(post.date)}
+          {formatPostDate(post.date, locale)}
         </p>
       </div>
     </Link>
@@ -142,7 +174,12 @@ export function FeaturedPostSplit({
   post,
   tagColor,
   fallbackGradient = "from-neutral-800 to-neutral-950",
-}: Readonly<{ post: PostCardData; tagColor?: string; fallbackGradient?: string }>) {
+}: Readonly<{
+  post: PostCardData
+  tagColor?: string
+  fallbackGradient?: string
+}>) {
+  const t = useTranslations("blog.card")
   return (
     <Link
       href={`/blog/${post.slug}`}
@@ -164,7 +201,7 @@ export function FeaturedPostSplit({
           {post.excerpt}
         </p>
         <span className="mt-7 inline-flex items-center gap-2 text-[15px] font-medium text-neutral-950">
-          Read article
+          {t("readArticle")}
           <span
             aria-hidden="true"
             className="transition-transform duration-300 group-hover:translate-x-1"

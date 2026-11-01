@@ -10,99 +10,45 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Eyebrow } from "@/components/shared/eyebrow"
 import { SplitReveal } from "@/components/shared/split-reveal"
 import { cn } from "@/lib/utils"
 
+// Text for each card lives in messages/<locale>/platform.json under
+// `capabilities.items.<id>`; the product label is there too ("Services"
+// is translated, product names are not).
 type Capability = {
+  id: string
   icon: LucideIcon
-  title: string
-  body: string
-  product: string
+  /** One colour per capability, from the site's feature palette. */
+  tone: string
 }
 
 const rows: Capability[][] = [
   [
-    {
-      icon: DatabaseZap,
-      title: "Knowledge Base & RAG",
-      body: "Answers grounded in your documents and data",
-      product: "RantAI Agents",
-    },
-    {
-      icon: Bot,
-      title: "Agent Builder",
-      body: "Roles, tools, and guardrails for each agent",
-      product: "RantAI Agents",
-    },
-    {
-      icon: ScrollText,
-      title: "Artifacts",
-      body: "Reports, docs, and code from a conversation",
-      product: "RantAI Agents",
-    },
-    {
-      icon: Zap,
-      title: "Skills",
-      body: "Reusable capabilities shared across agents",
-      product: "RantAI Agents",
-    },
-    {
-      icon: Users,
-      title: "Forward Deployed Engineering",
-      body: "Engineers working inside your environment",
-      product: "Services",
-    },
+    { id: "rag", icon: DatabaseZap, tone: "#3b82f6" },
+    { id: "builder", icon: Bot, tone: "#8b5cf6" },
+    { id: "artifacts", icon: ScrollText, tone: "#f59e0b" },
+    { id: "skills", icon: Zap, tone: "#ec4899" },
+    { id: "fde", icon: Users, tone: "#10b981" },
   ],
   [
-    {
-      icon: Terminal,
-      title: "Terminal UI",
-      body: "Keyboard-driven sessions, no browser required",
-      product: "RantAI Claw",
-    },
-    {
-      icon: LayoutDashboard,
-      title: "Web Control UI",
-      body: "Sessions, channels, and memory in one view",
-      product: "RantAI Claw",
-    },
-    {
-      icon: Blocks,
-      title: "ClawHub skills",
-      body: "Installable skills from a shared catalog",
-      product: "RantAI Claw",
-    },
-    {
-      icon: Server,
-      title: "Self-hosted runtime",
-      body: "Runs on your own infrastructure",
-      product: "RantAI Claw",
-    },
+    { id: "tui", icon: Terminal, tone: "#0ea5e9" },
+    { id: "webui", icon: LayoutDashboard, tone: "#6366f1" },
+    { id: "clawhub", icon: Blocks, tone: "#f97316" },
+    { id: "selfHosted", icon: Server, tone: "#14b8a6" },
   ],
 ]
-
-// One colour per capability, from the site's feature palette.
-const tones: Record<string, string> = {
-  "Knowledge Base & RAG": "#3b82f6",
-  "Agent Builder": "#8b5cf6",
-  Artifacts: "#f59e0b",
-  Skills: "#ec4899",
-  "Forward Deployed Engineering": "#10b981",
-  "Terminal UI": "#0ea5e9",
-  "Web Control UI": "#6366f1",
-  "ClawHub skills": "#f97316",
-  "Self-hosted runtime": "#14b8a6",
-}
-const toneFor = (title: string) => tones[title] ?? "#64748b"
 
 function Card({
   item,
   duplicate,
 }: Readonly<{ item: Capability; duplicate: boolean }>) {
+  const t = useTranslations("platform.capabilities.items")
   const Icon = item.icon
-  const tone = toneFor(item.title)
+  const tone = item.tone
   return (
     <li
       aria-hidden={duplicate || undefined}
@@ -116,15 +62,15 @@ function Card({
           <Icon aria-hidden="true" className="size-5" strokeWidth={1.9} />
         </span>
         <span className="text-xs font-medium tracking-[0.08em] text-neutral-500 uppercase">
-          {item.product}
+          {t(`${item.id}.product`)}
         </span>
       </div>
       <div>
         <p className="text-lg font-medium tracking-[-0.02em] text-neutral-950">
-          {item.title}
+          {t(`${item.id}.title`)}
         </p>
         <p className="mt-1.5 text-[15px] leading-relaxed text-neutral-600">
-          {item.body}
+          {t(`${item.id}.body`)}
         </p>
       </div>
     </li>
@@ -145,7 +91,7 @@ function Row({
       >
         {[...items, ...items].map((item, index) => (
           <Card
-            key={`${item.title}-${index}`}
+            key={`${item.id}-${index}`}
             item={item}
             duplicate={index >= items.length}
           />
@@ -156,6 +102,7 @@ function Row({
 }
 
 export function CapabilityMarquee() {
+  const t = useTranslations("platform.capabilities")
   return (
     <section
       id="capabilities"
@@ -163,10 +110,10 @@ export function CapabilityMarquee() {
       className="py-24 lg:py-32"
     >
       <div className="mx-auto max-w-[1440px] px-5 sm:px-10 lg:px-14">
-        <Eyebrow className="text-neutral-500">Capabilities</Eyebrow>
+        <Eyebrow className="text-neutral-500">{t("eyebrow")}</Eyebrow>
         <SplitReveal
           id="capabilities-heading"
-          text="What you can build with RantAI."
+          text={t("title")}
           className="mt-5 max-w-3xl text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-balance text-neutral-950"
         />
       </div>

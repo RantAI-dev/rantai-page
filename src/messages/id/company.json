@@ -1,0 +1,42 @@
+{
+  "hero": {
+    "eyebrow": "Perusahaan",
+    "title": "Orang-orang\ndi balik RantAI.",
+    "description": "Engineer, peneliti, dan builder yang fokus memajukan AI enterprise."
+  },
+  "cta": {
+    "title": "Bangun bersama kami.",
+    "description": "Kami selalu senang bertemu engineer, peneliti, dan penulis yang suka menuntaskan pekerjaan.",
+    "label": "Gabung tim kami",
+    "subject": "Bergabung dengan RantAI"
+  },
+  "sections": {
+    "whoWeAre": "Tentang kami",
+    "team": "Tim"
+  },
+  "about": {
+    "eyebrow": "Tentang kami",
+    "title": "Tim kecil.\nSistem serius.",
+    "body": "Perusahaan AI asal Indonesia. Kami membuat produk, sistem, dan buku agar tim bisa menjalankan AI di produksi.",
+    "facts": {
+      "people": "Orang di tim kami",
+      "products": "Produk yang kami jalankan",
+      "books": "Buku yang kami tulis",
+      "partners": "Tim yang telah kami bantu"
+    }
+  },
+  "team": {
+    "eyebrow": "Tim",
+    "title": "Kenali tim\ndi balik RantAI.",
+    "filterLabel": "Grup tim",
+    "everyone": "Semua",
+    "groups": {
+      "leadership": "Pimpinan",
+      "research": "Riset & Data",
+      "engineering": "Engineering",
+      "writingOps": "Penulisan & Ops"
+    },
+    "onProfile": "{name} di {network}",
+    "notAdded": "{network} belum ditambahkan"
+  }
+}

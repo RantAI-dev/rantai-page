@@ -1,0 +1,218 @@
+{
+  "reel": {
+    "eyebrow": "Platform",
+    "title": "Products built to run in production.",
+    "visit": "Visit {name}",
+    "rail": "Products"
+  },
+  "products": {
+    "imageAlt": "{name} interface",
+    "agents": {
+      "layer": "Applications",
+      "tagline": "Deploy AI agents that handle real work, not just demos.",
+      "features": [
+        "Knowledge base & RAG",
+        "Agent builder",
+        "Artifacts",
+        "Skills"
+      ]
+    },
+    "claw": {
+      "layer": "Runtime",
+      "tagline": "A lightweight multi-agent runtime written in Rust.",
+      "features": ["Terminal UI", "Web control UI", "Skills & ClawHub"]
+    },
+    "llmops": {
+      "layer": "Models",
+      "tagline": "Fine-tune, evaluate, and serve models on hardware you control.",
+      "features": [
+        "Fine-tune through the UI",
+        "Evaluate on your own test set",
+        "OpenAI-compatible API"
+      ],
+      "flow": ["Dataset", "Fine-tune", "Evaluate", "Serve"]
+    },
+    "lake": {
+      "layer": "Data",
+      "tagline": "A sovereign, AI-native lakehouse from raw data to BI-ready insight.",
+      "features": [
+        "Runs on your infrastructure",
+        "AI-native",
+        "BI-ready output"
+      ],
+      "flow": ["Raw data", "Lakehouse", "BI-ready insight"]
+    }
+  },
+  "demos": {
+    "agents": {
+      "knowledge": "Knowledge",
+      "assistant": "HR Assistant",
+      "searching": "Searching {count} sources…",
+      "placeholder": "Ask anything about your documents…",
+      "artifact": "Artifact",
+      "prompts": [
+        {
+          "chip": "Leave policy",
+          "q": "How many leave days do new staff get?",
+          "a": "New staff get 12 days of annual leave in their first year, rising to 15 days after two years of service.",
+          "cite": "HR Policy 2026 · p.4"
+        },
+        {
+          "chip": "Procurement",
+          "q": "Summarise this month's procurement requests",
+          "a": "42 requests this month: 31 approved, 8 waiting on budget review, and 3 sent back for missing quotes.",
+          "cite": "Procurement log · Oct"
+        },
+        {
+          "chip": "Vendor reply",
+          "q": "Draft a reply to the vendor about the late delivery",
+          "a": "Drafted a reply citing clause 7.2 on delivery terms and proposing a revised date of 14 November.",
+          "cite": "Vendor contract · §7.2"
+        }
+      ]
+    },
+    "claw": {
+      "schedule": "Schedule",
+      "channels": "Channels",
+      "connected": "Connected",
+      "schedules": ["Weekdays · 08:00", "Every hour", "Fridays · 16:00"]
+    },
+    "lake": {
+      "sql": "Generated SQL",
+      "unit": "Visitors (millions)",
+      "value": "{v, number, ::.0}M",
+      "lineage": "Lineage",
+      "asks": [
+        {
+          "chip": "Top countries",
+          "q": "Which countries sent the most visitors in 2024?",
+          "title": "Top source countries · 2024",
+          "labels": ["Malaysia", "Singapore", "Australia", "China", "Japan"]
+        },
+        {
+          "chip": "Busiest months",
+          "q": "Which months had the most visitors last year?",
+          "title": "Busiest months · 2024",
+          "labels": ["August", "July", "December", "June", "October"]
+        }
+      ]
+    },
+    "llmops": {
+      "run": "Run · {name}",
+      "steps": ["Load dataset", "Fine-tune", "Evaluate", "Serve"],
+      "rows": "{count, number} rows",
+      "loss": "Training loss",
+      "done": "Done · {count} epochs",
+      "epoch": "Epoch {n} / {total}",
+      "eval": "Eval · your test set",
+      "base": "Base model",
+      "tuned": "Fine-tuned",
+      "percent": "{v, number, percent}",
+      "endpoint": "Endpoint",
+      "live": "Live",
+      "compat": "OpenAI-compatible · on your GPUs"
+    }
+  },
+  "journey": {
+    "eyebrow": "How it fits together",
+    "title": "One request, four products.",
+    "open": "Open {name}",
+    "stops": {
+      "sources": {
+        "name": "Your data",
+        "line": "Visitor data sits in three different systems."
+      },
+      "lake": {
+        "name": "RantAI Lakehouse",
+        "line": "Lakehouse brings it into one clean table."
+      },
+      "llmops": {
+        "name": "RantAI LLMOps",
+        "line": "LLMOps tunes a model on your numbers."
+      },
+      "claw": {
+        "name": "RantAI Claw",
+        "line": "Claw runs the report every month."
+      },
+      "agents": {
+        "name": "RantAI Agents",
+        "line": "Agents answers your team in seconds."
+      }
+    },
+    "scenes": {
+      "sources": {
+        "hotel": "Hotel bookings",
+        "notConnected": "Not connected"
+      },
+      "lake": {
+        "countries": ["Malaysia", "Singapore", "Australia", "China"],
+        "value": "{v, number, ::.00}M",
+        "merged": "{count} sources merged"
+      },
+      "llmops": {
+        "loss": "Training loss",
+        "accuracy": "Accuracy",
+        "percent": "{v, number, percent}",
+        "testSet": "on your test set"
+      },
+      "claw": {
+        "schedule": "Every 1st · 07:00"
+      },
+      "agents": {
+        "question": "How did visitors change this month?",
+        "answer": "Up <b>12%</b> on last month, led by Malaysia and Singapore."
+      }
+    }
+  },
+  "capabilities": {
+    "eyebrow": "Capabilities",
+    "title": "What you can build with RantAI.",
+    "items": {
+      "rag": {
+        "title": "Knowledge Base & RAG",
+        "body": "Answers grounded in your documents and data",
+        "product": "RantAI Agents"
+      },
+      "builder": {
+        "title": "Agent Builder",
+        "body": "Roles, tools, and guardrails for each agent",
+        "product": "RantAI Agents"
+      },
+      "artifacts": {
+        "title": "Artifacts",
+        "body": "Reports, docs, and code from a conversation",
+        "product": "RantAI Agents"
+      },
+      "skills": {
+        "title": "Skills",
+        "body": "Reusable capabilities shared across agents",
+        "product": "RantAI Agents"
+      },
+      "fde": {
+        "title": "Forward Deployed Engineering",
+        "body": "Engineers working inside your environment",
+        "product": "Services"
+      },
+      "tui": {
+        "title": "Terminal UI",
+        "body": "Keyboard-driven sessions, no browser required",
+        "product": "RantAI Claw"
+      },
+      "webui": {
+        "title": "Web Control UI",
+        "body": "Sessions, channels, and memory in one view",
+        "product": "RantAI Claw"
+      },
+      "clawhub": {
+        "title": "ClawHub skills",
+        "body": "Installable skills from a shared catalog",
+        "product": "RantAI Claw"
+      },
+      "selfHosted": {
+        "title": "Self-hosted runtime",
+        "body": "Runs on your own infrastructure",
+        "product": "RantAI Claw"
+      }
+    }
+  }
+}

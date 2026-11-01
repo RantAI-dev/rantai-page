@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "products": "Produk",
+    "services": "Layanan",
+    "academy": "Academy",
+    "insights": "Insights",
+    "company": "Perusahaan",
+    "contactUs": "Hubungi kami",
+    "home": "Beranda RantAI",
+    "main": "Navigasi utama",
+    "mobile": "Navigasi seluler",
+    "open": "Buka navigasi",
+    "sheetTitle": "Navigasi",
+    "sheetDescription": "Lihat produk dan profil perusahaan RantAI."
+  },
+  "language": {
+    "label": "Bahasa",
+    "en": "English",
+    "id": "Bahasa Indonesia",
+    "short": {
+      "en": "EN",
+      "id": "ID"
+    },
+    "switchTo": "Ganti ke {language}"
+  },
+  "shell": {
+    "skipToContent": "Langsung ke konten",
+    "announcement": "Pengumuman"
+  },
+  "footer": {
+    "tagline": "AI agent, platform data, dan tim engineering untuk enterprise dan pemerintah, siap pakai di produksi.",
+    "products": "Produk",
+    "services": "Layanan",
+    "company": "Perusahaan",
+    "fde": "Forward Deployed Engineering",
+    "softwareEngineering": "Software Engineering",
+    "aiEngineering": "AI Engineering",
+    "team": "Tim",
+    "academy": "Academy",
+    "insights": "Insights",
+    "contact": "Kontak",
+    "email": "Email {email}",
+    "nav": "Footer",
+    "rights": "Hak cipta dilindungi",
+    "backToTop": "Kembali ke atas",
+    "exploreServices": "Atau lihat layanan kami",
+    "cta": {
+      "eyebrow": "Mulai dari satu workflow",
+      "title": "Tugas apa yang ingin Anda alihkan ke AI?",
+      "label": "Bicara dengan tim kami",
+      "subject": "Workflow untuk RantAI"
+    },
+    "prompt": {
+      "label": "Ceritakan workflow yang ingin Anda ubah",
+      "opening": "Membuka aplikasi email dengan pesan ini",
+      "examples": [
+        "Jawab pertanyaan staf soal aturan HR",
+        "Catat invoice masuk ke ERP kami",
+        "Ringkas laporan warga per kecamatan",
+        "Susun dokumen tender dari proyek lama"
+      ]
+    },
+    "home": "Beranda RantAI"
+  }
+}
