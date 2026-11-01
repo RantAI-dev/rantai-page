@@ -28,7 +28,21 @@ export function slugifyHeading(text: string) {
  * (the page already shows the title), gives every h2/h3 a stable id so it can
  * be linked to, and returns those headings for the table of contents.
  */
-export function prepareArticle(html: string): {
+/** Text the article markup adds, in the page's language. */
+export type ArticleLabels = { copy: string; linkToSection: string }
+
+const englishLabels: ArticleLabels = {
+  copy: "Copy",
+  linkToSection: "Link to this section",
+}
+
+const escapeAttr = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;")
+
+export function prepareArticle(
+  html: string,
+  labels: ArticleLabels = englishLabels
+): {
   html: string
   headings: ArticleHeading[]
 } {
@@ -51,11 +65,11 @@ export function prepareArticle(html: string): {
       }
       headings.push({ id, text, level: Number(lvl) as 2 | 3 })
       const rest = existing ? attrs : `${attrs} id="${id}"`
-      return `<h${lvl}${rest}>${inner}<a href="#${id}" class="heading-anchor" aria-label="Link to this section">#</a></h${lvl}>`
+      return `<h${lvl}${rest}>${inner}<a href="#${id}" class="heading-anchor" aria-label="${escapeAttr(labels.linkToSection)}">#</a></h${lvl}>`
     }
   )
 
-  return { html: wrapCodeBlocks(out), headings }
+  return { html: wrapCodeBlocks(out, labels.copy), headings }
 }
 
 const LANGS: Record<string, string> = {
@@ -95,13 +109,13 @@ export function languageLabel(lang?: string) {
 }
 
 /** Wraps each <pre> in a frame with its language and a copy button. */
-function wrapCodeBlocks(html: string) {
+function wrapCodeBlocks(html: string, copy: string) {
   return html.replace(/<pre\b[^>]*>[\s\S]*?<\/pre>/gi, (pre) => {
     const lang = /class\s*=\s*["'][^"']*\blanguage-([\w+#-]+)/i.exec(pre)?.[1]
     return (
       `<div class="code-frame not-prose">` +
       `<div class="code-head"><span>${languageLabel(lang)}</span>` +
-      `<button type="button" class="code-copy" data-copy>Copy</button></div>` +
+      `<button type="button" class="code-copy" data-copy>${escapeAttr(copy)}</button></div>` +
       `${pre}</div>`
     )
   })

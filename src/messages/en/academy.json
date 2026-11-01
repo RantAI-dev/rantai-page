@@ -1,0 +1,82 @@
+{
+  "hero": {
+    "eyebrow": "Academy",
+    "title": "Learn to build\nwith AI.",
+    "description": "Books, classes, and hands-on resources built for scientists and engineers."
+  },
+  "cta": {
+    "title": "RantAI Academy for Enterprises",
+    "description": "Custom books for scientists and engineers — with ready-to-use GenAI prompts, real use cases, and proven code.",
+    "label": "Contact us",
+    "subject": "RantAI Academy for Enterprises",
+    "prompts": [
+      "Train our engineers to build with GenAI",
+      "A custom book for our data science team",
+      "Hands-on prompt engineering for our analysts"
+    ]
+  },
+  "sections": {
+    "library": "Library",
+    "forTeams": "For teams"
+  },
+  "library": {
+    "searchPlaceholder": "Search by code or title",
+    "searchLabel": "Search books",
+    "clearSearch": "Clear search",
+    "count": "{shown} of {total} books",
+    "layout": "Layout",
+    "grid": "Grid view",
+    "list": "List view",
+    "categories": "Book categories",
+    "all": "All",
+    "read": "Read the book",
+    "comingSoon": "Coming soon",
+    "emptyTitle": "No books found",
+    "emptyBody": "Try another search or category.",
+    "clearFilters": "Clear filters"
+  },
+  "forTeams": {
+    "eyebrow": "For teams",
+    "title": "Bring the Academy\nto your team.",
+    "offers": {
+      "book": {
+        "title": "A book written for you",
+        "line": "Built on your data, your stack, your use cases.",
+        "subject": "A custom RantAI Academy book"
+      },
+      "classes": {
+        "title": "Classes for your engineers",
+        "line": "Hands-on cohorts, from prompting to agents.",
+        "subject": "RantAI Academy classes"
+      },
+      "library": {
+        "title": "The library for the team",
+        "line": "One licence: every book, every new edition.",
+        "subject": "RantAI Academy team licence"
+      }
+    },
+    "visual": {
+      "bookTitle1": "GenAI for",
+      "bookTitle2": "Your Company",
+      "bookSub": "Your data · your use cases",
+      "cohort": "Hands-on cohort",
+      "days": [
+        {
+          "day": "Mon",
+          "topic": "Prompting basics"
+        },
+        {
+          "day": "Wed",
+          "topic": "RAG on your docs"
+        },
+        {
+          "day": "Fri",
+          "topic": "Build an agent"
+        }
+      ],
+      "licence": "Team licence",
+      "seats": "24 / 25 seats",
+      "everyBook": "Every book, every update"
+    }
+  }
+}

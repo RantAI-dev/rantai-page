@@ -1,8 +1,10 @@
+import { getTranslations } from "next-intl/server"
+
 import { Footer, type FooterCta } from "@/components/layout/footer"
 import { Navbar } from "@/components/layout/navbar"
 import { SmoothScroll } from "@/components/layout/smooth-scroll"
 
-export function SiteShell({
+export async function SiteShell({
   children,
   announcement,
   cta,
@@ -11,6 +13,7 @@ export function SiteShell({
   announcement?: React.ReactNode
   cta?: FooterCta
 }>) {
+  const t = await getTranslations("common.shell")
   return (
     // overflow-x: clip keeps any element that runs too wide from widening the
     // page on phones (which zooms the layout out and breaks fixed menus).
@@ -23,9 +26,11 @@ export function SiteShell({
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:rounded-full focus:bg-neutral-950 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
       >
-        Skip to content
+        {t("skipToContent")}
       </a>
-      {announcement && <aside aria-label="Announcement">{announcement}</aside>}
+      {announcement && (
+        <aside aria-label={t("announcement")}>{announcement}</aside>
+      )}
       <Navbar />
       <main id="main" tabIndex={-1} className="outline-none">
         {children}

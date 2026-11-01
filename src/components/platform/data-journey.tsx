@@ -25,6 +25,7 @@ import {
   Terminal,
   type LucideIcon,
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Eyebrow } from "@/components/shared/eyebrow"
 import { SplitReveal } from "@/components/shared/split-reveal"
@@ -40,12 +41,11 @@ import { cn } from "@/lib/utils"
 
 const ease = [0.22, 1, 0.36, 1] as const
 
+// Each stop's name and line come from messages (platform.journey.stops.<id>).
 type Stop = {
-  id: string
-  name: string
+  id: "sources" | "lake" | "llmops" | "claw" | "agents"
   icon: LucideIcon
   tone: string
-  line: string
   /** The product's own logo, on its own tile colour, where one exists. */
   logo?: { src: string; bg: string }
 }
@@ -53,42 +53,32 @@ type Stop = {
 const stops: Stop[] = [
   {
     id: "sources",
-    name: "Your data",
     icon: Server,
     tone: "#737373",
-    line: "Visitor data sits in three different systems.",
   },
   {
     id: "lake",
-    name: "RantAI Lakehouse",
     icon: Database,
     tone: "#14b8a6",
     logo: { src: logoSrc("lake"), bg: "#ffffff" },
-    line: "Lakehouse brings it into one clean table.",
   },
   {
     id: "llmops",
-    name: "RantAI LLMOps",
     icon: BrainCircuit,
     tone: "#8b5cf6",
     logo: { src: logoSrc("llmops"), bg: "#ffffff" },
-    line: "LLMOps tunes a model on your numbers.",
   },
   {
     id: "claw",
-    name: "RantAI Claw",
     icon: Terminal,
     tone: "#f97316",
     logo: { src: logoSrc("claw"), bg: "#ffffff" },
-    line: "Claw runs the report every month.",
   },
   {
     id: "agents",
-    name: "RantAI Agents",
     icon: Bot,
     tone: "#3b82f6",
     logo: { src: logoSrc("agents"), bg: "#ffffff" },
-    line: "Agents answers your team in seconds.",
   },
 ]
 
@@ -96,6 +86,7 @@ const stops: Stop[] = [
 const appHref = Object.fromEntries(products.map((p) => [p.id, p.href]))
 
 function OpenApp({ stop }: Readonly<{ stop: Stop }>) {
+  const t = useTranslations("platform.journey")
   const href = appHref[stop.id]
   if (!href) return null
   return (
@@ -121,7 +112,7 @@ function OpenApp({ stop }: Readonly<{ stop: Stop }>) {
           <stop.icon className="size-3" />
         )}
       </span>
-      Open {stop.name}
+      {t("open", { name: t(`stops.${stop.id}.name`) })}
       <ArrowUpRight className="size-3.5 text-neutral-400 transition-colors group-hover:text-neutral-900" />
     </a>
   )
@@ -156,6 +147,7 @@ function Rise({
 }
 
 function SourcesScene() {
+  const t = useTranslations("platform.journey.scenes.sources")
   const items = [
     {
       icon: Database,
@@ -169,7 +161,7 @@ function SourcesScene() {
       meta: "Excel",
       tone: "#10b981",
     },
-    { icon: Globe, label: "Hotel bookings", meta: "REST API", tone: "#f59e0b" },
+    { icon: Globe, label: t("hotel"), meta: "REST API", tone: "#f59e0b" },
   ]
   return (
     <div className="grid w-full max-w-[520px] gap-3">
@@ -192,7 +184,7 @@ function SourcesScene() {
             </span>
           </span>
           <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] text-neutral-500">
-            Not connected
+            {t("notConnected")}
           </span>
         </Rise>
       ))}
@@ -201,18 +193,23 @@ function SourcesScene() {
 }
 
 function LakeScene() {
-  const rows = [
-    ["Malaysia", "1.61M", 100],
-    ["Singapore", "1.48M", 92],
-    ["Australia", "1.19M", 74],
-    ["China", "0.98M", 61],
-  ] as const
+  const t = useTranslations("platform.journey.scenes.lake")
+  const countries = t.raw("countries") as string[]
+  const rows = (
+    [
+      [1.61, 100],
+      [1.48, 92],
+      [1.19, 74],
+      [0.98, 61],
+    ] as const
+  ).map(([v, w], i) => [countries[i], t("value", { v }), w] as const)
   return (
     <Rise className={cn(card, "w-full max-w-[560px] overflow-hidden")}>
       <div className="flex items-center justify-between border-b border-black/[0.06] px-5 py-3">
         <span className="text-[13px] font-medium">visitors_clean</span>
         <span className="flex items-center gap-1.5 text-[11px] text-[#0f766e]">
-          <Check className="size-3.5" strokeWidth={3} /> 3 sources merged
+          <Check className="size-3.5" strokeWidth={3} />{" "}
+          {t("merged", { count: 3 })}
         </span>
       </div>
       <ul className="divide-y divide-black/[0.05]">
@@ -241,10 +238,11 @@ function LakeScene() {
 }
 
 function LlmopsScene() {
+  const t = useTranslations("platform.journey.scenes.llmops")
   return (
     <div className="grid w-full max-w-[560px] grid-cols-[1.4fr_1fr] gap-3">
       <Rise className={cn(card, "p-5")}>
-        <p className="text-[12px] text-neutral-500">Training loss</p>
+        <p className="text-[12px] text-neutral-500">{t("loss")}</p>
         <svg
           viewBox="0 0 200 90"
           className="mt-3 h-[130px] w-full overflow-visible"
@@ -275,15 +273,15 @@ function LlmopsScene() {
         delay={0.15}
         className={cn(card, "flex flex-col justify-between p-5")}
       >
-        <p className="text-[12px] text-neutral-500">Accuracy</p>
+        <p className="text-[12px] text-neutral-500">{t("accuracy")}</p>
         <div>
           <p className="text-[13px] text-neutral-400 tabular-nums line-through">
-            71%
+            {t("percent", { v: 0.71 })}
           </p>
           <p className="text-[40px] leading-none font-medium tracking-[-0.03em] text-[#7c3aed] tabular-nums">
-            89%
+            {t("percent", { v: 0.89 })}
           </p>
-          <p className="mt-1 text-[11px] text-neutral-500">on your test set</p>
+          <p className="mt-1 text-[11px] text-neutral-500">{t("testSet")}</p>
         </div>
       </Rise>
     </div>
@@ -291,6 +289,7 @@ function LlmopsScene() {
 }
 
 function ClawScene() {
+  const t = useTranslations("platform.journey.scenes.claw")
   const lines = [
     "query visitors_clean",
     "summarise with tourism-model",
@@ -306,7 +305,7 @@ function ClawScene() {
           ))}
         </span>
         <span className="rounded-full bg-[#f97316]/15 px-2.5 py-0.5 text-[11px] text-[#fdba74]">
-          Every 1st · 07:00
+          {t("schedule")}
         </span>
       </div>
       <div className="space-y-2 p-5 [font-family:ui-monospace,monospace] text-[13px]">
@@ -331,10 +330,11 @@ function ClawScene() {
 }
 
 function AgentsScene() {
+  const t = useTranslations("platform.journey.scenes.agents")
   return (
     <Rise className={cn(card, "w-full max-w-[560px] p-5")}>
       <p className="ml-auto w-fit rounded-2xl rounded-br-md bg-neutral-100 px-4 py-2.5 text-[14px]">
-        How did visitors change this month?
+        {t("question")}
       </p>
       <motion.div
         initial={{ opacity: 0 }}
@@ -347,8 +347,11 @@ function AgentsScene() {
         </span>
         <div className="flex-1">
           <p className="text-[14px] leading-relaxed">
-            Up <span className="font-medium text-[#047857]">12%</span> on last
-            month, led by Malaysia and Singapore.
+            {t.rich("answer", {
+              b: (chunks) => (
+                <span className="font-medium text-[#047857]">{chunks}</span>
+              ),
+            })}
           </p>
           <div className="mt-3 flex h-16 items-end gap-1.5">
             {[30, 38, 36, 50, 58, 70, 100].map((h, i) => (
@@ -390,6 +393,7 @@ function Route({
   progress?: MotionValue<number>
   onPick: (i: number) => void
 }>) {
+  const t = useTranslations("platform.journey")
   const reduce = useReducedMotion()
   const n = stops.length
   // The line fills with the scroll itself and reaches stop i exactly when
@@ -499,7 +503,7 @@ function Route({
                       : "text-neutral-500 group-hover:text-neutral-800"
                   )}
                 >
-                  {s.name}
+                  {t(`stops.${s.id}.name`)}
                 </span>
               </button>
             </li>
@@ -511,12 +515,13 @@ function Route({
 }
 
 function Header() {
+  const t = useTranslations("platform.journey")
   return (
     <div className="mx-auto max-w-3xl text-center">
-      <Eyebrow className="text-neutral-500">How it fits together</Eyebrow>
+      <Eyebrow className="text-neutral-500">{t("eyebrow")}</Eyebrow>
       <SplitReveal
         id="journey-heading"
-        text="One request, four products."
+        text={t("title")}
         className="mt-5 text-[clamp(2.25rem,4.6vw,4.25rem)] leading-[1] font-medium tracking-[-0.045em] text-balance text-neutral-950"
       />
     </div>
@@ -525,6 +530,7 @@ function Header() {
 
 /** Desktop: pinned, scroll moves the request from stop to stop. */
 function PinnedJourney() {
+  const t = useTranslations("platform.journey")
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -586,7 +592,7 @@ function PinnedJourney() {
             className="flex min-h-[72px] flex-col items-center gap-3"
           >
             <p className="text-center text-[clamp(1.1rem,1.6vw,1.4rem)] font-medium tracking-[-0.015em] text-neutral-900">
-              {stop.line}
+              {t(`stops.${stop.id}.line`)}
             </p>
             <OpenApp stop={stop} />
           </motion.div>
@@ -598,6 +604,7 @@ function PinnedJourney() {
 
 /** Phones, tablets and reduced motion: the stops as a list. */
 function StackedJourney() {
+  const t = useTranslations("platform.journey")
   return (
     <div className="px-5 py-24 sm:px-10">
       <Header />
@@ -615,10 +622,10 @@ function StackedJourney() {
                 </span>
                 <span>
                   <span className="block text-xs font-medium tracking-[0.08em] text-neutral-500 uppercase">
-                    {String(i + 1).padStart(2, "0")} · {s.name}
+                    {String(i + 1).padStart(2, "0")} · {t(`stops.${s.id}.name`)}
                   </span>
                   <span className="block text-[17px] font-medium text-neutral-900">
-                    {s.line}
+                    {t(`stops.${s.id}.line`)}
                   </span>
                 </span>
               </div>

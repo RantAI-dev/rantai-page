@@ -1,0 +1,49 @@
+import { Eyebrow } from "@/components/shared/eyebrow"
+import { SplitReveal } from "@/components/shared/split-reveal"
+import { MotionInView } from "@/components/shared/motion-in-view"
+import { PillLink } from "@/components/shared/pill-link"
+import { FeaturedPostCard, PostCard } from "@/components/blog/post-cards"
+import { getTranslations } from "next-intl/server"
+
+import { getPosts } from "@/lib/blog/posts"
+
+export async function HomeInsights() {
+  const t = await getTranslations("home.insights")
+  const { posts } = await getPosts({ limit: 5 })
+
+  if (posts.length === 0) return null
+
+  const [featured, ...rest] = posts
+
+  return (
+    <section
+      id="insights"
+      aria-labelledby="insights-heading"
+      className="mx-auto max-w-[1440px] px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
+    >
+      <MotionInView className="flex flex-col gap-6 border-t border-border pt-16 sm:flex-row sm:items-end sm:justify-between lg:pt-24">
+        <div>
+          <Eyebrow className="text-muted-foreground">{t("eyebrow")}</Eyebrow>
+          <SplitReveal
+            id="insights-heading"
+            text={t("title")}
+            className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em]"
+          />
+        </div>
+        <PillLink href="/blog" variant="outline">
+          {t("viewAll")}
+        </PillLink>
+      </MotionInView>
+
+      <MotionInView className="mt-12 grid gap-x-3 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
+        <FeaturedPostCard
+          post={featured}
+          className="lg:col-span-2 lg:row-span-2"
+        />
+        {rest.map((post) => (
+          <PostCard key={post.slug} post={post} />
+        ))}
+      </MotionInView>
+    </section>
+  )
+}

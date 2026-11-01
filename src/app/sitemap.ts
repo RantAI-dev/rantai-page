@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next"
 
 import { getAllPosts } from "@/lib/blog/posts"
 import { siteConfig } from "@/lib/config"
+import { languageAlternates } from "@/i18n/paths"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = ["", "/products", "/services", "/academy", "/blog", "/our-team"]
@@ -9,8 +10,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const latest = posts[0]?.date
 
   return [
+    // Each page once, with its Indonesian version as an hreflang alternate.
     ...pages.map((path) => ({
       url: `${siteConfig.url}${path}`,
+      alternates: {
+        languages: Object.fromEntries(
+          Object.entries(languageAlternates(path || "/")).map(([l, p]) => [
+            l,
+            `${siteConfig.url}${p === "/" ? "" : p}`,
+          ])
+        ),
+      },
       lastModified: path === "/blog" && latest ? new Date(latest) : undefined,
       changeFrequency:
         path === "/blog" ? ("weekly" as const) : ("monthly" as const),

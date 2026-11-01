@@ -9,10 +9,14 @@ Where code goes:
 ```
 src/
   app/                    routes only (URLs never depend on folder moves)
-    page.tsx              home; its sections in app/_components/home/
-    <route>/page.tsx      a public page
-    <route>/_components/  components used by that page only
-    admin/  api/  login/  CMS, route handlers, sign-in
+    [locale]/             the public site, once per language (see Internationalization)
+      layout.tsx          root layout: <html lang>, messages
+      page.tsx            home; its sections in [locale]/_components/home/
+      <route>/page.tsx    a public page
+      <route>/_components/  components used by that page only
+    (cms)/                admin, login and previews: own root layout, English only
+    api/                  route handlers
+    sitemap.ts robots.ts rss.xml/
   components/
     layout/    site chrome: navbar, footer, site-shell, section-nav, smooth-scroll
     shared/    building blocks used by several pages: page-hero, eyebrow, pill-link…
@@ -25,11 +29,25 @@ src/
     blog/      posts queries, dates, slugs, publishing, article HTML, tag colours
     data-table/  table config, types, parsers, helpers
     db/        Drizzle schema and client
+  i18n/        next-intl setup: routing, navigation, request config, paths
+  messages/    UI text: messages/<locale>/<namespace>.json
 ```
 
 - Used by one page: put it in that route's `_components/`. Used by two or more: move it to `src/components/<role>/`.
 - Import your own `_components` relatively (`./_components/x`); import everything else through `@/`. Pages never import another page's `_components`.
 - File names are kebab-case (`team-grid.tsx`, `use-media-query.ts`).
+
+## Internationalization
+
+The public site is in English and Indonesian, with [next-intl](https://next-intl.dev). English lives at the root (`/products`), Indonesian under `/id` (`/id/products`). The CMS (`app/(cms)`) is English only.
+
+- **No hard-coded UI text in public pages.** Put it in `src/messages/en/<namespace>.json` and the same key in `src/messages/id/<namespace>.json`; both files must have the same keys. Namespaces: `common` (navbar, footer, shell), `metadata` (titles, descriptions, preview cards), one per page area (`home`, `platform`, `products`, `services`, `academy`, `blog`, `company`, `notFound`). A new namespace must also be added to the list in `src/i18n/request.ts`.
+- **Reading text.** Server components: `await getTranslations("ns")` from `next-intl/server`. Client components: `useTranslations("ns")` from `next-intl`. Keep icons, colours, ids and links in code, and only text in messages (`t.raw` for arrays).
+- **New public page.** Create it under `app/[locale]/`, call `setRequestLocale(locale)` at the top of the page (keeps it static), export `generateMetadata` using `pageMetadata({ locale, page, path })` from `@/lib/seo`, and add its title and description to `metadata.json` in both languages. Add it to `src/app/sitemap.ts`.
+- **Links.** Use `Link`, `redirect`, `usePathname` and `useRouter` from `@/i18n/navigation`, not `next/link` or `next/navigation`, so links keep the visitor's language.
+- **Not translated.** Brand and product names (RantAI, RantAI Agents/Claw/LLMOps/Lakehouse, Academy, Insights) and CMS content from the database (posts, books, team names and roles). Articles are English for now, so `/id/blog/...` sets its canonical URL to the English page.
+- **Indonesian style.** Professional and concise, natural rather than literal, and the reader is "Anda". Keep tech terms Indonesians use in English (AI, deploy, workflow, dashboard). Write it as if the page were made for Indonesian readers: the same information as the English, not a word-for-word translation. Indonesian runs longer, so shorten or rephrase until headings and descriptions stay within two lines on desktop and phone, and no more lines than the English.
+- **Language choice.** Visitors are never redirected by browser language. An Indonesian browser on the English site sees a small "Tersedia dalam Bahasa Indonesia" offer (`components/layout/language-suggestion.tsx`); the navbar has an EN · ID switch.
 
 ## Build, Test, and Development Commands
 

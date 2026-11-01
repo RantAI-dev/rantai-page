@@ -10,6 +10,7 @@ import {
   type MotionValue,
 } from "motion/react"
 import { ArrowUpRight } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Eyebrow } from "@/components/shared/eyebrow"
 import { smoothScrollTo } from "@/components/layout/smooth-scroll"
@@ -18,7 +19,11 @@ import { ProductLogo, productIdFrom } from "@/components/shared/product-logo"
 import { cn } from "@/lib/utils"
 
 import { demos } from "@/components/platform/demos"
-import { Media, products, type Product } from "@/components/platform/products"
+import {
+  Media,
+  useProducts,
+  type Product,
+} from "@/components/platform/products"
 import { PanelScene } from "@/components/platform/scenes"
 
 /** In-page anchors other sections link to, by product. */
@@ -30,10 +35,6 @@ const anchors: Record<string, string> = {
 }
 
 type Intro = { eyebrow: string; title: string }
-const defaultIntro: Intro = {
-  eyebrow: "Platform",
-  title: "Products built to run in production.",
-}
 
 function PlatformIntro({ intro }: Readonly<{ intro: Intro }>) {
   return (
@@ -100,6 +101,7 @@ function useIsDesktop() {
 
 /** Primary pill to the product site, with a light sweep on hover. */
 function VisitButton({ product }: Readonly<{ product: Product }>) {
+  const t = useTranslations("platform.reel")
   return (
     <a
       href={product.href}
@@ -107,7 +109,7 @@ function VisitButton({ product }: Readonly<{ product: Product }>) {
       rel="noopener noreferrer"
       className="group relative inline-flex h-12 items-center gap-3 overflow-hidden rounded-full bg-white pr-1.5 pl-5 text-[15px] font-medium text-black transition-colors before:pointer-events-none before:absolute before:inset-y-0 before:-left-1/2 before:w-1/2 before:-skew-x-12 before:bg-linear-to-r before:from-transparent before:via-black/10 before:to-transparent before:transition-transform before:duration-700 hover:bg-white/90 hover:before:translate-x-[300%] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1 motion-reduce:before:hidden"
     >
-      Visit {product.name}
+      {t("visit", { name: product.name })}
       <span className="grid size-9 place-items-center rounded-full bg-black text-white transition-transform duration-300 group-hover:rotate-45">
         <ArrowUpRight className="size-4" aria-hidden="true" />
       </span>
@@ -308,6 +310,8 @@ function holdCentre(i: number, n: number) {
 }
 
 function DesktopReel({ intro }: Readonly<{ intro: Intro }>) {
+  const t = useTranslations("platform.reel")
+  const products = useProducts()
   const ref = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const progress = useStickyProgress(ref)
@@ -385,7 +389,7 @@ function DesktopReel({ intro }: Readonly<{ intro: Intro }>) {
         >
           {/* Product rail: where you are, and a shortcut to each panel */}
           <nav
-            aria-label="Products"
+            aria-label={t("rail")}
             className="flex items-center gap-1 px-14 pt-2 pb-4"
           >
             {products.map((p, i) => {
@@ -439,6 +443,7 @@ function DesktopReel({ intro }: Readonly<{ intro: Intro }>) {
 
 /** Phones, tablets and reduced motion get a plain vertical list. */
 function StackedReel({ intro }: Readonly<{ intro: Intro }>) {
+  const products = useProducts()
   return (
     <div className="px-5 py-20 sm:px-10">
       <PlatformIntro intro={intro} />
@@ -468,8 +473,10 @@ function StackedReel({ intro }: Readonly<{ intro: Intro }>) {
  * by vertical scroll (desktop), or stacked (phones, reduced motion).
  */
 export function PlatformReel({
-  intro = defaultIntro,
+  intro: introProp,
 }: Readonly<{ intro?: Intro }>) {
+  const t = useTranslations("platform.reel")
+  const intro = introProp ?? { eyebrow: t("eyebrow"), title: t("title") }
   const desktop = useIsDesktop()
   const reduce = useReducedMotion()
   return desktop && !reduce ? (

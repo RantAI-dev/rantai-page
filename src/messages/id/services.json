@@ -1,0 +1,304 @@
+{
+  "sections": {
+    "whatWeDo": "Yang kami bantu",
+    "howWeWork": "Cara kerja kami",
+    "proof": "Bukti",
+    "whyRantai": "Kenapa RantAI"
+  },
+  "cta": {
+    "title": "Tinggalkan software lambat dan rapuh.",
+    "description": "Audit teknis gratis: kami tunjukkan risiko terbesar di stack Anda. Tanpa ikatan.",
+    "label": "Minta audit gratis",
+    "subject": "Audit teknis gratis",
+    "prompts": [
+      "Aplikasi kami lambat tiap kali trafik naik",
+      "Sistem lama menghambat kami",
+      "AI kami lancar di demo, gagal di produksi",
+      "Tim kami butuh tambahan engineer"
+    ]
+  },
+  "hero": {
+    "eyebrow": "Layanan",
+    "title": "Software unggul,\nlebih cepat.",
+    "description": "Engineering software dan AI untuk sistem Anda, dari arsitektur sampai produksi.",
+    "findFix": "Cari solusinya",
+    "howWeWork": "Cara kerja kami"
+  },
+  "problems": {
+    "eyebrow": "Yang kami bantu",
+    "title": "Apa yang\nmenghambat Anda?",
+    "tablist": "Masalah",
+    "before": "Sebelum",
+    "after": "Dengan RantAI",
+    "typically": "Biasanya <b>{weeks}</b>",
+    "seeHow": "Lihat cara kerja ↓",
+    "talk": "Diskusikan masalah ini",
+    "items": {
+      "slow": {
+        "chip": "Aplikasi kami lambat",
+        "outcome": "Dari 2,8 s jadi 320 ms.",
+        "steps": [
+          "Profiling jalur kritis",
+          "Perbaiki query dan caching",
+          "Load test sebelum rilis"
+        ],
+        "weeks": "3–6 minggu"
+      },
+      "legacy": {
+        "chip": "Sistem lama menghambat kami",
+        "outcome": "Diperbarui tanpa downtime.",
+        "steps": [
+          "Petakan fungsi sistem lama",
+          "Migrasi bertahap",
+          "Beralih tanpa gangguan"
+        ],
+        "weeks": "8–16 minggu"
+      },
+      "ai": {
+        "chip": "AI kami mentok di demo",
+        "outcome": "Dari notebook ke produksi.",
+        "steps": [
+          "Hubungkan ke data nyata Anda",
+          "Evaluasi dengan data uji Anda",
+          "Deploy, pantau, latih ulang"
+        ],
+        "weeks": "4–8 minggu"
+      },
+      "people": {
+        "chip": "Kami kekurangan engineer",
+        "outcome": "Engineer kami masuk tim Anda.",
+        "steps": [
+          "Gabung ke tim Anda",
+          "Kerjakan backlog Anda",
+          "Serah terima saat Anda siap"
+        ],
+        "weeks": "Mulai 2 minggu"
+      }
+    },
+    "latency": {
+      "label": "Waktu respons p95",
+      "bad": "2,8 s",
+      "good": "320 ms",
+      "badCaption": "Melonjak tiap trafik puncak",
+      "goodCaption": "Stabil saat trafik puncak"
+    },
+    "legacy": {
+      "label": "Arsitektur",
+      "goodBadge": "Uptime 100% selama migrasi",
+      "badBadge": "Terakhir diubah: 2014",
+      "parts": ["Billing", "Orders", "Users", "Reports"],
+      "service": "Service {name}",
+      "deployAll": "Satu deploy untuk semuanya"
+    },
+    "demo": {
+      "live": "Live",
+      "stats": [
+        {
+          "value": "1,2 jt",
+          "label": "request"
+        },
+        {
+          "value": "99,9%",
+          "label": "uptime"
+        },
+        {
+          "value": "94%",
+          "label": "akurasi"
+        }
+      ],
+      "monitored": "Dipantau · retrain mingguan · di server Anda",
+      "works": "✓ Jalan di laptop saya",
+      "broken": "✗ Tanpa pemilik, monitoring, dan akses data"
+    },
+    "backlog": {
+      "columns": ["Backlog", "Selesai"],
+      "tickets": [
+        "Login SSO",
+        "Ekspor ke Excel",
+        "OCR invoice",
+        "Log audit",
+        "Aplikasi mobile"
+      ]
+    }
+  },
+  "engagement": {
+    "eyebrow": "Cara kerja kami",
+    "title": "Dari diskusi\nhingga serah terima.",
+    "book": "Jadwalkan discovery call",
+    "mailSubject": "Discovery call",
+    "youGet": "Hasilnya",
+    "week": "M{n}",
+    "then": "Lalu",
+    "phases": {
+      "call": {
+        "when": "Minggu 0",
+        "short": "Diskusi",
+        "title": "Membahas masalah Anda",
+        "line": "Kami dengarkan dulu: workflow, data, dan siapa yang akan memakainya.",
+        "get": ["Cek kecocokan jujur", "Perkiraan timeline", "Tanpa komitmen"]
+      },
+      "scope": {
+        "when": "Minggu 1",
+        "short": "Lingkup",
+        "title": "Lingkup satu halaman",
+        "line": "Tujuan jelas, data yang dibutuhkan, dan tolok ukur keberhasilan.",
+        "get": [
+          "Lingkup disetujui",
+          "Metrik keberhasilan",
+          "Rencana akses data"
+        ]
+      },
+      "build": {
+        "when": "Minggu 2–5",
+        "short": "Build",
+        "title": "Dibangun di lingkungan Anda",
+        "line": "Engineer kami bekerja di repo dan cloud Anda. Tak ada yang keluar.",
+        "get": ["Kode di repo Anda", "Demo mingguan", "Berjalan di infra Anda"]
+      },
+      "pilot": {
+        "when": "Minggu 6–8",
+        "short": "Pilot",
+        "title": "Pilot dengan user nyata",
+        "line": "Tim Anda memakainya untuk kerja nyata, kami menyetelnya sesuai metrik.",
+        "get": ["Pilot live", "Hasil terukur", "Review go / no-go"]
+      },
+      "handover": {
+        "when": "Lalu",
+        "short": "Serah terima",
+        "title": "Diserahkan, tetap didukung",
+        "line": "Kini milik tim Anda. Kami tetap siaga dan terus menyempurnakannya.",
+        "get": ["Dokumen & pelatihan", "Monitoring", "Dukungan lanjutan"]
+      }
+    },
+    "call": {
+      "title": "Discovery call",
+      "meta": "60 menit · tim Anda + 2 engineer RantAI",
+      "free": "Gratis",
+      "weAsk": "Pertanyaan kami",
+      "questions": [
+        "Proses mana paling merepotkan?",
+        "Di mana datanya disimpan?",
+        "Apa ukuran sukses Anda?"
+      ]
+    },
+    "scope": {
+      "title": "Lingkup · invoice-agent",
+      "signedOff": "Disetujui",
+      "rows": [
+        {
+          "key": "Tujuan",
+          "value": "Otomatisasi invoice pemasok"
+        },
+        {
+          "key": "Data",
+          "value": "ERP · shared drive · inbox"
+        },
+        {
+          "key": "Sukses",
+          "value": "80% diproses tanpa manusia"
+        },
+        {
+          "key": "Berjalan di",
+          "value": "Private cloud Anda"
+        }
+      ]
+    },
+    "build": {
+      "yourRepo": "Repo Anda",
+      "deploying": "Sedang deploy"
+    },
+    "pilot": {
+      "handled": "Diproses tanpa manusia",
+      "weeks": "Minggu 1–7 pilot · target 80%",
+      "team": "Dipakai tim keuangan",
+      "people": "12 orang"
+    },
+    "handover": {
+      "title": "Checklist serah terima",
+      "owns": "Milik tim Anda",
+      "items": [
+        {
+          "text": "Runbook dan dokumen arsitektur",
+          "tag": "Dokumen"
+        },
+        {
+          "text": "Dua sesi pelatihan untuk engineer Anda",
+          "tag": "Pelatihan"
+        },
+        {
+          "text": "Dashboard monitoring dan alert",
+          "tag": "Ops"
+        },
+        {
+          "text": "Dukungan setelah go-live",
+          "tag": "SLA"
+        }
+      ]
+    }
+  },
+  "partners": {
+    "eyebrow": "Mitra",
+    "title": "Sudah bermitra\ndengan kami.",
+    "description": "Dari lab riset hingga firma investasi: kami bangun sistem inti mereka, di infrastruktur mereka sendiri.",
+    "yourTeam": "Giliran tim Anda",
+    "subject": "Bermitra dengan RantAI"
+  },
+  "why": {
+    "eyebrow": "Kenapa RantAI",
+    "title": "Yang Anda\ndapatkan.",
+    "items": {
+      "products": {
+        "title": "Produk, bukan cuma layanan",
+        "body": "Platform kami bangun dan miliki sendiri, jadi roadmap jangka panjang terjamin, tak bergantung pada vendor atau proyek tertentu."
+      },
+      "lockIn": {
+        "title": "Tanpa vendor lock-in",
+        "body": "Mendukung 100+ LLM, jadi Anda bisa ganti penyedia model tanpa membangun ulang. Stack Anda tetap milik Anda."
+      },
+      "local": {
+        "title": "Keahlian lokal",
+        "body": "Paham betul regulasi pemerintah dan kepatuhan di Indonesia, dan sudah tertanam di arsitektur sejak hari pertama."
+      },
+      "production": {
+        "title": "Selalu siap produksi",
+        "body": "Sudah berjalan di produksi untuk instansi pemerintah dan enterprise. Dibangun untuk skala, keamanan, dan keandalan operasional."
+      },
+      "lifecycle": {
+        "title": "Kemampuan end-to-end",
+        "body": "Satu mitra untuk seluruh siklus, dari strategi AI dan desain arsitektur hingga deployment, monitoring, dan dukungan berkelanjutan."
+      },
+      "open": {
+        "title": "Standar terbuka",
+        "body": "Berbasis open-source sehingga bisa diaudit penuh. Tanpa kotak hitam, jebakan proprietary, atau dependensi tersembunyi."
+      }
+    },
+    "visuals": {
+      "builtBy": "Dibangun dan dirawat oleh RantAI",
+      "shipping": "Merilis pembaruan",
+      "compliance": "Kepatuhan",
+      "region": "Region Jakarta",
+      "rules": [
+        "Perlindungan data pribadi (UU PDP)",
+        "Data tetap di Indonesia",
+        "Jejak audit untuk setiap aksi"
+      ],
+      "uptime": "Uptime · 30 hari terakhir",
+      "uptimeValue": "99,97%",
+      "latency": "Latensi p95",
+      "requests": "Request hari ini",
+      "requestsValue": "1,2 jt",
+      "onePartner": "Satu mitra",
+      "stages": ["Strategi", "Desain", "Build", "Deploy", "Dukungan"]
+    }
+  },
+  "heroVisual": {
+    "pipeline": "Pipeline rilis",
+    "stages": ["Build", "Test", "Security scan", "Deploy"],
+    "shipped": "Live di produksi",
+    "running": "Menjalankan {stage}…",
+    "deploys": "Deploy minggu ini",
+    "faster": "↑ 4× lebih cepat",
+    "quality": "Skor kualitas",
+    "incidents": "0 insiden bulan ini"
+  }
+}

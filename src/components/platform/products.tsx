@@ -1,73 +1,80 @@
 "use client"
 
 import Image from "next/image"
-import { useEffect, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useInView, useReducedMotion } from "motion/react"
+import { useTranslations } from "next-intl"
 
 import { cn } from "@/lib/utils"
 
 // The four RantAI products shown in the homepage platform reel, and the
 // media for each (a demo video, or a pipeline diagram until one exists).
+// Text lives in messages/<locale>/platform.json under `products.<id>`.
 
-export type Product = {
-  id: string
+type ProductBase = {
+  id: "agents" | "claw" | "llmops" | "lake"
   name: string
-  layer: string
-  tagline: string
   href: string
-  features: string[]
   video?: string
   videoFit?: "cover" | "contain"
   /** A product screenshot, used when there is no demo video yet. */
   image?: string
+  /** Whether the product has a pipeline diagram (steps come from messages). */
+  hasFlow?: boolean
+}
+
+export type Product = ProductBase & {
+  layer: string
+  tagline: string
+  features: string[]
   flow?: string[]
 }
 
-export const products: Product[] = [
+/** Names, links and media; language-independent. */
+export const products: ProductBase[] = [
   {
     id: "agents",
     name: "RantAI Agents",
-    layer: "Applications",
-    tagline: "Deploy AI agents that handle real work, not just demos.",
     href: "https://agents.rantai.dev/",
-    features: ["Knowledge base & RAG", "Agent builder", "Artifacts", "Skills"],
     video: "/videos/rantai-agents/rag-prompt.mp4",
   },
   {
     id: "claw",
     name: "RantAI Claw",
-    layer: "Runtime",
-    tagline: "A lightweight multi-agent runtime written in Rust.",
     href: "https://claw.rantai.dev/",
-    features: ["Terminal UI", "Web control UI", "Skills & ClawHub"],
     video: "/videos/rantai-claw/claw-demo.mp4",
     videoFit: "contain",
   },
   {
     id: "llmops",
     name: "RantAI LLMOps",
-    layer: "Models",
-    tagline: "Fine-tune, evaluate, and serve models on hardware you control.",
     href: "https://llmops.rantai.dev/",
-    features: [
-      "Fine-tune through the UI",
-      "Evaluate on your own test set",
-      "OpenAI-compatible API",
-    ],
-    flow: ["Dataset", "Fine-tune", "Evaluate", "Serve"],
+    hasFlow: true,
   },
   {
     id: "lake",
     name: "RantAI Lakehouse",
-    layer: "Data",
-    tagline:
-      "A sovereign, AI-native lakehouse from raw data to BI-ready insight.",
     href: "https://lakehouse.rantai.dev/",
-    features: ["Runs on your infrastructure", "AI-native", "BI-ready output"],
     image: "/products/lake-dashboard.jpg",
-    flow: ["Raw data", "Lakehouse", "BI-ready insight"],
+    hasFlow: true,
   },
 ]
+
+/** The products with their text in the current language. */
+export function useProducts(): Product[] {
+  const t = useTranslations("platform.products")
+  return useMemo(
+    () =>
+      products.map((p) => ({
+        ...p,
+        layer: t(`${p.id}.layer`),
+        tagline: t(`${p.id}.tagline`),
+        features: t.raw(`${p.id}.features`) as string[],
+        flow: p.hasFlow ? (t.raw(`${p.id}.flow`) as string[]) : undefined,
+      })),
+    [t]
+  )
+}
 
 /* ----------------------------- Media ----------------------------- */
 
@@ -141,12 +148,13 @@ export function Media({
   product,
   compact,
 }: Readonly<{ product: Product; compact?: boolean }>) {
+  const t = useTranslations("platform.products")
   if (product.video) return <Video src={product.video} fit={product.videoFit} />
   if (product.image)
     return (
       <Image
         src={product.image}
-        alt={`${product.name} interface`}
+        alt={t("imageAlt", { name: product.name })}
         fill
         sizes="(min-width: 1024px) 55vw, 100vw"
         className="object-cover object-top-left"

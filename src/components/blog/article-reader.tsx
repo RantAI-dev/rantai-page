@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { motion, useScroll } from "motion/react"
 import { ChevronDown } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import type { ArticleHeading } from "@/lib/blog/article-html"
 import { smoothScrollTo } from "@/components/layout/smooth-scroll"
@@ -15,7 +16,11 @@ function TocList({
   headings,
   active,
   indicator,
-}: Readonly<{ headings: ArticleHeading[]; active: string | null; indicator?: boolean }>) {
+}: Readonly<{
+  headings: ArticleHeading[]
+  active: string | null
+  indicator?: boolean
+}>) {
   return (
     <ul className="relative space-y-0.5 border-l border-neutral-200">
       {headings.map((h) => {
@@ -36,7 +41,9 @@ function TocList({
               className={cn(
                 "block py-1.5 pr-2 text-[13.5px] leading-snug transition-colors duration-200",
                 h.level === 3 ? "pl-7" : "pl-4",
-                on ? "text-neutral-950" : "text-neutral-500 hover:text-neutral-950"
+                on
+                  ? "text-neutral-950"
+                  : "text-neutral-500 hover:text-neutral-950"
               )}
             >
               <span className="line-clamp-2">{h.text}</span>
@@ -62,6 +69,7 @@ export function ArticleReader({
   header: React.ReactNode
   children: React.ReactNode
 }>) {
+  const t = useTranslations("blog.article")
   const rootRef = useRef<HTMLDivElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState<string | null>(null)
@@ -101,13 +109,13 @@ export function ArticleReader({
     const id = decodeURIComponent(window.location.hash.slice(1))
     const el = id ? document.getElementById(id) : null
     if (!el || !rootRef.current?.contains(el)) return
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       window.scrollTo({
         top: el.getBoundingClientRect().top + window.scrollY - OFFSET,
         behavior: "instant",
       })
     }, 300)
-    return () => clearTimeout(t)
+    return () => clearTimeout(timer)
   }, [])
 
   // Clicks inside the article: section links and copy buttons.
@@ -119,7 +127,9 @@ export function ArticleReader({
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement
 
-      const link = target.closest<HTMLAnchorElement>("a.heading-anchor, a[data-toc]")
+      const link = target.closest<HTMLAnchorElement>(
+        "a.heading-anchor, a[data-toc]"
+      )
       if (link) {
         const id = decodeURIComponent(link.hash.slice(1))
         const el = document.getElementById(id)
@@ -134,16 +144,17 @@ export function ArticleReader({
 
       const copy = target.closest<HTMLButtonElement>("button[data-copy]")
       if (copy) {
-        const code = copy.closest(".code-frame")?.querySelector("pre")?.innerText ?? ""
+        const code =
+          copy.closest(".code-frame")?.querySelector("pre")?.innerText ?? ""
         void navigator.clipboard?.writeText(code).then(() => {
-          copy.textContent = "Copied"
+          copy.textContent = t("copied")
           copy.setAttribute("data-copied", "")
-          const t = setTimeout(() => {
-            copy.textContent = "Copy"
+          const timer = setTimeout(() => {
+            copy.textContent = t("copy")
             copy.removeAttribute("data-copied")
-            timers.delete(t)
+            timers.delete(timer)
           }, 1600)
-          timers.add(t)
+          timers.add(timer)
         })
       }
     }
@@ -153,7 +164,7 @@ export function ArticleReader({
       root.removeEventListener("click", onClick)
       timers.forEach(clearTimeout)
     }
-  }, [])
+  }, [t])
 
   const hasToc = headings.length > 1
 
@@ -178,7 +189,7 @@ export function ArticleReader({
           {hasToc && (
             <details className="group mt-10 rounded-xl bg-neutral-100 lg:hidden">
               <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[14px] font-medium [&::-webkit-details-marker]:hidden">
-                On this page
+                {t("onThisPage")}
                 <ChevronDown className="size-4 text-neutral-500 transition-transform duration-200 group-open:rotate-180" />
               </summary>
               <div className="px-2 pb-3">
@@ -191,9 +202,9 @@ export function ArticleReader({
 
         {hasToc && (
           <div className="hidden lg:block">
-            <nav aria-label="On this page" className="sticky top-28 pt-12">
+            <nav aria-label={t("onThisPage")} className="sticky top-28 pt-12">
               <p className="mb-4 text-[12px] font-medium tracking-[0.08em] text-neutral-500 uppercase">
-                On this page
+                {t("onThisPage")}
               </p>
               <div className="max-h-[calc(100svh-14rem)] overflow-y-auto [scrollbar-width:none]">
                 <TocList headings={headings} active={active} indicator />

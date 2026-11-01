@@ -3,16 +3,10 @@
 import { useEffect, useRef, useState } from "react"
 import { useReducedMotion } from "motion/react"
 import { ArrowUp, Check, Mail } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { siteConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
-
-export const defaultPrompts = [
-  "Answer staff questions from our HR policies",
-  "Read incoming invoices and update our ERP",
-  "Summarise citizen reports for each district",
-  "Draft tender documents from past projects",
-]
 
 /** Types each line out, pauses, deletes it, then moves to the next. */
 function useTypewriter(lines: string[]) {
@@ -79,8 +73,10 @@ function useBorderLight(ref: React.RefObject<HTMLDivElement | null>) {
 export function FooterPrompt({
   label,
   subject,
-  prompts = defaultPrompts,
+  prompts: given,
 }: Readonly<{ label: string; subject: string; prompts?: string[] }>) {
+  const t = useTranslations("common.footer.prompt")
+  const prompts = given ?? (t.raw("examples") as string[])
   const [value, setValue] = useState("")
   const [sent, setSent] = useState(false)
   const placeholder = useTypewriter(prompts)
@@ -129,7 +125,7 @@ export function FooterPrompt({
             className="relative w-full rounded-[18.5px] bg-[linear-gradient(180deg,#1a1a1c,#0c0c0d)] p-3 text-left shadow-[inset_0_1px_0_rgb(255_255_255/0.12)]"
           >
             <label htmlFor="footer-prompt" className="sr-only">
-              Describe the workflow you want to change
+              {t("label")}
             </label>
             <textarea
               id="footer-prompt"
@@ -156,9 +152,7 @@ export function FooterPrompt({
                       className="size-3.5 shrink-0 text-emerald-400"
                       aria-hidden="true"
                     />
-                    <span className="text-white/75">
-                      Opening your email app with this message
-                    </span>
+                    <span className="text-white/75">{t("opening")}</span>
                   </>
                 ) : (
                   <>
@@ -166,14 +160,16 @@ export function FooterPrompt({
                       className="size-3.5 shrink-0 text-white/55"
                       aria-hidden="true"
                     />
-                    <span className="text-[11px] whitespace-nowrap sm:text-xs">{email}</span>
+                    <span className="text-[11px] whitespace-nowrap sm:text-xs">
+                      {email}
+                    </span>
                   </>
                 )}
               </span>
               <button
                 type="submit"
                 className={cn(
-                  "inline-flex h-10 shrink-0 items-center gap-2 rounded-full pr-1.5 pl-3.5 text-[13px] font-medium sm:pl-4 sm:text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1",
+                  "inline-flex h-10 shrink-0 items-center gap-2 rounded-full pr-1.5 pl-3.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1 sm:pl-4 sm:text-sm",
                   value
                     ? "bg-white text-black hover:bg-white/85"
                     : "bg-white/15 text-white hover:bg-white/25"

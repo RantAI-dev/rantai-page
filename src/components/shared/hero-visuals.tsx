@@ -4,6 +4,7 @@ import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { Check, ShieldCheck, Zap } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { cn } from "@/lib/utils"
 
@@ -139,6 +140,9 @@ function useCount(to: number, run: number, ms = 900) {
  */
 export function ServicesVisual() {
   const reduce = useReducedMotion()
+  const tsv = useTranslations("services.heroVisual")
+  // Stage names in the page's language (the pipeline logic uses indexes).
+  const stageLabels = tsv.raw("stages") as string[]
   // 0..stages.length = stages done; a run loops every few seconds.
   const [done, setDone] = useState(reduce ? stages.length : 0)
   const [run, setRun] = useState(0)
@@ -217,7 +221,7 @@ export function ServicesVisual() {
               <div className={cn(card, "relative overflow-hidden p-5")}>
                 <div className="flex items-center justify-between">
                   <p className="text-[12px] text-neutral-500">
-                    Release pipeline
+                    {tsv("pipeline")}
                   </p>
                   <span className="text-[11px] text-neutral-500 tabular-nums">
                     {clock}
@@ -274,7 +278,7 @@ export function ServicesVisual() {
                               : "text-neutral-800"
                           )}
                         >
-                          {label}
+                          {stageLabels[i] ?? label}
                         </span>
                       </li>
                     )
@@ -296,7 +300,7 @@ export function ServicesVisual() {
                         className="absolute inset-0 flex items-center gap-2 rounded-xl bg-[#10b981] px-3 text-[12.5px] font-medium text-white"
                       >
                         <Zap className="size-3.5 fill-current" />
-                        Shipped to production
+                        {tsv("shipped")}
                         <span className="ml-auto text-white/80 tabular-nums">
                           {clock}
                         </span>
@@ -310,7 +314,9 @@ export function ServicesVisual() {
                         className="absolute inset-0 flex items-center gap-2 rounded-xl bg-neutral-50 px-3 text-[12.5px] text-neutral-500"
                       >
                         <span className="size-1.5 animate-pulse rounded-full bg-[#f97316]" />
-                        Running {stages[Math.min(done, stages.length - 1)]}…
+                        {tsv("running", {
+                          stage: stageLabels[Math.min(done, stages.length - 1)],
+                        })}
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -341,15 +347,13 @@ export function ServicesVisual() {
           >
             <Lift>
               <div className={cn(card, "p-4")}>
-                <p className="text-[12px] text-neutral-500">
-                  Deploys this week
-                </p>
+                <p className="text-[12px] text-neutral-500">{tsv("deploys")}</p>
                 <div className="mt-1 flex items-baseline gap-2">
                   <span className="text-[30px] leading-none font-medium tracking-[-0.03em] tabular-nums">
                     {deploys}
                   </span>
                   <span className="text-[11px] font-medium text-[#059669]">
-                    ↑ 4× faster
+                    {tsv("faster")}
                   </span>
                 </div>
                 <div className="mt-3 flex h-10 items-end gap-1.5">
@@ -410,11 +414,11 @@ export function ServicesVisual() {
                 </span>
                 <span>
                   <span className="block text-[13px] font-medium">
-                    Quality score
+                    {tsv("quality")}
                   </span>
                   <span className="mt-0.5 flex items-center gap-1.5 text-[11.5px] text-neutral-500">
-                    <ShieldCheck className="size-3.5 text-[#0d9488]" />0
-                    incidents this month
+                    <ShieldCheck className="size-3.5 text-[#0d9488]" />
+                    {tsv("incidents")}
                   </span>
                 </span>
               </div>
@@ -499,6 +503,7 @@ export function PostsVisual({
     thumbnail?: string | null
   }[]
 }>) {
+  const tv = useTranslations("blog.visual")
   const reduce = useReducedMotion()
   const [open, setOpen] = useState(Boolean(reduce))
   const [lift, setLift] = useState<number | null>(null)
@@ -584,7 +589,7 @@ export function PostsVisual({
         <motion.button
           type="button"
           tabIndex={-1}
-          aria-label={open ? "Close folder" : "Open folder"}
+          aria-label={open ? tv("closeFolder") : tv("openFolder")}
           onClick={() => setOpen((v) => !v)}
           className="absolute inset-x-0 bottom-0 z-10 h-[78%] origin-bottom cursor-pointer rounded-[22px] bg-gradient-to-b from-[#2dd4bf] to-[#14b8a6] shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.25)]"
           initial={false}
@@ -597,7 +602,7 @@ export function PostsVisual({
               Insights
             </span>
             <span className="block text-[12px] text-white/80">
-              Latest from the team
+              {tv("latest")}
             </span>
           </span>
         </motion.button>

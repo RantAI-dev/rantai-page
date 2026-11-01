@@ -1,0 +1,56 @@
+{
+  "home": {
+    "title": "RantAI: AI systems for real-world operations",
+    "description": "RantAI builds production-grade agentic AI, intelligent data platforms, and automation systems for government and enterprise."
+  },
+  "products": {
+    "title": "Products",
+    "description": "RantAI Agents, RantAI Claw, RantAI LLMOps, and RantAI Lakehouse: AI products built to run on your own infrastructure."
+  },
+  "services": {
+    "title": "Services",
+    "description": "Software and AI engineering that takes your systems from architecture to production, with RantAI engineers embedded in your team."
+  },
+  "academy": {
+    "title": "Academy",
+    "description": "Books, classes, and resources for scientists and engineers building with AI."
+  },
+  "blog": {
+    "title": "Insights",
+    "description": "Updates, releases, and insights on building AI that works in production."
+  },
+  "company": {
+    "title": "Company",
+    "description": "Meet the engineers, researchers, and builders behind RantAI, an AI company from Indonesia."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has moved."
+  },
+  "og": {
+    "home": {
+      "eyebrow": "Enterprise AI",
+      "title": "AI systems for\nreal-world operations."
+    },
+    "products": {
+      "eyebrow": "Products",
+      "title": "AI products built\nfor real operations."
+    },
+    "services": {
+      "eyebrow": "Services",
+      "title": "Ship better\nsoftware, faster."
+    },
+    "academy": {
+      "eyebrow": "Academy",
+      "title": "Learn to build\nwith AI."
+    },
+    "blog": {
+      "eyebrow": "Insights",
+      "title": "Notes from the\nRantAI team."
+    },
+    "company": {
+      "eyebrow": "Company",
+      "title": "The people\nbehind RantAI."
+    }
+  }
+}

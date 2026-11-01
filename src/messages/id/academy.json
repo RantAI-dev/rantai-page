@@ -1,0 +1,82 @@
+{
+  "hero": {
+    "eyebrow": "Academy",
+    "title": "Belajar membangun\ndengan AI.",
+    "description": "Buku, kelas, dan materi praktis untuk ilmuwan dan engineer."
+  },
+  "cta": {
+    "title": "RantAI Academy untuk Enterprise",
+    "description": "Buku khusus untuk ilmuwan dan engineer — berisi prompt GenAI siap pakai, studi kasus nyata, dan kode teruji.",
+    "label": "Hubungi kami",
+    "subject": "RantAI Academy untuk Enterprise",
+    "prompts": [
+      "Pelatihan GenAI untuk engineer kami",
+      "Buku khusus untuk tim data science kami",
+      "Workshop prompt engineering untuk analis kami"
+    ]
+  },
+  "sections": {
+    "library": "Perpustakaan",
+    "forTeams": "Untuk tim"
+  },
+  "library": {
+    "searchPlaceholder": "Cari kode atau judul buku",
+    "searchLabel": "Cari buku",
+    "clearSearch": "Hapus pencarian",
+    "count": "{shown} dari {total} buku",
+    "layout": "Tata letak",
+    "grid": "Tampilan grid",
+    "list": "Tampilan daftar",
+    "categories": "Kategori buku",
+    "all": "Semua",
+    "read": "Baca bukunya",
+    "comingSoon": "Segera hadir",
+    "emptyTitle": "Buku tidak ditemukan",
+    "emptyBody": "Coba kata kunci atau kategori lain.",
+    "clearFilters": "Hapus filter"
+  },
+  "forTeams": {
+    "eyebrow": "Untuk tim",
+    "title": "Bawa Academy\nke tim Anda.",
+    "offers": {
+      "book": {
+        "title": "Buku khusus untuk Anda",
+        "line": "Disusun dari data, stack, dan use case Anda.",
+        "subject": "Buku khusus RantAI Academy"
+      },
+      "classes": {
+        "title": "Kelas untuk engineer Anda",
+        "line": "Praktik langsung, dari prompting ke agent.",
+        "subject": "Kelas RantAI Academy"
+      },
+      "library": {
+        "title": "Perpustakaan untuk tim",
+        "line": "Satu lisensi: semua buku, setiap edisi baru.",
+        "subject": "Lisensi tim RantAI Academy"
+      }
+    },
+    "visual": {
+      "bookTitle1": "GenAI untuk",
+      "bookTitle2": "Perusahaan Anda",
+      "bookSub": "Data Anda · use case Anda",
+      "cohort": "Kelas praktik",
+      "days": [
+        {
+          "day": "Sen",
+          "topic": "Dasar prompting"
+        },
+        {
+          "day": "Rab",
+          "topic": "RAG dokumen Anda"
+        },
+        {
+          "day": "Jum",
+          "topic": "Membuat agent"
+        }
+      ],
+      "licence": "Lisensi tim",
+      "seats": "24 / 25 kursi",
+      "everyBook": "Semua buku & pembaruannya"
+    }
+  }
+}

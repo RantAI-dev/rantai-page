@@ -1,0 +1,230 @@
+{
+  "announcement": {
+    "badge": "Baru",
+    "title": "Forward Deployed Engineering",
+    "detail": ": engineer RantAI, langsung di tim Anda"
+  },
+  "sections": {
+    "problem": "Masalahnya",
+    "solution": "Cara kami membantu",
+    "platform": "Produk",
+    "capabilities": "Kapabilitas",
+    "howWeWork": "Cara kami bekerja",
+    "insights": "Insights"
+  },
+  "insights": {
+    "eyebrow": "Insights",
+    "title": "Kabar terbaru dari RantAI.",
+    "viewAll": "Lihat semua insights"
+  },
+  "hero": {
+    "label": "Pengantar",
+    "title": "Sistem AI untuk operasional nyata.",
+    "description": "AI agent, platform data, dan tim engineering untuk enterprise dan pemerintah, siap pakai di produksi.",
+    "talk": "Bicara dengan tim kami",
+    "explore": "Lihat produk",
+    "partners": "Partner",
+    "scroll": "Gulir ke bawah"
+  },
+  "problem": {
+    "heading": "Mengapa proyek AI mandek",
+    "items": [
+      {
+        "title": "Pengetahuan Anda tercecer.",
+        "body": "Kebijakan, manual, spreadsheet, dan chat tersebar di banyak tempat."
+      },
+      {
+        "title": "AI berhenti di demo.",
+        "body": "Pilot memukau saat rapat, tapi tak sampai ke kerja harian."
+      },
+      {
+        "title": "Banyak tool memaksa data keluar.",
+        "body": "Tool itu di cloud pihak lain, padahal data teregulasi tak boleh ke sana."
+      }
+    ],
+    "scattered": {
+      "policy": "Policy.pdf",
+      "q3": "Q3 data.xlsx",
+      "email": "Utas email",
+      "chat": "Chat tim",
+      "crm": "Data CRM",
+      "sop": "SOP v3.docx"
+    },
+    "stalled": {
+      "projects": "Proyek",
+      "stalled": "Mandek",
+      "active": "Aktif",
+      "deadline": "Tenggat",
+      "idea": "Ide",
+      "demo": "Demo",
+      "pilot": "Pilot",
+      "production": "Produksi",
+      "draft": "Draf",
+      "days": "{count} hari",
+      "noteStrong": "6 minggu tanpa kabar.",
+      "note": "Tim kembali ke proses lama."
+    },
+    "boundary": {
+      "title": "Hubungkan data Anda",
+      "subtitle": "Unggah data ke cloud kami untuk memulai.",
+      "stopped": "Unggahan dihentikan",
+      "uploading": "Mengunggah ke cloud…",
+      "blockedStrong": "Diblokir kebijakan data.",
+      "blocked": "Data sensitif tak boleh keluar jaringan.",
+      "items": {
+        "citizens": {
+          "name": "Data penduduk",
+          "meta": "2,4 jt baris"
+        },
+        "contracts": {
+          "name": "Kontrak",
+          "meta": "18.240 file"
+        },
+        "ledger": {
+          "name": "Buku besar",
+          "meta": "6,1 GB"
+        }
+      }
+    }
+  },
+  "solution": {
+    "eyebrow": "Cara RantAI membantu",
+    "engineers": "Engineer kami",
+    "tokens": [
+      {
+        "text": "Dokumen,",
+        "inline": "files",
+        "dwell": 1
+      },
+      {
+        "text": "kebijakan,",
+        "inline": "policy"
+      },
+      {
+        "text": "dan",
+        "breakBefore": true
+      },
+      {
+        "text": "data",
+        "inline": "data"
+      },
+      {
+        "text": "Anda"
+      },
+      {
+        "text": "menjadi"
+      },
+      {
+        "text": "agent",
+        "inline": "agents",
+        "dwell": 1
+      },
+      {
+        "text": "yang",
+        "breakBefore": true
+      },
+      {
+        "text": "menjawab,",
+        "card": "answer",
+        "dwell": 3
+      },
+      {
+        "text": "menulis,",
+        "card": "write",
+        "dwell": 3
+      },
+      {
+        "text": "dan"
+      },
+      {
+        "text": "bertindak",
+        "card": "act",
+        "dwell": 3
+      },
+      {
+        "text": "di",
+        "breakBefore": true
+      },
+      {
+        "text": "infrastruktur",
+        "mark": true
+      },
+      {
+        "text": "Anda",
+        "mark": true
+      },
+      {
+        "text": "sendiri.",
+        "inline": "infra",
+        "mark": true,
+        "dwell": 4
+      }
+    ],
+    "cards": {
+      "answer": {
+        "question": "Apa yang berubah di kebijakan cuti?",
+        "reply": "Tiga perubahan berlaku mulai Januari. Cuti tahunan naik jadi 14 hari.",
+        "source": "Policy.pdf · hlm. 3"
+      },
+      "write": {
+        "title": "Laporan operasional mingguan"
+      },
+      "act": {
+        "title": "Tiket #482 selesai",
+        "detail": "Permintaan akses disetujui dan dicatat"
+      }
+    }
+  },
+  "process": {
+    "eyebrow": "Cara kami bekerja",
+    "title": "Kami bangun bersama Anda.",
+    "fde": "Forward Deployed Engineering",
+    "talk": "Bicara dengan tim kami",
+    "alsoAvailable": "Juga tersedia sebagai",
+    "alsoLink": "software dan AI engineering",
+    "steps": [
+      {
+        "title": "Tentukan use case",
+        "body": "Pilih satu workflow yang layak dibenahi."
+      },
+      {
+        "title": "Bangun di lingkungan Anda",
+        "body": "Engineer kami bekerja di infrastruktur Anda."
+      },
+      {
+        "title": "Jalankan dan tingkatkan",
+        "body": "Pantau, evaluasi, dan latih ulang di produksi."
+      }
+    ],
+    "visuals": {
+      "define": {
+        "impact": "Dampak",
+        "effort": "Upaya",
+        "quickWins": "Quick wins",
+        "options": {
+          "invoice": "Proses invoice",
+          "tender": "Penyusunan tender",
+          "hr": "Pertanyaan HR",
+          "support": "Triase support",
+          "reporting": "Laporan mingguan",
+          "contract": "Review kontrak"
+        }
+      },
+      "build": {
+        "boundary": "Infrastruktur Anda",
+        "sources": {
+          "erp": "ERP",
+          "docs": "Dokumen",
+          "inbox": "Inbox"
+        },
+        "agent": "Agent invoice",
+        "team": "Keuangan"
+      },
+      "run": {
+        "quality": "Kualitas jawaban",
+        "period": "12 minggu terakhir",
+        "releaseBar": "Batas rilis"
+      }
+    }
+  }
+}

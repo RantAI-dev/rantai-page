@@ -1,6 +1,7 @@
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { ArrowUpRight, Mail } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 
 import {
   BackToTop,
@@ -16,70 +17,78 @@ import { ProductLogo, productIdFrom } from "@/components/shared/product-logo"
 
 type FooterLink = { label: string; href: string; external?: boolean }
 
-const columns: { title: string; links: FooterLink[] }[] = [
-  {
-    title: "Products",
-    links: [
-      {
-        label: "RantAI Agents",
-        href: "https://agents.rantai.dev/",
-        external: true,
-      },
-      { label: "RantAI Claw", href: "https://claw.rantai.dev/", external: true },
-      {
-        label: "RantAI LLMOps",
-        href: "https://llmops.rantai.dev/",
-        external: true,
-      },
-      {
-        label: "RantAI Lakehouse",
-        href: "https://lakehouse.rantai.dev/",
-        external: true,
-      },
-    ],
-  },
-  {
-    title: "Services",
-    links: [
-      {
-        label: "Forward Deployed Engineering",
-        href: "/services#forward-deployed-engineering",
-      },
-      { label: "Software Engineering", href: "/services#what-we-do" },
-      { label: "AI Engineering", href: "/services#what-we-do" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "Team", href: "/our-team" },
-      { label: "Academy", href: "/academy" },
-      { label: "Insights", href: "/blog" },
-      { label: "Contact", href: `mailto:${siteConfig.links.email}` },
-    ],
-  },
-]
+type Translate = Awaited<ReturnType<typeof getTranslations<"common.footer">>>
 
-const socials = [
-  {
-    label: "LinkedIn",
-    href: siteConfig.links.linkedin,
-    icon: <LinkedInIcon size={16} />,
-    external: true,
-  },
-  {
-    label: "GitHub",
-    href: siteConfig.links.github,
-    icon: <GithubIcon size={16} />,
-    external: true,
-  },
-  {
-    label: `Email ${siteConfig.links.email}`,
-    href: `mailto:${siteConfig.links.email}`,
-    icon: <Mail aria-hidden="true" className="size-[17px]" />,
-    external: false,
-  },
-]
+function footerColumns(t: Translate): { title: string; links: FooterLink[] }[] {
+  return [
+    {
+      title: t("products"),
+      links: [
+        // Product names stay as they are in every language.
+        {
+          label: "RantAI Agents",
+          href: "https://agents.rantai.dev/",
+          external: true,
+        },
+        {
+          label: "RantAI Claw",
+          href: "https://claw.rantai.dev/",
+          external: true,
+        },
+        {
+          label: "RantAI LLMOps",
+          href: "https://llmops.rantai.dev/",
+          external: true,
+        },
+        {
+          label: "RantAI Lakehouse",
+          href: "https://lakehouse.rantai.dev/",
+          external: true,
+        },
+      ],
+    },
+    {
+      title: t("services"),
+      links: [
+        { label: t("fde"), href: "/services#forward-deployed-engineering" },
+        { label: t("softwareEngineering"), href: "/services#what-we-do" },
+        { label: t("aiEngineering"), href: "/services#what-we-do" },
+      ],
+    },
+    {
+      title: t("company"),
+      links: [
+        { label: t("team"), href: "/our-team" },
+        { label: t("academy"), href: "/academy" },
+        { label: t("insights"), href: "/blog" },
+        { label: t("contact"), href: `mailto:${siteConfig.links.email}` },
+      ],
+    },
+  ]
+}
+
+function footerSocials(t: Translate) {
+  return [
+    {
+      label: "LinkedIn",
+      href: siteConfig.links.linkedin,
+      icon: <LinkedInIcon size={16} />,
+      external: true,
+    },
+    {
+      label: "GitHub",
+      href: siteConfig.links.github,
+      icon: <GithubIcon size={16} />,
+      external: true,
+    },
+    {
+      label: t("email", { email: siteConfig.links.email }),
+      href: `mailto:${siteConfig.links.email}`,
+      icon: <Mail aria-hidden="true" className="size-[17px]" />,
+      external: false,
+    },
+  ]
+}
 
 // Underline that grows from the left on hover.
 const linkUnderline =
@@ -99,14 +108,17 @@ export type FooterCta = {
   showServicesLink?: boolean
 }
 
-const defaultCta: FooterCta = {
-  eyebrow: "Start with one workflow",
-  title: "What should AI take off your team's plate?",
-  label: "Talk to our team",
-  showServicesLink: true,
-}
+export async function Footer({ cta: given }: Readonly<{ cta?: FooterCta }>) {
+  const t = await getTranslations("common.footer")
+  const columns = footerColumns(t)
+  const socials = footerSocials(t)
+  const cta: FooterCta = given ?? {
+    eyebrow: t("cta.eyebrow"),
+    title: t("cta.title"),
+    label: t("cta.label"),
+    showServicesLink: true,
+  }
 
-export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
   return (
     <footer
       id="contact"
@@ -136,7 +148,7 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
           <Reveal index={3} className="mt-10 w-full">
             <FooterPrompt
               label={cta.label}
-              subject={cta.subject ?? "A workflow for RantAI"}
+              subject={cta.subject ?? t("cta.subject")}
               prompts={cta.prompts}
             />
           </Reveal>
@@ -146,7 +158,7 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
                 href="/services"
                 className={`mt-8 inline-flex items-center gap-1 text-sm text-white/55 hover:text-white ${linkUnderline}`}
               >
-                Or explore our services
+                {t("exploreServices")}
                 <ArrowUpRight className="size-3.5" aria-hidden="true" />
               </Link>
             </Reveal>
@@ -160,7 +172,7 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
           <Reveal className="max-w-sm">
             <Link
               href="/"
-              aria-label="RantAI home"
+              aria-label={t("home")}
               className="inline-flex items-center gap-2.5 text-foreground transition-opacity hover:opacity-75"
             >
               <Image
@@ -175,8 +187,7 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
               </span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Agents, data platforms, and engineering teams for enterprise and
-              government, built to run in production.
+              {t("tagline")}
             </p>
             <ul className="mt-5 -ml-2 flex items-center gap-1">
               {socials.map((social) => (
@@ -197,7 +208,7 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
           </Reveal>
 
           <nav
-            aria-label="Footer"
+            aria-label={t("nav")}
             className="grid grid-cols-2 gap-x-10 gap-y-10 sm:grid-cols-3 lg:gap-x-16"
           >
             {columns.map((column, i) => (
@@ -248,7 +259,7 @@ export function Footer({ cta = defaultCta }: Readonly<{ cta?: FooterCta }>) {
           <p suppressHydrationWarning>
             © {new Date().getFullYear()} RantAI
             <span className="mx-1.5 opacity-50">·</span>
-            All rights reserved
+            {t("rights")}
           </p>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <a

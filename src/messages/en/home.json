@@ -1,0 +1,236 @@
+{
+  "announcement": {
+    "badge": "New",
+    "title": "Forward Deployed Engineering",
+    "detail": ": RantAI engineers, embedded with your team"
+  },
+  "sections": {
+    "problem": "The problem",
+    "solution": "How we help",
+    "platform": "Products",
+    "capabilities": "Capabilities",
+    "howWeWork": "How we work",
+    "insights": "Insights"
+  },
+  "insights": {
+    "eyebrow": "Insights",
+    "title": "The latest from RantAI.",
+    "viewAll": "View all insights"
+  },
+  "hero": {
+    "label": "Introduction",
+    "title": "AI systems for real‑world operations.",
+    "description": "Agents, data platforms, and engineering teams for enterprise and government, built to run in production.",
+    "talk": "Talk to our team",
+    "explore": "Explore products",
+    "partners": "Partners",
+    "scroll": "Scroll to explore"
+  },
+  "problem": {
+    "heading": "Why AI projects stall",
+    "items": [
+      {
+        "title": "Your knowledge is scattered.",
+        "body": "Policies, manuals, spreadsheets, and chats live in different places."
+      },
+      {
+        "title": "AI stops at the demo.",
+        "body": "Pilots look good in a meeting, then never reach daily work."
+      },
+      {
+        "title": "Most tools want your data out.",
+        "body": "They run in someone else's cloud. Regulated teams can't send data there."
+      }
+    ],
+    "scattered": {
+      "policy": "Policy.pdf",
+      "q3": "Q3 data.xlsx",
+      "email": "Email thread",
+      "chat": "Team chat",
+      "crm": "CRM records",
+      "sop": "SOP v3.docx"
+    },
+    "stalled": {
+      "projects": "Projects",
+      "stalled": "Stalled",
+      "active": "Active",
+      "deadline": "Deadline",
+      "idea": "Idea",
+      "demo": "Demo",
+      "pilot": "Pilot",
+      "production": "Production",
+      "draft": "Draft",
+      "days": "{count} days",
+      "noteStrong": "No update in 6 weeks.",
+      "note": "The team went back to the old process."
+    },
+    "boundary": {
+      "title": "Connect your data",
+      "subtitle": "Upload sources to our cloud to get started.",
+      "stopped": "Upload stopped",
+      "uploading": "Uploading to cloud…",
+      "blockedStrong": "Blocked by data policy.",
+      "blocked": "Sensitive data can't leave your network.",
+      "items": {
+        "citizens": {
+          "name": "Citizen records",
+          "meta": "2.4M rows"
+        },
+        "contracts": {
+          "name": "Contracts",
+          "meta": "18,240 files"
+        },
+        "ledger": {
+          "name": "Finance ledger",
+          "meta": "6.1 GB"
+        }
+      }
+    }
+  },
+  "solution": {
+    "eyebrow": "How RantAI helps",
+    "engineers": "Our engineers",
+    "tokens": [
+      {
+        "text": "RantAI"
+      },
+      {
+        "text": "turns"
+      },
+      {
+        "text": "your"
+      },
+      {
+        "text": "documents",
+        "inline": "files",
+        "dwell": 1
+      },
+      {
+        "text": "policies",
+        "inline": "policy",
+        "breakBefore": true
+      },
+      {
+        "text": "and"
+      },
+      {
+        "text": "data",
+        "inline": "data"
+      },
+      {
+        "text": "into"
+      },
+      {
+        "text": "agents",
+        "inline": "agents",
+        "dwell": 1
+      },
+      {
+        "text": "that",
+        "breakBefore": true
+      },
+      {
+        "text": "answer,",
+        "card": "answer",
+        "dwell": 3
+      },
+      {
+        "text": "write,",
+        "card": "write",
+        "dwell": 3
+      },
+      {
+        "text": "and"
+      },
+      {
+        "text": "act,",
+        "card": "act",
+        "dwell": 3
+      },
+      {
+        "text": "inside"
+      },
+      {
+        "text": "your",
+        "mark": true,
+        "breakBefore": true
+      },
+      {
+        "text": "own",
+        "mark": true
+      },
+      {
+        "text": "infrastructure.",
+        "inline": "infra",
+        "mark": true,
+        "dwell": 4
+      }
+    ],
+    "cards": {
+      "answer": {
+        "question": "What changed in the leave policy?",
+        "reply": "Three changes take effect in January. Annual leave rises to 14 days.",
+        "source": "Policy.pdf · p.3"
+      },
+      "write": {
+        "title": "Weekly operations report"
+      },
+      "act": {
+        "title": "Ticket #482 resolved",
+        "detail": "Access request approved and logged"
+      }
+    }
+  },
+  "process": {
+    "eyebrow": "How we work",
+    "title": "We build it with you.",
+    "fde": "Forward Deployed Engineering",
+    "talk": "Talk to our team",
+    "alsoAvailable": "Also available as",
+    "alsoLink": "software and AI engineering",
+    "steps": [
+      {
+        "title": "Define the use case",
+        "body": "Pick one workflow worth changing."
+      },
+      {
+        "title": "Build in your environment",
+        "body": "Our engineers work inside your infrastructure."
+      },
+      {
+        "title": "Run and improve",
+        "body": "Monitor, evaluate, and retrain in production."
+      }
+    ],
+    "visuals": {
+      "define": {
+        "impact": "Impact",
+        "effort": "Effort",
+        "quickWins": "Quick wins",
+        "options": {
+          "invoice": "Invoice processing",
+          "tender": "Tender drafting",
+          "hr": "HR questions",
+          "support": "Support triage",
+          "reporting": "Weekly reporting",
+          "contract": "Contract review"
+        }
+      },
+      "build": {
+        "boundary": "Your infrastructure",
+        "sources": {
+          "erp": "ERP",
+          "docs": "Docs",
+          "inbox": "Inbox"
+        },
+        "agent": "Invoice agent",
+        "team": "Finance"
+      },
+      "run": {
+        "quality": "Answer quality",
+        "period": "Last 12 weeks",
+        "releaseBar": "Release bar"
+      }
+    }
+  }
+}

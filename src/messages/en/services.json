@@ -1,0 +1,300 @@
+{
+  "sections": {
+    "whatWeDo": "Where we help",
+    "howWeWork": "How we work",
+    "proof": "Proof",
+    "whyRantai": "Why RantAI"
+  },
+  "cta": {
+    "title": "Stop paying for slow, fragile software.",
+    "description": "Get a free technical audit. We'll identify the biggest risk in your stack — no commitment required.",
+    "label": "Get my free audit",
+    "subject": "Free technical audit",
+    "prompts": [
+      "Our app slows down whenever traffic spikes",
+      "A legacy system is holding us back",
+      "Our AI works in a demo but not in production",
+      "We need more engineers on our team"
+    ]
+  },
+  "hero": {
+    "eyebrow": "Services",
+    "title": "Ship better\nsoftware, faster.",
+    "description": "Software and AI engineering that takes your systems from architecture to production.",
+    "findFix": "Find your fix",
+    "howWeWork": "How we work"
+  },
+  "problems": {
+    "eyebrow": "Where we help",
+    "title": "What's slowing\nyou down?",
+    "tablist": "Problems",
+    "before": "Before",
+    "after": "With RantAI",
+    "typically": "Typically <b>{weeks}</b>",
+    "seeHow": "See how we work ↓",
+    "talk": "Talk to us about this",
+    "items": {
+      "slow": {
+        "chip": "Our app is slow",
+        "outcome": "From 2.8 s to 320 ms.",
+        "steps": [
+          "Profile the hot paths",
+          "Fix queries and caching",
+          "Load-test before release"
+        ],
+        "weeks": "3–6 weeks"
+      },
+      "legacy": {
+        "chip": "A legacy system holds us back",
+        "outcome": "Modernised, with zero downtime.",
+        "steps": [
+          "Map what the old system does",
+          "Move it piece by piece",
+          "Switch over with no outage"
+        ],
+        "weeks": "8–16 weeks"
+      },
+      "ai": {
+        "chip": "Our AI is stuck in a demo",
+        "outcome": "From notebook to production.",
+        "steps": [
+          "Connect it to your real data",
+          "Evaluate on your test set",
+          "Deploy, monitor, retrain"
+        ],
+        "weeks": "4–8 weeks"
+      },
+      "people": {
+        "chip": "We're short on engineers",
+        "outcome": "Our engineers join your team.",
+        "steps": [
+          "Embed with your team",
+          "Ship from your backlog",
+          "Hand over when you're ready"
+        ],
+        "weeks": "From 2 weeks"
+      }
+    },
+    "latency": {
+      "label": "p95 response time",
+      "bad": "2.8 s",
+      "good": "320 ms",
+      "badCaption": "Spikes every time traffic peaks",
+      "goodCaption": "Steady under peak traffic"
+    },
+    "legacy": {
+      "label": "Architecture",
+      "goodBadge": "Uptime 100% during move",
+      "badBadge": "Last change: 2014",
+      "parts": ["Billing", "Orders", "Users", "Reports"],
+      "service": "{name} service",
+      "deployAll": "One deploy for everything"
+    },
+    "demo": {
+      "live": "Live",
+      "stats": [
+        {
+          "value": "1.2M",
+          "label": "requests"
+        },
+        {
+          "value": "99.9%",
+          "label": "uptime"
+        },
+        {
+          "value": "94%",
+          "label": "accuracy"
+        }
+      ],
+      "monitored": "Monitored · retrained weekly · on your servers",
+      "works": "✓ Works on my laptop",
+      "broken": "✗ No owner, no monitoring, no data access"
+    },
+    "backlog": {
+      "columns": ["Backlog", "Shipped"],
+      "tickets": [
+        "SSO login",
+        "Export to Excel",
+        "Invoice OCR",
+        "Audit log",
+        "Mobile app"
+      ]
+    }
+  },
+  "engagement": {
+    "eyebrow": "How we work",
+    "title": "From first call\nto handover.",
+    "book": "Book a discovery call",
+    "mailSubject": "Discovery call",
+    "youGet": "You get",
+    "week": "W{n}",
+    "then": "Then",
+    "phases": {
+      "call": {
+        "when": "Week 0",
+        "short": "Call",
+        "title": "A call about your problem",
+        "line": "We listen first: the workflow, the data, the people who will use it.",
+        "get": ["Honest fit check", "Rough timeline", "No commitment"]
+      },
+      "scope": {
+        "when": "Week 1",
+        "short": "Scope",
+        "title": "One page of scope",
+        "line": "A clear goal, the data we need, and how we will measure success.",
+        "get": ["Signed scope", "Success metric", "Data access plan"]
+      },
+      "build": {
+        "when": "Weeks 2–5",
+        "short": "Build",
+        "title": "Built inside your environment",
+        "line": "Our engineers work in your repos and your cloud. Nothing leaves.",
+        "get": ["Code in your repo", "Weekly demos", "Deployed on your infra"]
+      },
+      "pilot": {
+        "when": "Weeks 6–8",
+        "short": "Pilot",
+        "title": "A pilot with real users",
+        "line": "Your team uses it on real work while we tune it against the metric.",
+        "get": ["Live pilot", "Measured results", "Go / no-go review"]
+      },
+      "handover": {
+        "when": "Then",
+        "short": "Handover",
+        "title": "Handed over, still supported",
+        "line": "Your team owns it. We stay on call and keep improving it with you.",
+        "get": ["Docs and training", "Monitoring", "Ongoing support"]
+      }
+    },
+    "call": {
+      "title": "Discovery call",
+      "meta": "60 min · your team + 2 RantAI engineers",
+      "free": "Free",
+      "weAsk": "We ask",
+      "questions": [
+        "Which workflow hurts most?",
+        "Where does the data live?",
+        "What does success look like?"
+      ]
+    },
+    "scope": {
+      "title": "Scope · invoice-agent",
+      "signedOff": "Signed off",
+      "rows": [
+        {
+          "key": "Goal",
+          "value": "Auto-process supplier invoices"
+        },
+        {
+          "key": "Data",
+          "value": "ERP · shared drive · inbox"
+        },
+        {
+          "key": "Success",
+          "value": "80% handled without a person"
+        },
+        {
+          "key": "Runs on",
+          "value": "Your private cloud"
+        }
+      ]
+    },
+    "build": {
+      "yourRepo": "Your repo",
+      "deploying": "Deploying"
+    },
+    "pilot": {
+      "handled": "Handled without a person",
+      "weeks": "Weeks 1–7 of the pilot · goal 80%",
+      "team": "Finance team using it",
+      "people": "12 people"
+    },
+    "handover": {
+      "title": "Handover checklist",
+      "owns": "Your team owns it",
+      "items": [
+        {
+          "text": "Runbook and architecture docs",
+          "tag": "Docs"
+        },
+        {
+          "text": "Two training sessions for your engineers",
+          "tag": "Training"
+        },
+        {
+          "text": "Monitoring dashboards and alerts",
+          "tag": "Ops"
+        },
+        {
+          "text": "Support after go-live",
+          "tag": "SLA"
+        }
+      ]
+    }
+  },
+  "partners": {
+    "eyebrow": "Partners",
+    "title": "Teams we've\nbuilt with.",
+    "description": "From research labs to investment firms, we build the systems they run on, on their own infrastructure.",
+    "yourTeam": "Your team next",
+    "subject": "Partnering with RantAI"
+  },
+  "why": {
+    "eyebrow": "Why RantAI",
+    "title": "What you\nget with us.",
+    "items": {
+      "products": {
+        "title": "Products, not just services",
+        "body": "We build and own our platforms, guaranteeing long-term roadmap continuity independent of any single vendor or engagement."
+      },
+      "lockIn": {
+        "title": "No vendor lock-in",
+        "body": "Support for 100+ LLMs means you can switch model providers without rebuilding anything. Your stack stays yours."
+      },
+      "local": {
+        "title": "Local expertise",
+        "body": "Deep understanding of Indonesian government regulations and compliance requirements — built into the architecture from day one."
+      },
+      "production": {
+        "title": "Production-grade, always",
+        "body": "Deployed in real production environments across government and enterprise. Built for scale, security, and operational reliability."
+      },
+      "lifecycle": {
+        "title": "End-to-end capability",
+        "body": "One partner for the full lifecycle — from AI strategy and architecture design to deployment, monitoring, and ongoing support."
+      },
+      "open": {
+        "title": "Open standards",
+        "body": "Built on open-source foundations for full auditability. No black boxes, no proprietary traps, no hidden dependencies."
+      }
+    },
+    "visuals": {
+      "builtBy": "Built and maintained by RantAI",
+      "shipping": "Shipping updates",
+      "compliance": "Compliance",
+      "region": "Jakarta region",
+      "rules": [
+        "Personal data protection (UU PDP)",
+        "Data stays in Indonesia",
+        "Audit trail for every action"
+      ],
+      "uptime": "Uptime · last 30 days",
+      "uptimeValue": "99.97%",
+      "latency": "p95 latency",
+      "requests": "Requests today",
+      "requestsValue": "1.2M",
+      "onePartner": "One partner",
+      "stages": ["Strategy", "Design", "Build", "Deploy", "Support"]
+    }
+  },
+  "heroVisual": {
+    "pipeline": "Release pipeline",
+    "stages": ["Build", "Test", "Security scan", "Deploy"],
+    "shipped": "Shipped to production",
+    "running": "Running {stage}…",
+    "deploys": "Deploys this week",
+    "faster": "↑ 4× faster",
+    "quality": "Quality score",
+    "incidents": "0 incidents this month"
+  }
+}
