@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePosts } from "@/lib/revalidate";
 import { publishDueScheduledPosts } from "@/lib/blog/publish";
 
 export async function GET(req: NextRequest) {
@@ -15,8 +15,7 @@ export async function GET(req: NextRequest) {
   // Only bust the blog caches when something actually went live, so the daily
   // run is cheap on days with nothing scheduled.
   if (published.length > 0) {
-    revalidatePath("/blog");
-    revalidatePath("/blog/[slug]", "page");
+    revalidatePosts(...published.map((p) => p.slug));
   }
 
   return NextResponse.json({ publishedCount: published.length, published });
