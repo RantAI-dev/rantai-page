@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "motion/react"
 import { Eyebrow } from "@/components/shared/eyebrow"
 import { SplitReveal } from "@/components/shared/split-reveal"
 import { cn } from "@/lib/utils"
-import type { WhyItem } from "../types"
+import { whyRantAI } from "../data"
 import { whyRantAIVisuals } from "./why-rantai-visuals"
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -19,9 +19,11 @@ const spans = ["lg:col-span-2", "", "", "", "", "lg:col-span-2"]
  * at once, with just its title. No tabs to click through.
  */
 export function WhyRantAISection({
-  items,
   eyebrow = "Why RantAI",
-}: Readonly<{ items: WhyItem[]; eyebrow?: string }>) {
+}: Readonly<{ eyebrow?: string }>) {
+  // Read here, not passed in: the items hold icon components, which can't
+  // cross from the server page to this client component as props.
+  const items = whyRantAI
   const reduce = useReducedMotion()
   const [hover, setHover] = useState<number | null>(null)
   return (
@@ -56,6 +58,7 @@ export function WhyRantAISection({
               )}
             >
               <div
+                aria-hidden="true"
                 className="flex h-[260px] items-center justify-center overflow-hidden rounded-xl p-5"
                 style={{
                   backgroundColor: `${tone}10`,

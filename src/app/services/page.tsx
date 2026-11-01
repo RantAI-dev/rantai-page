@@ -1,5 +1,3 @@
-"use client"
-
 import { ServicesVisual } from "@/components/shared/hero-visuals"
 import { PageHero } from "@/components/shared/page-hero"
 import { PillLink } from "@/components/shared/pill-link"
@@ -10,7 +8,14 @@ import { Engagement } from "./_components/engagement"
 import { ProblemPicker } from "./_components/problem-picker"
 import { WhyRantAISection } from "./_components/why-rantai-section"
 import { partners } from "@/lib/partners"
-import { whyRantAI } from "./data"
+import { pageMetadata } from "@/lib/seo"
+
+export const metadata = pageMetadata({
+  title: "Services",
+  description:
+    "Software and AI engineering that takes your systems from architecture to production, with RantAI engineers embedded in your team.",
+  path: "/services",
+})
 
 const sectionLinks = [
   { id: "what-we-do", label: "Where we help" },
@@ -56,7 +61,7 @@ export default function ServicesPage() {
       <Engagement />
 
       <PartnersSection partners={partners} eyebrow="Proof" />
-      <WhyRantAISection items={whyRantAI} />
+      <WhyRantAISection />
       <SectionNav sections={sectionLinks} />
     </SiteShell>
   )

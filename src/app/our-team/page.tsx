@@ -1,5 +1,6 @@
 import { asc } from "drizzle-orm"
 
+import { pageMetadata } from "@/lib/seo"
 import { db } from "@/lib/db"
 import { books, teamMembers } from "@/lib/db/schema"
 import { PeopleVisual } from "@/components/shared/hero-visuals"
@@ -10,10 +11,12 @@ import { partners } from "@/lib/partners"
 import { AboutSection } from "./_components/about-section"
 import { OurTeamGrid } from "./_components/team-grid"
 
-export const metadata = {
-  title: "Our Team",
-  description: "Meet the people behind RantAI.",
-}
+export const metadata = pageMetadata({
+  title: "Company",
+  description:
+    "Meet the engineers, researchers, and builders behind RantAI, an AI company from Indonesia.",
+  path: "/our-team",
+})
 
 export default async function OurTeamPage() {
   const [members, bookRows] = await Promise.all([

@@ -1,7 +1,6 @@
 export const siteConfig = {
   name: "RantAI",
   url: "https://www.rantai.dev",
-  ogImage: "https://www.rantai.dev/og.jpg",
   description:
     "Enterprise AI Products & Engineering — Building production-ready AI platforms for government and enterprise.",
   links: {
