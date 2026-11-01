@@ -39,7 +39,10 @@ export function WhyRantAISection({
         className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-neutral-950"
       />
 
-      <ul className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {/* grid-cols-1 + min-w-0: tiles may shrink below their content, so the
+          endless model marquee (w-max) can't widen the column (on phones it
+          made the whole page 1,650px wide). */}
+      <ul className="mt-14 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((item, i) => {
           const Visual = whyRantAIVisuals[i]
           const tone = /#[0-9a-f]{6}/i.exec(item.iconBg)?.[0] ?? "#517fbb"
@@ -53,7 +56,7 @@ export function WhyRantAISection({
               onPointerEnter={() => setHover(i)}
               onPointerLeave={() => setHover(null)}
               className={cn(
-                "flex flex-col rounded-2xl bg-neutral-100 p-3",
+                "flex min-w-0 flex-col rounded-2xl bg-neutral-100 p-3",
                 spans[i]
               )}
             >
