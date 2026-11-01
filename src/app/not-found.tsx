@@ -4,11 +4,14 @@ import { PillLink } from "@/components/shared/pill-link"
 export default function NotFound() {
   return (
     <NotFoundView
-      title="Page not found"
-      description="The page you are looking for does not exist or has been moved."
+      title={"This page took\na wrong turn."}
+      description="The link may be old, or the page has moved. These are the places people usually look for."
     >
       <PillLink href="/" size="lg">
         Back to home
+      </PillLink>
+      <PillLink href="/blog" size="lg" variant="outline">
+        Browse insights
       </PillLink>
     </NotFoundView>
   )
