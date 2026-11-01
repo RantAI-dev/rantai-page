@@ -5,6 +5,7 @@ import { books as booksTable } from "@/lib/db/schema"
 import { BooksVisual } from "@/components/hero-visuals"
 import { MotionInView } from "@/components/motion-in-view"
 import { PageHero } from "@/components/page-hero"
+import { SectionNav } from "@/components/section-nav"
 import { SiteShell } from "@/components/site-shell"
 import { BookLibrary } from "@/features/book-library"
 
@@ -54,11 +55,15 @@ export default async function AcademyPage() {
           />
         }
       />
-      <section className="mx-auto max-w-[1440px] px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32">
+      <section
+        id="library"
+        className="mx-auto max-w-[1440px] scroll-mt-20 px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
+      >
         <MotionInView className="pt-16 lg:pt-20">
           <BookLibrary books={books} />
         </MotionInView>
       </section>
+      <SectionNav sections={[{ id: "library", label: "Library" }]} />
     </SiteShell>
   )
 }

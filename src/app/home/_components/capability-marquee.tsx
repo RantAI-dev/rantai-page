@@ -157,7 +157,11 @@ function Row({
 
 export function CapabilityMarquee() {
   return (
-    <section aria-labelledby="capabilities-heading" className="py-24 lg:py-32">
+    <section
+      id="capabilities"
+      aria-labelledby="capabilities-heading"
+      className="py-24 lg:py-32"
+    >
       <div className="mx-auto max-w-[1440px] px-5 sm:px-10 lg:px-14">
         <Eyebrow className="text-neutral-500">Capabilities</Eyebrow>
         <SplitReveal

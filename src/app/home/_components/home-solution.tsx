@@ -580,6 +580,7 @@ export function HomeSolution() {
   return (
     <section
       ref={ref}
+      id="solution"
       aria-labelledby="solution-heading"
       className="relative h-[420svh]"
     >
