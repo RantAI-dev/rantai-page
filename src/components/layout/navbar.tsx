@@ -59,9 +59,9 @@ export function Navbar() {
       className={cn(
         "sticky inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,color] duration-500",
         overDark
-          ? "dark border-white/10 bg-black/80 text-foreground backdrop-blur-xl"
+          ? "dark border-white/10 bg-black text-foreground md:bg-black/80 md:backdrop-blur-xl"
           : scrolled
-            ? "border-border bg-background/85 backdrop-blur-xl"
+            ? "border-border bg-background md:bg-background/85 md:backdrop-blur-xl"
             : "border-transparent bg-background"
       )}
     >
