@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidateTags } from "@/lib/revalidate";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
@@ -31,6 +31,6 @@ export async function POST(req: NextRequest) {
     ),
   );
 
-  revalidatePath("/blog");
+  revalidateTags();
   return NextResponse.json({ ok: true });
 }

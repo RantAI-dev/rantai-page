@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidateTeam } from "@/lib/revalidate";
 import { db } from "@/lib/db";
 import { teamMembers } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
     .values({ name, role, bio, imageUrl, linkedin, github, orderIndex: orderIndex ?? 0 })
     .returning();
 
-  revalidatePath("/our-team");
-  revalidatePath("/team");
+  revalidateTeam();
   return NextResponse.json(member, { status: 201 });
 }

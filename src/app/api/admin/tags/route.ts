@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidateTags } from "@/lib/revalidate";
 import { asc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { tags } from "@/lib/db/schema";
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const [tag] = await db.insert(tags).values({ name, color, orderIndex }).returning();
-    revalidatePath("/blog");
+    revalidateTags();
     return NextResponse.json(tag, { status: 201 });
   } catch (err) {
     const { status } = getDatabaseErrorResponse(err);

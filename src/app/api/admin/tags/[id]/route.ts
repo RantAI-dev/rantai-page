@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePosts } from "@/lib/revalidate";
 import { count, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { blogPosts, tags } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
 import { getDatabaseErrorResponse } from "@/lib/blog/input";
-
-function revalidateBlogPages() {
-  revalidatePath("/blog");
-  revalidatePath("/blog/[slug]", "page");
-}
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
@@ -41,7 +36,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       await db.update(blogPosts).set({ tag: name }).where(eq(blogPosts.tag, existing.name));
     }
 
-    revalidateBlogPages();
+    revalidatePosts();
     return NextResponse.json(tag);
   } catch (err) {
     const { status } = getDatabaseErrorResponse(err);
@@ -71,6 +66,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   }
 
   await db.delete(tags).where(eq(tags.id, id));
-  revalidateBlogPages();
+  revalidatePosts();
   return NextResponse.json({ ok: true });
 }

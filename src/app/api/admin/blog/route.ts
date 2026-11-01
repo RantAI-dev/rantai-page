@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
+import { revalidatePosts } from "@/lib/revalidate"
 import { db } from "@/lib/db"
 import { blogPosts } from "@/lib/db/schema"
 import { getSession } from "@/lib/auth"
@@ -58,8 +58,7 @@ export async function POST(req: NextRequest) {
       })
       .returning()
 
-    revalidatePath("/blog")
-    revalidatePath("/blog/[slug]", "page")
+    revalidatePosts(post.slug)
     return NextResponse.json(post, { status: 201 })
   } catch (err) {
     const { message, status } = getDatabaseErrorResponse(err)

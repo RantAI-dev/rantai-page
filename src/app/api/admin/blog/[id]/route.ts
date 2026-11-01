@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
+import { revalidatePosts } from "@/lib/revalidate"
 import { db } from "@/lib/db"
 import { blogPosts } from "@/lib/db/schema"
 import { getSession } from "@/lib/auth"
@@ -13,14 +13,6 @@ import {
 import { generateUniqueSlug } from "@/lib/blog/slug"
 import { getPublishedAtForUpdate } from "@/lib/blog/date"
 import { eq } from "drizzle-orm"
-
-function revalidateBlogPages(...slugs: string[]) {
-  revalidatePath("/blog")
-  revalidatePath("/blog/[slug]", "page")
-  for (const slug of slugs) {
-    revalidatePath(`/blog/${slug}`)
-  }
-}
 
 export async function GET(
   _req: NextRequest,
@@ -79,7 +71,7 @@ export async function PUT(
         .where(eq(blogPosts.id, id))
         .returning()
 
-      revalidateBlogPages()
+      revalidatePosts()
       return NextResponse.json(post)
     }
 
@@ -138,7 +130,7 @@ export async function PUT(
       .where(eq(blogPosts.id, id))
       .returning()
 
-    revalidateBlogPages(existingPost.slug, post.slug)
+    revalidatePosts(existingPost.slug, post.slug)
     return NextResponse.json(post)
   } catch (err) {
     const { message, status } = getDatabaseErrorResponse(err)
@@ -156,6 +148,6 @@ export async function DELETE(
 
   const { id } = await params
   await db.delete(blogPosts).where(eq(blogPosts.id, id))
-  revalidateBlogPages()
+  revalidatePosts()
   return NextResponse.json({ ok: true })
 }
