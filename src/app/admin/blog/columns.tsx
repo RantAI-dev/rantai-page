@@ -17,10 +17,10 @@ import { toast } from "sonner";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { siteConfig } from "@/lib/config";
-import { getBlogPostingDate, type BlogPublicationStatus } from "@/lib/blog-date";
+import { getBlogPostingDate, type BlogPublicationStatus } from "@/lib/blog/date";
 import type { BlogPost } from "@/lib/db/schema";
-import type { Option } from "@/types/data-table";
-import { XIcon, LinkedInIcon, ThreadsIcon, FacebookIcon } from "@/components/icons";
+import type { Option } from "@/lib/data-table/types";
+import { XIcon, LinkedInIcon, ThreadsIcon, FacebookIcon } from "@/components/shared/icons";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

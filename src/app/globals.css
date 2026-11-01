@@ -175,7 +175,7 @@
   }
 }
 
-/* Reading page: code frames and heading links (markup from lib/article-html) */
+/* Reading page: code frames and heading links (markup from lib/blog/article-html) */
 @layer components {
   .code-frame {
     @apply my-8 overflow-hidden rounded-xl bg-neutral-950 text-neutral-100;

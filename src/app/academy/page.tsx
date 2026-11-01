@@ -2,13 +2,13 @@ import { asc } from "drizzle-orm"
 
 import { db } from "@/lib/db"
 import { books as booksTable } from "@/lib/db/schema"
-import { BooksVisual } from "@/components/hero-visuals"
-import { MotionInView } from "@/components/motion-in-view"
-import { PageHero } from "@/components/page-hero"
-import { SectionNav } from "@/components/section-nav"
+import { BooksVisual } from "@/components/shared/hero-visuals"
+import { MotionInView } from "@/components/shared/motion-in-view"
+import { PageHero } from "@/components/shared/page-hero"
+import { SectionNav } from "@/components/layout/section-nav"
 import { ForTeams } from "./_components/for-teams"
-import { SiteShell } from "@/components/site-shell"
-import { BookLibrary } from "@/features/book-library"
+import { SiteShell } from "@/components/layout/site-shell"
+import { BookLibrary } from "./_components/book-library"
 
 export const metadata = {
   title: "Academy",

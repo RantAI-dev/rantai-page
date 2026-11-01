@@ -46,7 +46,7 @@ import {
   ItemTitle,
   ItemDescription,
 } from "@/components/ui/item"
-import { ClaudeIcon, OpenAIIcon, GoogleIcon } from "@/components/icons"
+import { ClaudeIcon, OpenAIIcon, GoogleIcon } from "@/components/shared/icons"
 import { Separator } from "@/components/ui/separator"
 
 // ── Types ─────────────────────────────────────────────────────────────────────

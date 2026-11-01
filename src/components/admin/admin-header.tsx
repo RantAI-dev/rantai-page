@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ThemeToggle } from "@/components/shared/theme-toggle"
 
 const breadcrumbLabels: Record<string, string> = {
   admin: "Dashboard",

@@ -19,7 +19,7 @@ import {
   Table2,
 } from "lucide-react"
 
-import { ProductLogo, ProductTile } from "@/components/product-logo"
+import { ProductLogo, ProductTile } from "@/components/shared/product-logo"
 import { cn } from "@/lib/utils"
 
 // Interactive product demos for the platform reel: each one plays a short,

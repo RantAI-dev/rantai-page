@@ -3,8 +3,8 @@
 import { useState } from "react"
 import { motion, useReducedMotion } from "motion/react"
 
-import { Eyebrow } from "@/components/eyebrow"
-import { SplitReveal } from "@/components/split-reveal"
+import { Eyebrow } from "@/components/shared/eyebrow"
+import { SplitReveal } from "@/components/shared/split-reveal"
 import { cn } from "@/lib/utils"
 import type { WhyItem } from "../types"
 import { whyRantAIVisuals } from "./why-rantai-visuals"

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { gradientForColor } from "@/lib/tag-colors";
+import { gradientForColor } from "@/lib/blog/tag-colors";
 import {
   Combobox,
   ComboboxContent,

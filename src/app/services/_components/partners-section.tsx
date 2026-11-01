@@ -3,11 +3,11 @@
 import Image from "next/image"
 import { motion, useReducedMotion } from "motion/react"
 
-import { Eyebrow } from "@/components/eyebrow"
-import { SplitReveal } from "@/components/split-reveal"
+import { Eyebrow } from "@/components/shared/eyebrow"
+import { SplitReveal } from "@/components/shared/split-reveal"
 import { siteConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
-import type { PartnerItem } from "../types"
+import type { PartnerItem } from "@/lib/partners"
 
 // Proof: the teams we have built with, as a clean grid of logos.
 

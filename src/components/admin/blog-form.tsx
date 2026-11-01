@@ -21,7 +21,7 @@ import { ImageUpload } from "@/components/admin/image-upload";
 import { DateTimePicker } from "@/components/admin/datetime-picker";
 import { AuthorSelect, type TeamAuthor } from "@/components/admin/author-select";
 import { TagSelect, type TagOption } from "@/components/admin/tag-select";
-import { BLOG_TITLE_MAX_LENGTH, normalizeBlogInput } from "@/lib/blog-input";
+import { BLOG_TITLE_MAX_LENGTH, normalizeBlogInput } from "@/lib/blog/input";
 import type { BlogPost } from "@/lib/db/schema";
 
 // Soft target for SEO meta descriptions; we warn past this, never block.

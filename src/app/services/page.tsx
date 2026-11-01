@@ -1,15 +1,16 @@
 "use client"
 
-import { ServicesVisual } from "@/components/hero-visuals"
-import { PageHero } from "@/components/page-hero"
-import { PillLink } from "@/components/pill-link"
-import { SectionNav } from "@/components/section-nav"
-import { SiteShell } from "@/components/site-shell"
+import { ServicesVisual } from "@/components/shared/hero-visuals"
+import { PageHero } from "@/components/shared/page-hero"
+import { PillLink } from "@/components/shared/pill-link"
+import { SectionNav } from "@/components/layout/section-nav"
+import { SiteShell } from "@/components/layout/site-shell"
 import { PartnersSection } from "./_components/partners-section"
 import { Engagement } from "./_components/engagement"
 import { ProblemPicker } from "./_components/problem-picker"
 import { WhyRantAISection } from "./_components/why-rantai-section"
-import { partners, whyRantAI } from "./data"
+import { partners } from "@/lib/partners"
+import { whyRantAI } from "./data"
 
 const sectionLinks = [
   { id: "what-we-do", label: "Where we help" },

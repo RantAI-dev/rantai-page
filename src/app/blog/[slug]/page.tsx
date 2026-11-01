@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation"
 
-import { getAllPostSlugs, getNextPost, getPostBySlug } from "@/lib/blog"
+import { getAllPostSlugs, getNextPost, getPostBySlug } from "@/lib/blog/posts"
 import { siteConfig } from "@/lib/config"
-import { BlogPostView } from "@/components/blog-post-view"
+import { BlogPostView } from "@/components/blog/blog-post-view"
 
 export async function generateStaticParams() {
   const paths = await getAllPostSlugs()

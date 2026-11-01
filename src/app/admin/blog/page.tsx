@@ -20,7 +20,7 @@ import {
 import {
   getBlogPublicationStatus,
   type BlogPublicationStatus,
-} from "@/lib/blog-date"
+} from "@/lib/blog/date"
 import { db } from "@/lib/db"
 import { blogPosts, tags as tagsTable } from "@/lib/db/schema"
 

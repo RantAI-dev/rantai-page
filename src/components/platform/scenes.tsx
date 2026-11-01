@@ -3,9 +3,9 @@
 import { useSyncExternalStore } from "react"
 import { motion, type MotionValue } from "motion/react"
 
-import DotGrid from "@/components/react-bits/dot-grid"
-import GhostFibers from "@/components/react-bits/ghost-fibers"
-import LineWaves from "@/components/react-bits/line-waves"
+import DotGrid from "@/components/effects/dot-grid"
+import GhostFibers from "@/components/effects/ghost-fibers"
+import LineWaves from "@/components/effects/line-waves"
 import { hasFastWebGL } from "@/lib/webgl-support"
 
 // A backdrop per product panel (three from React Bits, one in plain CSS),

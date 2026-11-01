@@ -26,11 +26,11 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { Eyebrow } from "@/components/eyebrow"
-import { SplitReveal } from "@/components/split-reveal"
-import { smoothScrollTo } from "@/components/smooth-scroll"
+import { Eyebrow } from "@/components/shared/eyebrow"
+import { SplitReveal } from "@/components/shared/split-reveal"
+import { smoothScrollTo } from "@/components/layout/smooth-scroll"
 import { products } from "@/components/platform/products"
-import { logoSrc } from "@/components/product-logo"
+import { logoSrc } from "@/components/shared/product-logo"
 import { cn } from "@/lib/utils"
 
 // "One request, four products": a single monthly report travels from raw

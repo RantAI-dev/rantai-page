@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TAG_COLOR_PRESETS, gradientForColor } from "@/lib/tag-colors";
+import { TAG_COLOR_PRESETS, gradientForColor } from "@/lib/blog/tag-colors";
 import type { Tag } from "@/lib/db/schema";
 
 function ColorSwatch({ color }: { color: string }) {

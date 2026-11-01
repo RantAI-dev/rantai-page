@@ -11,10 +11,10 @@ import {
 } from "motion/react"
 import { ArrowUpRight } from "lucide-react"
 
-import { Eyebrow } from "@/components/eyebrow"
-import { smoothScrollTo } from "@/components/smooth-scroll"
-import { SplitReveal } from "@/components/split-reveal"
-import { ProductLogo, productIdFrom } from "@/components/product-logo"
+import { Eyebrow } from "@/components/shared/eyebrow"
+import { smoothScrollTo } from "@/components/layout/smooth-scroll"
+import { SplitReveal } from "@/components/shared/split-reveal"
+import { ProductLogo, productIdFrom } from "@/components/shared/product-logo"
 import { cn } from "@/lib/utils"
 
 import { demos } from "@/components/platform/demos"

@@ -1,131 +1,13 @@
 import {
-  ServerIcon,
-  DatabaseIcon,
-  PackageIcon,
-  ShieldCheckIcon,
-  MapPinIcon,
-  RocketIcon,
-  LayersIcon,
   CodeIcon,
-  CloudIcon,
-  AppWindowIcon,
+  LayersIcon,
+  MapPinIcon,
+  PackageIcon,
+  RocketIcon,
+  ShieldCheckIcon,
 } from "lucide-react"
 
-import type {
-  TabContentSoftware,
-  TabContentAI,
-  PartnerItem,
-  WhyItem,
-} from "./types"
-
-export const softwareEngineering: TabContentSoftware = {
-  title: "Full Stack Development",
-  description:
-    "End-to-end product development, from architecture to deployment. We own the full lifecycle.",
-  features: [
-    "Frontend, backend, and infrastructure",
-    "React, Next.js, FastAPI, Node.js",
-    "Cloud-native, containerized deployment",
-    "API design and microservices architecture",
-  ],
-  stack: [
-    {
-      category: "Frontend",
-      categoryIcon: AppWindowIcon,
-      iconColor: "#22c55e",
-      tech: "React",
-      techIcon: "/tech-stack/react.svg",
-    },
-    {
-      category: "Backend",
-      categoryIcon: ServerIcon,
-      iconColor: "#eab308",
-      tech: "Rust",
-      techIcon: "/tech-stack/rust.svg",
-    },
-    {
-      category: "Database",
-      categoryIcon: DatabaseIcon,
-      iconColor: "#ef4444",
-      tech: "PostgreSQL",
-      techIcon: "/tech-stack/postgresql.svg",
-    },
-    {
-      category: "Infrastructure",
-      categoryIcon: CloudIcon,
-      iconColor: "#3b82f6",
-      tech: "Docker",
-      techIcon: "/tech-stack/docker.svg",
-    },
-  ],
-}
-
-export const aiEngineering: TabContentAI = {
-  title: "ML Engineering & Operations",
-  description:
-    "From model integration to MLOps pipelines — we make sure your AI actually runs in production, not just in a notebook.",
-  features: [
-    "LLM integration and RAG pipelines",
-    "Fine-tuning and model evaluation",
-    "MLOps: monitoring, versioning, retraining",
-    "AI strategy consulting",
-  ],
-  pipelineRow1: [
-    { label: "Data Ingestion" },
-    { label: "RAG Pipeline", highlighted: true },
-    { label: "LLM" },
-  ],
-  pipelineRow2: [
-    { label: "Evaluation" },
-    { label: "MLOps", highlighted: true },
-    { label: "Deploy" },
-  ],
-  stats: [
-    { value: "98%", label: "Infrastructure" },
-    { value: "42ms", label: "Latency" },
-    { value: "100+", label: "LLM Support" },
-  ],
-}
-
-export const partners: PartnerItem[] = [
-  {
-    id: "nqrust",
-    name: "NexusQuantum Technologies",
-    logo: "/partners/nqrust.png",
-    showcase: {
-      name: "NQRust Hypervisor Suite",
-      tagline: "Multi-agent orchestrator for quantitative research workflows.",
-      ctaLabel: "VISIT WEBSITE",
-      ctaHref: "#",
-      image: "/partners/nqrust.png",
-    },
-  },
-  {
-    id: "ventures",
-    name: "Quantum Investa Utama",
-    logo: "/partners/ventures.png",
-    showcase: {
-      name: "AI Platform",
-      tagline:
-        "Investment intelligence platform for venture-scale decision making.",
-      ctaLabel: "VISIT WEBSITE",
-      ctaHref: "#",
-      image: "/partners/ventures.png",
-    },
-  },
-  {
-    id: "bohrlabs",
-    name: "Bohrlabs",
-    logo: "/partners/bohrlabs.png",
-    showcase: {
-      name: "Bohrlabs Research Suite",
-      tagline: "Scientific computing infrastructure for modern research labs.",
-      ctaLabel: "VISIT WEBSITE",
-      ctaHref: "#",
-      image: "/partners/bohrlabs.png",
-    },
-  },
-]
+import type { WhyItem } from "./types"
 
 export const whyRantAI: WhyItem[] = [
   {
