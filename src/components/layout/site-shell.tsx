@@ -12,7 +12,11 @@ export function SiteShell({
   cta?: FooterCta
 }>) {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
+    // overflow-x: clip keeps any element that runs too wide from widening the
+    // page on phones (which zooms the layout out and breaks fixed menus).
+    // clip, not hidden: hidden would turn this into a scroll container and
+    // stop sticky sections from pinning.
+    <div className="min-h-dvh overflow-x-clip bg-background text-foreground">
       <SmoothScroll />
       {/* Keyboard and screen-reader users can jump past the navigation */}
       <a
