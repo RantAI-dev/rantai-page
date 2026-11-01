@@ -347,7 +347,7 @@ function AgentsScene() {
         </span>
         <div className="flex-1">
           <p className="text-[14px] leading-relaxed">
-            Up <span className="font-medium text-[#059669]">12%</span> on last
+            Up <span className="font-medium text-[#047857]">12%</span> on last
             month, led by Malaysia and Singapore.
           </p>
           <div className="mt-3 flex h-16 items-end gap-1.5">
@@ -496,7 +496,7 @@ function Route({
                     "text-[13px] font-medium whitespace-nowrap transition-colors",
                     now
                       ? "text-neutral-950"
-                      : "text-neutral-400 group-hover:text-neutral-700"
+                      : "text-neutral-500 group-hover:text-neutral-800"
                   )}
                 >
                   {s.name}

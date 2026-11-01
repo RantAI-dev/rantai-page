@@ -128,7 +128,7 @@ export function HomeHero() {
               animate={ready ? { opacity: 1, y: 0 } : undefined}
               transition={{ duration: 0.8, ease, delay: 0.7 }}
             >
-              <span className="text-xs font-medium tracking-[0.08em] text-white/45 uppercase">
+              <span className="text-xs font-medium tracking-[0.08em] text-white/60 uppercase">
                 Partners
               </span>
               <ul className="flex items-center gap-6 sm:gap-10">

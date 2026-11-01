@@ -190,16 +190,16 @@ export function ArticleReader({
         </div>
 
         {hasToc && (
-          <aside className="hidden lg:block">
+          <div className="hidden lg:block">
             <nav aria-label="On this page" className="sticky top-28 pt-12">
-              <p className="mb-4 text-[12px] font-medium tracking-[0.08em] text-neutral-400 uppercase">
+              <p className="mb-4 text-[12px] font-medium tracking-[0.08em] text-neutral-500 uppercase">
                 On this page
               </p>
               <div className="max-h-[calc(100svh-14rem)] overflow-y-auto [scrollbar-width:none]">
                 <TocList headings={headings} active={active} indicator />
               </div>
             </nav>
-          </aside>
+          </div>
         )}
       </div>
     </>

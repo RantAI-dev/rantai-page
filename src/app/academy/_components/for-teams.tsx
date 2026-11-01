@@ -18,6 +18,7 @@ function Desk({
 }: Readonly<{ tone: string; children: React.ReactNode }>) {
   return (
     <div
+      aria-hidden="true"
       className="flex h-[240px] items-center justify-center overflow-hidden rounded-xl"
       style={{
         backgroundColor: `${tone}10`,
@@ -188,7 +189,7 @@ export function ForTeams() {
                   {o.title}
                 </h3>
                 <div className="mt-1.5 flex items-end justify-between gap-3">
-                  <p className="text-[15px] text-neutral-500">{o.line}</p>
+                  <p className="text-[15px] text-neutral-600">{o.line}</p>
                   <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-neutral-500 transition-colors duration-200 group-hover:bg-neutral-950 group-hover:text-white">
                     <ArrowRight className="size-4" />
                   </span>

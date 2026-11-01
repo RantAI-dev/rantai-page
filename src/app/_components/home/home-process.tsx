@@ -380,7 +380,7 @@ function SequenceRow({
                         : "border-transparent"
                     )}
                   >
-                    <div className="relative size-full">
+                    <div aria-hidden="true" className="relative size-full">
                       <Visual
                         active={on && !all ? true : i === active}
                         done={done || all}

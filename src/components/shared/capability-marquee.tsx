@@ -115,7 +115,7 @@ function Card({
         >
           <Icon aria-hidden="true" className="size-5" strokeWidth={1.9} />
         </span>
-        <span className="text-xs font-medium tracking-[0.08em] text-neutral-400 uppercase">
+        <span className="text-xs font-medium tracking-[0.08em] text-neutral-500 uppercase">
           {item.product}
         </span>
       </div>

@@ -402,7 +402,7 @@ function PhaseCopy({ phase }: Readonly<{ phase: Phase }>) {
       <p className="mt-4 max-w-md text-[17px] leading-relaxed text-white/60">
         {phase.line}
       </p>
-      <p className="mt-8 text-[12px] font-medium tracking-[0.08em] text-white/40 uppercase">
+      <p className="mt-8 text-[12px] font-medium tracking-[0.08em] text-white/60 uppercase">
         You get
       </p>
       <ul className="mt-3 flex flex-wrap gap-2">
@@ -462,7 +462,7 @@ function Timeline({
     <div className="relative">
       {/* Week ruler */}
       <div
-        className="grid text-[11px] text-white/35 tabular-nums"
+        className="grid text-[11px] text-white/55 tabular-nums"
         style={{ gridTemplateColumns: `repeat(${WEEKS}, minmax(0, 1fr))` }}
       >
         {Array.from({ length: WEEKS }, (_, w) => (
@@ -496,7 +496,13 @@ function Timeline({
                     : done
                       ? `${p.tone}59`
                       : "rgba(255,255,255,0.06)",
-                  color: now || done ? "#ffffff" : "rgba(255,255,255,0.45)",
+                  // Dark text on the bright current bar: white on these
+                  // tones falls below readable contrast.
+                  color: now
+                    ? "#0a0a0a"
+                    : done
+                      ? "#ffffff"
+                      : "rgba(255,255,255,0.6)",
                   boxShadow: now
                     ? `0 0 0 1px ${p.tone}, 0 8px 24px -8px ${p.tone}`
                     : "0 0 0 1px rgba(255,255,255,0)",
@@ -573,6 +579,7 @@ function Pinned() {
           >
             <AnimatePresence mode="wait">
               <motion.div
+                aria-hidden="true"
                 key={phase.id}
                 className="flex w-full justify-center"
                 initial={{ opacity: 0 }}
@@ -598,6 +605,7 @@ function Stacked() {
           <li key={p.id} className="grid gap-6">
             <PhaseCopy phase={p} />
             <div
+              aria-hidden="true"
               className="flex justify-center rounded-[24px] p-5 sm:p-8"
               style={{
                 backgroundColor: `${p.tone}14`,

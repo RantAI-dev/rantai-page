@@ -172,7 +172,7 @@ export function AboutSection({
               <p className="text-[clamp(2.25rem,4vw,3.25rem)] leading-none font-medium tracking-[-0.04em] text-neutral-950 tabular-nums">
                 <CountUp to={f.n} />
               </p>
-              <p className="mt-2 text-[14px] text-neutral-500">{f.label}</p>
+              <p className="mt-2 text-[14px] text-neutral-600">{f.label}</p>
             </div>
           </motion.li>
         ))}

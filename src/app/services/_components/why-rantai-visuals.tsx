@@ -363,7 +363,8 @@ function Lifecycle({ hover }: Readonly<Scene>) {
   return (
     <Rise className={cn(card, "w-full max-w-lg p-5")}>
       <p className="text-[12px] font-medium text-neutral-500">One partner</p>
-      <ol className="relative mt-5 flex items-start justify-between">
+      {/* The connecting line sits beside the list: an <ol> may only hold <li>s */}
+      <div className="relative mt-5">
         <span className="absolute top-4 right-6 left-6 h-px bg-[#bb5153]/20" />
         <motion.span
           className="absolute top-4 left-6 h-px origin-left bg-[#bb5153]"
@@ -371,26 +372,28 @@ function Lifecycle({ hover }: Readonly<Scene>) {
           animate={{ scaleX: at / (stages.length - 1) }}
           transition={{ duration: 0.4, ease }}
         />
-        {stages.map((s, i) => (
-          <li
-            key={s.label}
-            className="relative flex w-16 flex-col items-center gap-2"
-          >
-            <motion.span
-              className="grid size-8 place-items-center rounded-full text-[11px] font-medium"
-              animate={{
-                backgroundColor: i <= at ? "#bb5153" : "#f5e6e7",
-                color: i <= at ? "#ffffff" : "#bb5153",
-                scale: i === at && hover ? 1.15 : 1,
-              }}
-              transition={{ duration: 0.25 }}
+        <ol className="relative flex items-start justify-between">
+          {stages.map((s, i) => (
+            <li
+              key={s.label}
+              className="relative flex w-16 flex-col items-center gap-2"
             >
-              <s.icon className="size-3.5" strokeWidth={2.2} />
-            </motion.span>
-            <span className="text-[10.5px] text-neutral-600">{s.label}</span>
-          </li>
-        ))}
-      </ol>
+              <motion.span
+                className="grid size-8 place-items-center rounded-full text-[11px] font-medium"
+                animate={{
+                  backgroundColor: i <= at ? "#bb5153" : "#f5e6e7",
+                  color: i <= at ? "#ffffff" : "#bb5153",
+                  scale: i === at && hover ? 1.15 : 1,
+                }}
+                transition={{ duration: 0.25 }}
+              >
+                <s.icon className="size-3.5" strokeWidth={2.2} />
+              </motion.span>
+              <span className="text-[10.5px] text-neutral-600">{s.label}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
     </Rise>
   )
 }
