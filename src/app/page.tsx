@@ -10,6 +10,7 @@ import { HomeProcess } from "@/app/home/_components/home-process"
 import { HomeSolution } from "@/app/home/_components/home-solution"
 import { ExpandingPanel } from "@/components/platform/expanding-panel"
 import { PlatformReel } from "@/components/platform/platform-reel"
+import { SectionNav } from "@/components/section-nav"
 import { SiteShell } from "@/components/site-shell"
 
 export const metadata: Metadata = {
@@ -60,6 +61,16 @@ export default function Page() {
       <CapabilityMarquee />
       <HomeProcess />
       <HomeInsights />
+      <SectionNav
+        sections={[
+          { id: "problem", label: "The problem" },
+          { id: "solution", label: "How we help" },
+          { id: "platform", label: "Products" },
+          { id: "capabilities", label: "Capabilities" },
+          { id: "how-we-work", label: "How we work" },
+          { id: "insights", label: "Insights" },
+        ]}
+      />
     </SiteShell>
   )
 }

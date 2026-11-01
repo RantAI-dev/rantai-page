@@ -14,6 +14,7 @@ export async function HomeInsights() {
 
   return (
     <section
+      id="insights"
       aria-labelledby="insights-heading"
       className="mx-auto max-w-[1440px] px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
     >
@@ -32,7 +33,10 @@ export async function HomeInsights() {
       </MotionInView>
 
       <MotionInView className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-        <FeaturedPostCard post={featured} className="lg:col-span-2 lg:row-span-2" />
+        <FeaturedPostCard
+          post={featured}
+          className="lg:col-span-2 lg:row-span-2"
+        />
         {rest.map((post) => (
           <PostCard key={post.slug} post={post} />
         ))}

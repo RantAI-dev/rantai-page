@@ -9,6 +9,7 @@ import { ExpandingPanel } from "@/components/platform/expanding-panel"
 import { PlatformReel } from "@/components/platform/platform-reel"
 import { DataJourney } from "@/components/platform/data-journey"
 import { ServicesOverview } from "@/components/services-overview"
+import { SectionNav } from "@/components/section-nav"
 import { SiteShell } from "@/components/site-shell"
 
 export const metadata: Metadata = {
@@ -64,6 +65,14 @@ export default function ProductsPage() {
       </ExpandingPanel>
       <CapabilityMarquee />
       <ServicesOverview />
+      <SectionNav
+        sections={[
+          { id: "how-it-fits", label: "How it fits" },
+          { id: "platform", label: "Products" },
+          { id: "capabilities", label: "Capabilities" },
+          { id: "services", label: "Engineers" },
+        ]}
+      />
     </SiteShell>
   )
 }

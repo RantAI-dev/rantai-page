@@ -5,6 +5,7 @@ import { teamMembers } from "@/lib/db/schema"
 import { PeopleVisual } from "@/components/hero-visuals"
 import { MotionInView } from "@/components/motion-in-view"
 import { PageHero } from "@/components/page-hero"
+import { SectionNav } from "@/components/section-nav"
 import { SiteShell } from "@/components/site-shell"
 import { OurTeamGrid } from "./_components/team-grid"
 
@@ -36,11 +37,15 @@ export default async function OurTeamPage() {
           />
         }
       />
-      <section className="mx-auto max-w-[1440px] px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32">
+      <section
+        id="team"
+        className="mx-auto max-w-[1440px] scroll-mt-20 px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
+      >
         <MotionInView className="pt-16 lg:pt-20">
           <OurTeamGrid members={members} />
         </MotionInView>
       </section>
+      <SectionNav sections={[{ id: "team", label: "Team" }]} />
     </SiteShell>
   )
 }

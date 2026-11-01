@@ -580,6 +580,7 @@ export function HomeProblem() {
   return (
     <section
       ref={ref}
+      id="problem"
       aria-labelledby="problem-heading"
       className="relative h-[420svh]"
     >
