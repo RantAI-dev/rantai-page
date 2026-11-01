@@ -2,7 +2,13 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { LayoutGridIcon, ListIcon, SearchIcon, XIcon } from "lucide-react"
+import {
+  ArrowUpRight,
+  LayoutGridIcon,
+  ListIcon,
+  SearchIcon,
+  XIcon,
+} from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
 import { FilterChips } from "@/components/filter-chips"
@@ -28,6 +34,12 @@ function CategoryTag({
       {category}
     </span>
   )
+}
+
+/** "Deep Learning via Rust - Neural network mastery" → title and subtitle. */
+function splitName(name: string) {
+  const [title, ...rest] = name.split(" - ")
+  return { title, subtitle: rest.join(" - ") }
 }
 
 function linkProps(book: Book) {
@@ -125,7 +137,7 @@ export function BookLibrary({ books }: BookLibraryProps) {
       />
 
       {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           <AnimatePresence mode="popLayout">
             {filteredBooks.map((book, idx) => (
               <motion.a
@@ -136,30 +148,47 @@ export function BookLibrary({ books }: BookLibraryProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ duration: 0.35, delay: Math.min(idx, 8) * 0.03 }}
-                className="group flex flex-col rounded-2xl bg-muted p-3 transition-colors hover:bg-neutral-200/70"
+                className="group flex flex-col"
               >
-                <div className="relative aspect-3/4 overflow-hidden rounded-xl bg-neutral-200">
-                  <Image
-                    src={book.imageUrl}
-                    alt={book.name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                  />
-                </div>
-                <div className="flex flex-1 flex-col gap-2 px-1.5 pt-4 pb-1.5">
-                  <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
-                    {book.code}
-                  </p>
-                  <p className="line-clamp-2 text-[17px] leading-snug font-medium tracking-[-0.015em] text-foreground">
-                    {book.name}
-                  </p>
-                  <div className="mt-auto pt-2">
-                    <CategoryTag
-                      category={book.category}
-                      tone={getCategoryTone(book.category)}
+                {/* The cover lifts like a book pulled off the shelf; the
+                    subtitle and a read link slide up over it */}
+                <div className="relative aspect-[2/3] [perspective:900px]">
+                  <div className="relative size-full overflow-hidden rounded-l-[2px] rounded-r-[5px] bg-neutral-200 shadow-[0_1px_2px_rgba(0,0,0,0.06)] transition-[transform,box-shadow] duration-500 ease-out group-hover:[transform:rotateY(-8deg)_translateY(-6px)] group-hover:shadow-[16px_22px_40px_-18px_rgba(0,0,0,0.45)]">
+                    <Image
+                      src={book.imageUrl}
+                      alt={book.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      className="object-cover"
                     />
+                    {/* Spine shade */}
+                    <span className="absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-black/25 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/85 via-black/60 to-transparent px-4 pt-14 pb-4 text-white transition-transform duration-500 ease-out group-hover:translate-y-0">
+                      <p className="mb-1.5 text-[10.5px] font-medium tracking-[0.08em] text-white/60 uppercase">
+                        {book.code} · {book.category}
+                      </p>
+                      {splitName(book.name).subtitle && (
+                        <p className="text-[15px] leading-snug font-medium">
+                          {splitName(book.name).subtitle}
+                        </p>
+                      )}
+                      <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[12px] font-medium text-neutral-900">
+                        {book.url ? "Read the book" : "Coming soon"}
+                        {book.url && <ArrowUpRight className="size-3.5" />}
+                      </span>
+                    </div>
                   </div>
+                </div>
+                {/* Compact caption: title and a category dot */}
+                <div className="mt-3 flex items-start gap-2 px-0.5">
+                  <span
+                    aria-hidden="true"
+                    className="mt-[7px] size-1.5 shrink-0 rounded-full"
+                    style={{ background: getCategoryTone(book.category).tone }}
+                  />
+                  <p className="line-clamp-2 text-[14px] leading-snug font-medium text-foreground">
+                    {splitName(book.name).title}
+                  </p>
                 </div>
               </motion.a>
             ))}
@@ -179,7 +208,7 @@ export function BookLibrary({ books }: BookLibraryProps) {
                 transition={{ duration: 0.3, delay: Math.min(idx, 8) * 0.03 }}
                 className="group flex items-center gap-4 rounded-2xl bg-muted p-3 transition-colors hover:bg-neutral-200/70"
               >
-                <div className="relative aspect-3/4 h-24 shrink-0 overflow-hidden rounded-lg bg-neutral-200 sm:h-28">
+                <div className="relative aspect-[2/3] h-24 shrink-0 overflow-hidden rounded-l-[2px] rounded-r-[4px] bg-neutral-200 sm:h-28">
                   <Image
                     src={book.imageUrl}
                     alt={book.name}
