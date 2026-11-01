@@ -1,116 +1,85 @@
 "use client"
 
 import { useState } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { motion, useReducedMotion } from "motion/react"
 
 import { Eyebrow } from "@/components/eyebrow"
-import { MotionInView } from "@/components/motion-in-view"
+import { SplitReveal } from "@/components/split-reveal"
 import { cn } from "@/lib/utils"
 import type { WhyItem } from "../types"
 import { whyRantAIVisuals } from "./why-rantai-visuals"
 
-export function WhyRantAISection({ items }: { items: WhyItem[] }) {
-  const [selectedIdx, setSelectedIdx] = useState(0)
-  const selected = items[selectedIdx]
-  const SelectedVisual = whyRantAIVisuals[selectedIdx]
-  // Each point gets a desk tinted with its own icon colour.
-  const tone = /#[0-9a-f]{6}/i.exec(selected.iconBg)?.[0] ?? "#517fbb"
+const ease = [0.22, 1, 0.36, 1] as const
 
+// Tile sizes for the bento: two wide tiles, four regular ones.
+const spans = ["lg:col-span-2", "", "", "", "", "lg:col-span-2"]
+
+/**
+ * Why RantAI as a bento: every point shows its own small piece of product
+ * at once, with just its title. No tabs to click through.
+ */
+export function WhyRantAISection({
+  items,
+  eyebrow = "Why RantAI",
+}: Readonly<{ items: WhyItem[]; eyebrow?: string }>) {
+  const reduce = useReducedMotion()
+  const [hover, setHover] = useState<number | null>(null)
   return (
     <section
+      id="why-rantai"
       aria-labelledby="why-heading"
       className="mx-auto max-w-[1440px] px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
     >
-      <MotionInView className="border-t border-border pt-16 lg:pt-24">
-        <Eyebrow className="text-muted-foreground">Why RantAI</Eyebrow>
-        <h2
-          id="why-heading"
-          className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em]"
-        >
-          What you get with us.
-        </h2>
-      </MotionInView>
+      <Eyebrow className="text-muted-foreground">{eyebrow}</Eyebrow>
+      <SplitReveal
+        id="why-heading"
+        text={"What you\nget with us."}
+        className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-neutral-950"
+      />
 
-      <MotionInView className="mt-14 grid gap-3 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <ul className="flex flex-col gap-1">
-          {items.map((item, idx) => {
-            const Icon = item.icon
-            const isActive = idx === selectedIdx
-            return (
-              <li key={item.title}>
-                <button
-                  type="button"
-                  aria-pressed={isActive}
-                  onClick={() => setSelectedIdx(idx)}
-                  className={cn(
-                    "flex w-full items-center gap-4 rounded-2xl px-5 py-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-1",
-                    isActive ? "bg-muted" : "hover:bg-muted/60"
-                  )}
-                >
-                  <span
-                    className={cn(
-                      item.iconBg,
-                      "flex size-9 shrink-0 items-center justify-center rounded-lg text-white"
-                    )}
-                  >
-                    <Icon className="size-4" />
-                  </span>
-                  <span
-                    className={cn(
-                      "text-lg tracking-[-0.01em] transition-colors",
-                      isActive ? "text-foreground" : "text-muted-foreground"
-                    )}
-                  >
-                    {item.title}
-                  </span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
-
-        <div className="flex flex-col overflow-hidden rounded-2xl bg-muted">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedIdx + "-header"}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="p-7 sm:p-9"
+      <ul className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map((item, i) => {
+          const Visual = whyRantAIVisuals[i]
+          const tone = /#[0-9a-f]{6}/i.exec(item.iconBg)?.[0] ?? "#517fbb"
+          return (
+            <motion.li
+              key={item.title}
+              initial={reduce ? false : { opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, ease, delay: (i % 3) * 0.08 }}
+              onPointerEnter={() => setHover(i)}
+              onPointerLeave={() => setHover(null)}
+              className={cn(
+                "flex flex-col rounded-2xl bg-neutral-100 p-3",
+                spans[i]
+              )}
             >
-              <h3 className="text-2xl font-medium tracking-[-0.03em] sm:text-3xl">
-                {selected.title}
-              </h3>
-              <p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground">
-                {selected.body}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-
-          <div
-            className="relative mx-3 mb-3 flex min-h-[300px] flex-1 items-center justify-center overflow-hidden rounded-xl p-6 transition-colors duration-500 sm:p-8"
-            style={{
-              backgroundColor: `${tone}14`,
-              backgroundImage: `radial-gradient(${tone}33 1.2px, transparent 1.4px)`,
-              backgroundSize: "18px 18px",
-            }}
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedIdx + "-illustration"}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.3 }}
-                className="flex h-full max-h-[340px] w-full max-w-2xl items-center justify-center"
+              <div
+                className="flex h-[260px] items-center justify-center overflow-hidden rounded-xl p-5"
+                style={{
+                  backgroundColor: `${tone}10`,
+                  backgroundImage: `radial-gradient(${tone}2e 1.1px, transparent 1.3px)`,
+                  backgroundSize: "16px 16px",
+                }}
               >
-                <SelectedVisual />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-      </MotionInView>
+                {Visual && <Visual hover={hover === i} />}
+              </div>
+              <div className="flex items-center gap-3 px-3 pt-4 pb-2">
+                <span
+                  className="grid size-7 shrink-0 place-items-center rounded-lg text-white"
+                  style={{ background: tone }}
+                >
+                  <item.icon className="size-3.5" />
+                </span>
+                <h3 className="text-[17px] font-medium tracking-[-0.015em] text-neutral-950">
+                  {item.title}
+                </h3>
+              </div>
+            </motion.li>
+          )
+        })}
+      </ul>
     </section>
   )
 }

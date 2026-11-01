@@ -39,12 +39,12 @@ const steps = [
 
 /** On the services page the section is already about engineering, so the
  *  links back to it are dropped. */
-type Links = { links: boolean }
+type Links = { links: boolean; eyebrow?: string }
 
-function Header({ links }: Readonly<Links>) {
+function Header({ links, eyebrow = "How we work" }: Readonly<Links>) {
   return (
     <div className="mb-[min(2.5rem,4dvh)] max-w-3xl">
-      <Eyebrow className="text-white/50">How we work</Eyebrow>
+      <Eyebrow className="text-white/50">{eyebrow}</Eyebrow>
       <SplitReveal
         id="process-heading"
         text="We build it with you."
@@ -411,7 +411,7 @@ function SequenceRow({
 // where all three stay in focus.
 const PLAY = 0.78
 
-function PinnedSequence({ links }: Readonly<Links>) {
+function PinnedSequence({ links, eyebrow }: Readonly<Links>) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -443,7 +443,7 @@ function PinnedSequence({ links }: Readonly<Links>) {
         >
           <FooterAscii />
         </div>
-        <Header links={links} />
+        <Header links={links} eyebrow={eyebrow} />
         <SequenceRow active={active} progress={progress} />
         <Footnote links={links} />
       </div>
@@ -452,11 +452,11 @@ function PinnedSequence({ links }: Readonly<Links>) {
 }
 
 /** Phones, tablets and reduced motion: the three cards, all in focus. */
-function StaticSequence({ links }: Readonly<Links>) {
+function StaticSequence({ links, eyebrow }: Readonly<Links>) {
   const progress = useMotionValue(1)
   return (
     <div className="px-5 py-24 sm:px-10">
-      <Header links={links} />
+      <Header links={links} eyebrow={eyebrow} />
       <SequenceRow active={3} progress={progress} />
       <Footnote links={links} />
     </div>
@@ -475,7 +475,10 @@ function useIsDesktop() {
   return desktop
 }
 
-export function HomeProcess({ links = true }: Readonly<Partial<Links>>) {
+export function HomeProcess({
+  links = true,
+  eyebrow,
+}: Readonly<Partial<Links>>) {
   const desktop = useIsDesktop()
   const reduce = useReducedMotion()
   if (desktop && !reduce) {
@@ -485,7 +488,7 @@ export function HomeProcess({ links = true }: Readonly<Partial<Links>>) {
         aria-labelledby="process-heading"
         className="scroll-mt-20 px-3 sm:px-4"
       >
-        <PinnedSequence links={links} />
+        <PinnedSequence links={links} eyebrow={eyebrow} />
       </section>
     )
   }
@@ -495,7 +498,7 @@ export function HomeProcess({ links = true }: Readonly<Partial<Links>>) {
       aria-labelledby="process-heading"
       className="scroll-mt-20"
     >
-      <StaticSequence links={links} />
+      <StaticSequence links={links} eyebrow={eyebrow} />
     </DarkPanel>
   )
 }
