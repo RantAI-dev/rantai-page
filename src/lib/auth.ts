@@ -2,7 +2,16 @@ import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
+/**
+ * The signing key. Without one we refuse to sign or accept tokens: encoding
+ * a missing value would sign with the text "undefined", which anyone could
+ * reproduce to forge an admin session.
+ */
+function jwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET is not set");
+  return new TextEncoder().encode(secret);
+}
 const COOKIE_NAME = "admin_token";
 
 export async function hashPassword(password: string): Promise<string> {
@@ -17,12 +26,12 @@ export async function createToken(payload: { email: string }): Promise<string> {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
-    .sign(JWT_SECRET);
+    .sign(jwtSecret());
 }
 
 export async function verifyToken(token: string): Promise<{ email: string } | null> {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, jwtSecret());
     return { email: payload.email as string };
   } catch {
     return null;
