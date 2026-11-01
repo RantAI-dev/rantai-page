@@ -1,13 +1,17 @@
 "use client"
 
+import { useSyncExternalStore } from "react"
 import { motion, type MotionValue } from "motion/react"
 
 import DotGrid from "@/components/react-bits/dot-grid"
 import GhostFibers from "@/components/react-bits/ghost-fibers"
 import LineWaves from "@/components/react-bits/line-waves"
+import { hasFastWebGL } from "@/lib/webgl-support"
 
 // A backdrop per product panel (three from React Bits, one in plain CSS),
 // kept monochrome and quiet so it supports the screen instead of competing.
+// They render at 1x: they sit dimmed behind a mask, so extra pixels only
+// cost GPU time (and battery) without showing.
 
 function AgentsScene() {
   // Dots that swell toward the cursor: many small pieces of knowledge
@@ -21,6 +25,7 @@ function AgentsScene() {
       glow={0.4}
       intro={false}
       clickShock={false}
+      dpr={1}
     />
   )
 }
@@ -96,6 +101,7 @@ function LlmopsScene() {
       vignette={0.4}
       pulseOnClick={false}
       intro={false}
+      dpr={1}
     />
   )
 }
@@ -115,10 +121,14 @@ function LakeScene() {
       rotation={-12}
       clickRipple={false}
       intro={false}
-      maxDevicePixelRatio={1.5}
+      maxDevicePixelRatio={1}
     />
   )
 }
+
+// Scenes drawn with WebGL; skipped where there is no real GPU.
+const webgl = new Set(["agents", "llmops", "lake"])
+const noop = () => () => {}
 
 const scenes: Record<string, () => React.ReactNode> = {
   agents: AgentsScene,
@@ -132,8 +142,10 @@ export function PanelScene({
   opacity,
   live,
 }: Readonly<{ id: string; opacity: MotionValue<number>; live: boolean }>) {
+  // Checked in the browser only; the server renders no scene either way.
+  const gpu = useSyncExternalStore(noop, hasFastWebGL, () => false)
   const scene = scenes[id]?.()
-  if (!scene) return null
+  if (!scene || (webgl.has(id) && !gpu)) return null
   return (
     <motion.div
       aria-hidden="true"

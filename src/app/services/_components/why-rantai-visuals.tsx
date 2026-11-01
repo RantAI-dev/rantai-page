@@ -6,6 +6,7 @@ import {
   AnimatePresence,
   motion,
   useAnimationFrame,
+  useInView,
   useMotionValue,
   useReducedMotion,
 } from "motion/react"
@@ -175,15 +176,29 @@ function ModelRow({
   const trackRef = useRef<HTMLDivElement>(null)
   const x = useMotionValue(0)
   const v = useRef(speed)
+  const half = useRef(0)
+  // Off screen the row stands still, so it costs nothing.
+  const inView = useInView(trackRef, { margin: "100px" })
+  useEffect(() => {
+    const el = trackRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => {
+      half.current = 0
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
   useAnimationFrame((_, delta) => {
     const el = trackRef.current
-    if (!el || reduce) return
+    if (!el || reduce || !inView) return
     // Ease the current speed toward the target (px per second).
     v.current += (speed - v.current) * Math.min(1, delta / 250)
-    const half = el.scrollWidth / 2
+    // The track's width only changes with the layout: measure it once.
+    if (!half.current) half.current = el.scrollWidth / 2
+    const halfW = half.current
     let next = x.get() + (reverse ? 1 : -1) * v.current * (delta / 1000)
-    if (next <= -half) next += half
-    if (next > 0) next -= half
+    if (next <= -halfW) next += halfW
+    if (next > 0) next -= halfW
     x.set(next)
   })
   return (

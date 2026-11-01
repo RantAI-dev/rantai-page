@@ -65,7 +65,7 @@ export function HomeHero() {
                 text="AI systems for real‑world operations."
                 trigger="mount"
                 play={ready}
-                delay={0.3}
+                delay={0.15}
                 className={headline}
               />
               {/* One pass of light across the headline once it has landed */}
@@ -82,7 +82,7 @@ export function HomeHero() {
                       ? { backgroundPosition: "-20% 0", opacity: [0, 1, 1, 0] }
                       : undefined
                   }
-                  transition={{ duration: 1.6, delay: 1.5, ease: "easeInOut" }}
+                  transition={{ duration: 1.6, delay: 1.1, ease: "easeInOut" }}
                 >
                   AI systems for real‑world operations.
                 </motion.p>
@@ -92,7 +92,7 @@ export function HomeHero() {
               className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 sm:text-xl"
               initial={reduce ? false : { opacity: 0, y: 12 }}
               animate={ready ? { opacity: 1, y: 0 } : undefined}
-              transition={{ duration: 0.6, ease, delay: 0.7 }}
+              transition={{ duration: 0.6, ease, delay: 0.35 }}
             >
               Agents, data platforms, and engineering teams for enterprise and
               government, built to run in production.
@@ -102,7 +102,7 @@ export function HomeHero() {
               className="mt-9 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row"
               initial={reduce ? false : { opacity: 0, y: 16 }}
               animate={ready ? { opacity: 1, y: 0 } : undefined}
-              transition={{ duration: 0.8, ease, delay: 0.9 }}
+              transition={{ duration: 0.8, ease, delay: 0.5 }}
             >
               <PillLink
                 href={`mailto:${siteConfig.links.email}`}
@@ -126,7 +126,7 @@ export function HomeHero() {
               className="mt-12 flex w-full flex-col items-center gap-2 border-t border-white/10 pt-4 sm:mt-14 sm:flex-row sm:justify-center sm:gap-10"
               initial={reduce ? false : { opacity: 0, y: 16 }}
               animate={ready ? { opacity: 1, y: 0 } : undefined}
-              transition={{ duration: 0.8, ease, delay: 1.1 }}
+              transition={{ duration: 0.8, ease, delay: 0.7 }}
             >
               <span className="text-xs font-medium tracking-[0.08em] text-white/45 uppercase">
                 Partners
