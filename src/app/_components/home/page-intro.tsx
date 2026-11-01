@@ -72,6 +72,9 @@ export function PageIntro({
       !hole ||
       !box ||
       box.top < -1 || // page restored mid-scroll: the hero is not in view
+      // Phones go straight to the hero: on a slow connection the intro only
+      // delays the first words (CSS hides the cover there too, see below).
+      window.matchMedia("(max-width: 767px)").matches ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     if (skip || !hole || !box) {
       onReveal()
@@ -164,7 +167,8 @@ export function PageIntro({
     <div
       ref={overlayRef}
       aria-hidden="true"
-      className="pointer-events-auto fixed inset-0 z-[100] animate-[intro-failsafe_0.3s_ease_5s_forwards] overflow-hidden"
+      // Hidden on phones from the first paint, before any script runs.
+      className="pointer-events-auto fixed inset-0 z-[100] animate-[intro-failsafe_0.3s_ease_5s_forwards] overflow-hidden max-md:hidden"
     >
       {/* The cover: page-coloured, with the window cut out of it. Before the
           first cut (server render) it covers the whole screen. */}

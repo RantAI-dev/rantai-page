@@ -89,7 +89,9 @@ export function HomeHero() {
               )}
             </div>
             <motion.p
-              className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 sm:text-xl"
+              // Shown from the first paint on phones (no fade): it is the
+              // largest text there, the one load speed is measured by.
+              className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 max-md:transform-none! max-md:opacity-100! sm:text-xl"
               initial={reduce ? false : { opacity: 0, y: 12 }}
               animate={ready ? { opacity: 1, y: 0 } : undefined}
               transition={{ duration: 0.6, ease, delay: 0.35 }}
