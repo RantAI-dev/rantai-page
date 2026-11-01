@@ -428,7 +428,7 @@ function ProgressSegment({
       <span
         className={cn(
           "truncate text-[12px] transition-colors duration-300",
-          active ? "font-medium text-neutral-900" : "text-neutral-400"
+          active ? "font-medium text-neutral-900" : "text-neutral-500"
         )}
       >
         {label}
@@ -642,6 +642,7 @@ export function ProblemPicker() {
             <AnimatePresence initial={false}>
               <motion.div
                 key={`${p.id}-${after}`}
+                aria-hidden="true"
                 className="absolute inset-0 flex items-center justify-center"
                 initial={{ opacity: 0, scale: 0.97, filter: "blur(6px)" }}
                 animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
@@ -665,9 +666,13 @@ export function ProblemPicker() {
               transition={{ duration: 0.5, ease }}
             >
               <span
-                className="w-fit rounded-full px-3 py-1 text-[12px] font-medium text-white"
-                style={{ background: p.tone }}
+                className="flex w-fit items-center gap-2 rounded-full px-3 py-1 text-[12px] font-medium text-neutral-900"
+                style={{ background: `${p.tone}24` }}
               >
+                <span
+                  className="size-1.5 rounded-full"
+                  style={{ background: p.tone }}
+                />
                 {p.service}
               </span>
               <h3 className="mt-5 line-clamp-2 min-h-[2.1em] text-[clamp(1.6rem,2.3vw,2.25rem)] leading-[1.05] font-medium tracking-[-0.035em] text-neutral-950">
@@ -687,7 +692,7 @@ export function ProblemPicker() {
                 ))}
               </ol>
               <div className="mt-auto flex flex-wrap items-center justify-between gap-4 border-t border-black/[0.07] pt-6">
-                <span className="w-full text-[14px] text-neutral-500">
+                <span className="w-full text-[14px] text-neutral-600">
                   Typically{" "}
                   <span className="font-medium text-neutral-900">
                     {p.weeks}
@@ -695,7 +700,7 @@ export function ProblemPicker() {
                 </span>
                 <a
                   href="#how-we-work"
-                  className="text-[14px] font-medium text-neutral-500 transition-colors hover:text-neutral-900"
+                  className="text-[14px] font-medium text-neutral-600 transition-colors hover:text-neutral-900"
                 >
                   See how we work ↓
                 </a>

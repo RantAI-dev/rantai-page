@@ -405,7 +405,7 @@ function DesktopReel({ intro }: Readonly<{ intro: Intro }>) {
                       "text-sm transition-colors",
                       on
                         ? "text-white"
-                        : "text-white/40 group-hover:text-white/70"
+                        : "text-white/60 group-hover:text-white/80"
                     )}
                   >
                     <span className="mr-2 text-xs tabular-nums">0{i + 1}</span>

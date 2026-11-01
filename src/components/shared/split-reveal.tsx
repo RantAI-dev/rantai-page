@@ -59,7 +59,6 @@ export function SplitReveal({
   return (
     <MotionTag
       id={id}
-      aria-label={label}
       className={className}
       variants={containerVariants}
       initial={reduce ? false : "hidden"}
@@ -68,6 +67,9 @@ export function SplitReveal({
         ? { animate: play ? "shown" : "hidden" }
         : { whileInView: "shown", viewport: { once: true, amount: 0.4 } })}
     >
+      {/* The whole sentence for screen readers; the animated words below
+          are hidden from them. (aria-label is not allowed on <p>/<span>.) */}
+      <span className="sr-only">{label}</span>
       {lines.map((words, lineIndex) => (
         <Fragment key={lineIndex}>
           {lineIndex > 0 && (

@@ -39,7 +39,7 @@ function NextArticle({ post }: Readonly<{ post: PostListItem }>) {
         <span className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/[0.06]" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[12px] font-medium tracking-[0.08em] text-neutral-400 uppercase">
+        <p className="text-[12px] font-medium tracking-[0.08em] text-neutral-500 uppercase">
           Next article
         </p>
         <p className="mt-2 line-clamp-2 text-[17px] leading-snug font-medium tracking-[-0.015em] text-neutral-950 sm:text-xl">

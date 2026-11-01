@@ -371,7 +371,7 @@ function ServiceCard({
               backgroundSize: "16px 16px",
             }}
           >
-            <div className="flex w-full justify-center">
+            <div aria-hidden="true" className="flex w-full justify-center">
               <s.Visual playing={seen && !reduce} hover={hover} />
             </div>
           </div>
@@ -382,20 +382,23 @@ function ServiceCard({
               </h3>
               {s.badge ? (
                 <span
-                  className="relative shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-medium tracking-[0.06em] text-white uppercase"
-                  style={{ background: s.tone }}
+                  className="relative shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-medium tracking-[0.06em] text-neutral-900 uppercase"
+                  style={{ background: `${s.tone}24` }}
                 >
                   <span className="relative flex items-center gap-1.5">
-                    <span className="size-1.5 animate-pulse rounded-full bg-white" />
+                    <span
+                      className="size-1.5 animate-pulse rounded-full"
+                      style={{ background: s.tone }}
+                    />
                     {s.badge}
                   </span>
                 </span>
               ) : null}
             </div>
-            <p className="mt-1.5 mb-6 text-[15px] text-neutral-500">{s.line}</p>
+            <p className="mt-1.5 mb-6 text-[15px] text-neutral-600">{s.line}</p>
             {/* Details as one quiet line, the arrow beside it */}
             <div className="mt-auto flex items-center justify-between gap-3 border-t border-black/[0.06] pt-4">
-              <p className="truncate text-[13px] text-neutral-500">
+              <p className="truncate text-[13px] text-neutral-600">
                 {s.details.join("  ·  ")}
               </p>
               <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-neutral-500 transition-colors duration-200 group-hover:bg-neutral-950 group-hover:text-white">
