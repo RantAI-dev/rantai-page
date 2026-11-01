@@ -54,3 +54,17 @@ describe("COOKIE_NAME", () => {
     expect(COOKIE_NAME).toBe("admin_token");
   });
 });
+
+describe("without JWT_SECRET", () => {
+  it("refuses to sign and rejects every token", async () => {
+    const saved = process.env.JWT_SECRET;
+    const token = await createToken({ email: "admin@rantai.dev" });
+    delete process.env.JWT_SECRET;
+    try {
+      await expect(createToken({ email: "x@y.z" })).rejects.toThrow("JWT_SECRET");
+      expect(await verifyToken(token)).toBeNull();
+    } finally {
+      process.env.JWT_SECRET = saved;
+    }
+  });
+});
