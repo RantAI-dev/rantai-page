@@ -95,7 +95,7 @@ export function PageHero({
     <motion.div
       {...rise(0.25)}
       aria-hidden="true"
-      className="relative aspect-[4/3] w-full overflow-hidden rounded-[28px]"
+      className="relative aspect-square w-full overflow-hidden rounded-[28px] sm:aspect-[4/3]"
       style={{ background: desks[tone].bg }}
     >
       {/* A white desk blends into the page, so it goes without dots */}
@@ -109,7 +109,8 @@ export function PageHero({
           glow={0.3}
         />
       )}
-      <div className="absolute inset-6 sm:inset-10">{visual}</div>
+      {/* Square on phones, so the visuals keep a readable size */}
+      <div className="absolute inset-5 sm:inset-10">{visual}</div>
     </motion.div>
   )
 

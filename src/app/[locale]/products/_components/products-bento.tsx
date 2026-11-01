@@ -21,7 +21,8 @@ import { cn } from "@/lib/utils"
 
 // Products hero visual: an asymmetric bento of the four products, with
 // their real screens and demo videos. Tiles at the right and bottom run off
-// the desk on purpose; the name labels stay in view.
+// the desk on purpose; the name labels stay in view. On phones the bento
+// fits the desk whole and drops the infrastructure tile.
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -160,9 +161,9 @@ function BentoMixed() {
   const t = useTranslations("products.bento")
   const [agents, claw, lake, llmops] = products
   return (
-    <div className="absolute top-0 -right-16 -bottom-14 left-0 flex gap-3">
+    <div className="absolute inset-0 flex gap-2.5 sm:-right-16 sm:-bottom-14 sm:gap-3">
       {/* Left column */}
-      <div className="flex w-[60%] flex-col gap-3">
+      <div className="flex w-[56%] flex-col gap-2.5 sm:w-[60%] sm:gap-3">
         <Tile p={agents} className="basis-[58%]" delay={0.35}>
           <Screen p={agents} />
         </Tile>
@@ -178,8 +179,8 @@ function BentoMixed() {
       </div>
 
       {/* Right column, cut at different heights */}
-      <div className="flex flex-1 flex-col gap-3">
-        <Tile p={claw} className="basis-[40%]" delay={0.45}>
+      <div className="flex flex-1 flex-col gap-2.5 sm:gap-3">
+        <Tile p={claw} className="basis-[52%] sm:basis-[40%]" delay={0.45}>
           <video
             src={claw.video}
             autoPlay
@@ -191,15 +192,15 @@ function BentoMixed() {
         </Tile>
         <Rise
           delay={0.6}
-          className="flex basis-[24%] flex-col justify-between bg-[#8b5cf6] p-4 text-white"
+          className="flex flex-1 flex-col justify-between bg-[#8b5cf6] p-3.5 text-white sm:flex-initial sm:basis-[24%] sm:p-4"
         >
-          <span className="flex items-center gap-2 text-[12px] font-medium text-white/85">
-            <span className="grid size-5 place-items-center rounded-md bg-white/15">
+          <span className="flex items-center gap-2 text-[12px] leading-tight font-medium text-white/85">
+            <span className="grid size-5 shrink-0 place-items-center rounded-md bg-white/15">
               <ProductLogo id="llmops" variant="dark" className="h-3" />
             </span>
             {llmops.name}
           </span>
-          <span className="flex items-baseline gap-2">
+          <span className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-2">
             <span className="text-[32px] leading-none font-medium tracking-[-0.03em] tabular-nums">
               +18%
             </span>
@@ -210,7 +211,7 @@ function BentoMixed() {
         </Rise>
         <Rise
           delay={0.75}
-          className="flex flex-1 flex-col justify-between bg-neutral-950 p-4 text-white"
+          className="hidden flex-1 flex-col justify-between bg-neutral-950 p-4 text-white sm:flex"
         >
           <span className="grid size-9 place-items-center rounded-lg bg-white/10">
             <Server className="size-4" />

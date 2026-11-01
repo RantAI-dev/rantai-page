@@ -46,7 +46,7 @@ export function LanguageSwitcher({
             }}
             className={cn(
               "rounded-full font-medium transition-colors",
-              size === "lg" ? "px-4 py-2 text-sm" : "px-2.5 py-1 text-xs",
+              size === "lg" ? "px-5 py-2.5 text-sm" : "px-2.5 py-1 text-xs",
               current
                 ? "bg-background text-foreground shadow-[0_1px_2px_rgb(0_0_0/0.08)]"
                 : "text-foreground/55 hover:text-foreground"

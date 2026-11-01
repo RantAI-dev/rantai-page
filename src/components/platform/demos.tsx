@@ -32,8 +32,10 @@ const W = 880
 const H = 550
 // Narrow screens get a portrait canvas with only the main cards, so the
 // text stays readable instead of shrinking the desktop layout.
-const CW = 400
-const CH = 500
+// Sized close to a phone's frame (about 326px wide), so it scales by ~1 and
+// the text keeps its real size.
+const CW = 320
+const CH = 450
 const COMPACT_BELOW = 640
 
 /* ------------------------------------------------------------------ */
@@ -233,28 +235,64 @@ function Chips({
   options,
   value,
   onPick,
+  compact,
 }: Readonly<{
   options: string[]
   value: number
   onPick: (i: number) => void
+  compact?: boolean
 }>) {
-  return (
+  const row = useRef<HTMLDivElement>(null)
+  // Fade the right edge while more chips sit beyond it.
+  const [more, setMore] = useState(false)
+  useEffect(() => {
+    const el = row.current
+    if (!el) return
+    const update = () =>
+      setMore(el.scrollLeft + el.clientWidth < el.scrollWidth - 2)
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    el.addEventListener("scroll", update, { passive: true })
+    return () => {
+      ro.disconnect()
+      el.removeEventListener("scroll", update)
+    }
+  }, [compact])
+  const buttons = options.map((o, i) => (
+    <button
+      key={o}
+      type="button"
+      onClick={() => onPick(i)}
+      className={cn(
+        "rounded-full border whitespace-nowrap transition-colors",
+        compact
+          ? "h-10 shrink-0 px-4 text-[13px]"
+          : "px-3.5 py-1.5 text-[12px]",
+        i === value
+          ? "border-neutral-900 bg-neutral-900 text-white"
+          : "border-black/10 bg-white/80 text-neutral-600 hover:border-black/25 hover:text-neutral-900"
+      )}
+    >
+      {o}
+    </button>
+  ))
+  // On phones the row may be wider than the screen: it scrolls sideways
+  // (centred when it fits) instead of shrinking the chips.
+  return compact ? (
+    <div
+      ref={row}
+      className={cn(
+        "absolute inset-x-0 bottom-2.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        more &&
+          "[mask-image:linear-gradient(to_right,black_80%,transparent_98%)]"
+      )}
+    >
+      <div className="mx-auto flex w-max gap-2 px-3">{buttons}</div>
+    </div>
+  ) : (
     <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-2">
-      {options.map((o, i) => (
-        <button
-          key={o}
-          type="button"
-          onClick={() => onPick(i)}
-          className={cn(
-            "rounded-full border px-3.5 py-1.5 text-[12px] whitespace-nowrap transition-colors",
-            i === value
-              ? "border-neutral-900 bg-neutral-900 text-white"
-              : "border-black/10 bg-white/80 text-neutral-600 hover:border-black/25 hover:text-neutral-900"
-          )}
-        >
-          {o}
-        </button>
-      ))}
+      {buttons}
     </div>
   )
 }
@@ -380,7 +418,7 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           className={cn(
             "flex flex-col overflow-hidden",
             compact
-              ? "inset-x-5 top-5 h-[318px]"
+              ? "inset-x-3 top-3 h-[300px]"
               : "top-10 left-[270px] h-[400px] w-[380px]"
           )}
           key={`chat-${pick}`}
@@ -411,7 +449,10 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="mt-2.5 flex w-fit items-center gap-1.5 rounded-full border border-[#3b82f6]/25 bg-[#3b82f6]/[0.06] px-2.5 py-1 text-[11px] text-[#2563eb]"
+                        className={cn(
+                          "mt-2.5 flex w-fit items-center gap-1.5 rounded-full border border-[#3b82f6]/25 bg-[#3b82f6]/[0.06] px-2.5 py-1 text-[#2563eb]",
+                          compact ? "text-[12px]" : "text-[11px]"
+                        )}
                       >
                         <FileText className="size-3" /> {p.cite}
                       </motion.span>
@@ -421,8 +462,8 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
               </motion.div>
             )}
           </div>
-          <div className="mx-4 mb-4 flex items-center justify-between rounded-xl border border-black/[0.08] px-3 py-2 text-[12px] text-neutral-400">
-            {t("placeholder")}
+          <div className="mx-4 mb-4 flex items-center justify-between gap-2 rounded-xl border border-black/[0.08] px-3 py-2 text-[12px] text-neutral-400">
+            <span className="min-w-0 truncate">{t("placeholder")}</span>
             <span className="grid size-6 place-items-center rounded-full bg-neutral-900 text-white">
               <ArrowUp className="size-3" />
             </span>
@@ -431,14 +472,14 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
 
         {/* Artifact */}
         <Card
-          className="inset-x-5 top-[352px] flex items-center gap-3 p-3"
+          className="inset-x-3 top-[322px] flex items-center gap-3 p-3"
           show={compact && s >= 3}
         >
           <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#8b5cf6]/12 text-[#8b5cf6]">
             <FileText className="size-4" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[11px] text-neutral-500">
+            <span className="block text-[12px] text-neutral-500">
               {t("artifact")}
             </span>
             <span className="block truncate text-[13px] font-medium">
@@ -470,6 +511,7 @@ export function AgentsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           options={prompts.map((a) => a.chip)}
           value={pick}
           onPick={setPick}
+          compact={compact}
         />
       </Stage>
     </div>
@@ -539,7 +581,7 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
         <Card
           className={cn(
             "overflow-hidden border-white/10 bg-[#0d0f12] text-white",
-            compact ? "inset-x-5 top-5" : "top-10 left-10 w-[520px]"
+            compact ? "inset-x-3 top-3" : "top-10 left-10 w-[520px]"
           )}
           key={`term-${pick}`}
         >
@@ -548,7 +590,12 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
               <span key={i} className="size-2.5 rounded-full bg-white/15" />
             ))}
             <ProductLogo id="claw" variant="dark" className="ml-3 h-3.5" />
-            <span className="[font-family:ui-monospace,monospace] text-[11px] text-white/45">
+            <span
+              className={cn(
+                "[font-family:ui-monospace,monospace] text-white/45",
+                compact ? "text-[12px]" : "text-[11px]"
+              )}
+            >
               rantaiclaw · ~/ops
             </span>
           </div>
@@ -556,7 +603,7 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
             className={cn(
               "space-y-1.5 [font-family:ui-monospace,SFMono-Regular,Menlo,monospace]",
               compact
-                ? "min-h-[228px] p-4 text-[12px]"
+                ? "min-h-[216px] p-4 text-[12px]"
                 : "min-h-[300px] p-5 text-[13px]"
             )}
           >
@@ -592,16 +639,35 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
         <Card
           className={cn(
             "p-4",
-            compact ? "inset-x-5 top-[310px]" : "top-16 right-8 w-[230px]"
+            compact ? "inset-x-3 top-[284px]" : "top-16 right-8 w-[230px]"
           )}
           key={`sched-${pick}`}
         >
-          <p className="text-[12px] font-medium text-neutral-500">
-            {t("schedule")}
-          </p>
-          <p className="mt-2 text-[15px] font-medium">{run.chip}</p>
-          <p className="mt-1 text-[12px] text-neutral-500">{schedules[pick]}</p>
-          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-neutral-100">
+          {compact ? (
+            <>
+              <p className="flex justify-between gap-3 text-[12px] text-neutral-500">
+                <span className="font-medium">{t("schedule")}</span>
+                {schedules[pick]}
+              </p>
+              <p className="mt-1.5 text-[15px] font-medium">{run.chip}</p>
+            </>
+          ) : (
+            <>
+              <p className="text-[12px] font-medium text-neutral-500">
+                {t("schedule")}
+              </p>
+              <p className="mt-2 text-[15px] font-medium">{run.chip}</p>
+              <p className="mt-1 text-[12px] text-neutral-500">
+                {schedules[pick]}
+              </p>
+            </>
+          )}
+          <div
+            className={cn(
+              "h-1.5 overflow-hidden rounded-full bg-neutral-100",
+              compact ? "mt-3" : "mt-4"
+            )}
+          >
             <motion.div
               className="h-full rounded-full bg-[#f97316]"
               animate={{ width: `${(shown / run.lines.length) * 100}%` }}
@@ -631,6 +697,7 @@ export function ClawDemo({ active = true }: Readonly<{ active?: boolean }>) {
           options={clawRuns.map((r) => r.chip)}
           value={pick}
           onPick={setPick}
+          compact={compact}
         />
       </Stage>
     </div>
@@ -682,14 +749,19 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
           className={cn(
             "p-3",
             compact
-              ? "inset-x-5 top-5"
+              ? "inset-x-3 top-3"
               : "top-8 left-1/2 w-[560px] -translate-x-1/2"
           )}
           key={`ask-${pick}`}
         >
           <div className="flex items-center gap-3 px-1">
             <ProductLogo id="lake" className="h-4" />
-            <span className="flex-1 text-[14px]">
+            <span
+              className={cn(
+                "flex-1",
+                compact ? "text-[13px] leading-snug" : "text-[14px]"
+              )}
+            >
               <Typed text={a.q} on={s >= 0} />
             </span>
             <span className="grid size-7 place-items-center rounded-full bg-[#0b6ab0] text-white">
@@ -702,7 +774,7 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
         <Card
           className={cn(
             "overflow-hidden",
-            compact ? "inset-x-5 top-[104px]" : "top-[110px] left-8 w-[300px]"
+            compact ? "inset-x-3 top-[88px]" : "top-[110px] left-8 w-[300px]"
           )}
           show={s >= 1 && (!compact || s < 2)}
           key={`sql-${pick}`}
@@ -715,7 +787,12 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
               <Check className="size-3.5 text-[#10b981]" strokeWidth={3} />
             )}
           </div>
-          <pre className="px-4 py-3 [font-family:ui-monospace,monospace] text-[11.5px] leading-relaxed whitespace-pre-wrap text-[#1e3a8a]">
+          <pre
+            className={cn(
+              "px-4 py-3 [font-family:ui-monospace,monospace] leading-relaxed whitespace-pre-wrap text-[#1e3a8a]",
+              compact ? "text-[12px]" : "text-[11.5px]"
+            )}
+          >
             <Typed text={a.sql} on={s >= 1} speed={12} />
           </pre>
         </Card>
@@ -723,15 +800,23 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
         {/* Chart */}
         <Card
           className={cn(
-            "p-5",
-            compact ? "inset-x-5 top-[104px]" : "top-[110px] right-8 w-[480px]"
+            compact
+              ? "inset-x-3 top-[88px] p-4"
+              : "top-[110px] right-8 w-[480px] p-5"
           )}
           show={s >= 2}
           key={`chart-${pick}`}
         >
           <p className="text-[14px] font-medium">{a.title}</p>
-          <p className="text-[11px] text-neutral-500">{t("unit")}</p>
-          <ul className="mt-4 space-y-2.5">
+          <p
+            className={cn(
+              "text-neutral-500",
+              compact ? "text-[12px]" : "text-[11px]"
+            )}
+          >
+            {t("unit")}
+          </p>
+          <ul className={compact ? "mt-3 space-y-1.5" : "mt-4 space-y-2.5"}>
             {a.bars.map(([label, v], i) => (
               <li
                 key={label}
@@ -758,14 +843,20 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
         <Card
           className={cn(
             "p-4",
-            compact ? "inset-x-5 top-[340px]" : "bottom-20 left-8 w-[300px]"
+            compact ? "inset-x-3 top-[296px]" : "bottom-20 left-8 w-[300px]"
           )}
           show={s >= 3}
         >
           <p className="text-[12px] font-medium text-neutral-500">
             {t("lineage")}
           </p>
-          <div className="mt-3 flex items-center gap-2 text-[11px]">
+          <div
+            className={cn(
+              "mt-3 flex items-center",
+              compact ? "text-[12px]" : "text-[11px]",
+              compact ? "gap-1.5" : "gap-2"
+            )}
+          >
             {[
               [Database, "raw"],
               [Table2, "clean"],
@@ -773,11 +864,25 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
             ].map(([Icon, l], i) => {
               const I = Icon as typeof Database
               return (
-                <span key={l as string} className="flex items-center gap-2">
+                <span
+                  key={l as string}
+                  className={cn(
+                    "flex items-center",
+                    compact ? "gap-1.5" : "gap-2",
+                    compact && i < 2 && "flex-1"
+                  )}
+                >
                   <span className="flex items-center gap-1.5 rounded-lg border border-black/[0.08] px-2 py-1.5">
                     <I className="size-3.5 text-[#2563eb]" /> {l as string}
                   </span>
-                  {i < 2 && <span className="h-px w-4 bg-neutral-300" />}
+                  {i < 2 && (
+                    <span
+                      className={cn(
+                        "h-px bg-neutral-300",
+                        compact ? "min-w-2 flex-1" : "w-4"
+                      )}
+                    />
+                  )}
                 </span>
               )
             })}
@@ -788,6 +893,7 @@ export function LakeDemo({ active = true }: Readonly<{ active?: boolean }>) {
           options={asks.map((x) => x.chip)}
           value={pick}
           onPick={setPick}
+          compact={compact}
         />
       </Stage>
     </div>
@@ -834,7 +940,7 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
         <Card
           className={cn(
             "p-4",
-            compact ? "inset-x-5 top-5" : "top-10 left-8 w-[250px]"
+            compact ? "inset-x-3 top-3" : "top-10 left-8 w-[250px]"
           )}
           key={`run-${pick}`}
         >
@@ -842,7 +948,12 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
             <ProductTile id="llmops" className="size-5" logoClassName="h-3" />
             {t("run", { name: r.chip })}
           </p>
-          <ul className="mt-3 space-y-3">
+          <ul
+            className={cn(
+              "mt-3",
+              compact ? "grid grid-cols-2 gap-x-3 gap-y-2.5" : "space-y-3"
+            )}
+          >
             {steps.map((l, i) => (
               <Step
                 key={l}
@@ -869,14 +980,19 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
         <Card
           className={cn(
             "p-5",
-            compact ? "inset-x-5 top-[196px]" : "top-10 right-8 w-[540px]"
+            compact ? "inset-x-3 top-[134px]" : "top-10 right-8 w-[540px]"
           )}
           show={s >= 2 && (!compact || s < 3)}
           key={`train-${pick}`}
         >
           <div className="flex items-baseline justify-between">
             <p className="text-[14px] font-medium">{t("loss")}</p>
-            <p className="text-[11px] text-neutral-500">
+            <p
+              className={cn(
+                "text-neutral-500",
+                compact ? "text-[12px]" : "text-[11px]"
+              )}
+            >
               {s >= 3
                 ? t("done", { count: 3 })
                 : t("epoch", { n: 2, total: 3 })}
@@ -916,7 +1032,7 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           className={cn(
             "p-4",
             compact
-              ? "inset-x-5 top-[232px]"
+              ? "inset-x-3 top-[134px]"
               : "right-[300px] bottom-20 w-[260px]"
           )}
           show={s >= 3}
@@ -952,7 +1068,7 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
         <Card
           className={cn(
             "p-4",
-            compact ? "inset-x-5 top-[354px]" : "right-8 bottom-20 w-[250px]"
+            compact ? "inset-x-3 top-[280px]" : "right-8 bottom-20 w-[250px]"
           )}
           show={s >= 4}
         >
@@ -960,12 +1076,22 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
             <p className="text-[12px] font-medium text-neutral-500">
               {t("endpoint")}
             </p>
-            <span className="flex items-center gap-1.5 text-[11px] text-[#10b981]">
+            <span
+              className={cn(
+                "flex items-center gap-1.5 text-[#10b981]",
+                compact ? "text-[12px]" : "text-[11px]"
+              )}
+            >
               <span className="size-1.5 animate-pulse rounded-full bg-[#10b981]" />{" "}
               {t("live")}
             </span>
           </div>
-          <p className="mt-2 rounded-lg bg-neutral-50 px-2.5 py-2 [font-family:ui-monospace,monospace] text-[11px] text-neutral-700">
+          <p
+            className={cn(
+              "mt-2 rounded-lg bg-neutral-50 px-2.5 py-2 [font-family:ui-monospace,monospace] text-neutral-700",
+              compact ? "text-[12px]" : "text-[11px]"
+            )}
+          >
             POST /v1/chat/completions
           </p>
           <p
@@ -982,6 +1108,7 @@ export function LlmopsDemo({ active = true }: Readonly<{ active?: boolean }>) {
           options={llmRuns.map((x) => x.chip)}
           value={pick}
           onPick={setPick}
+          compact={compact}
         />
       </Stage>
     </div>

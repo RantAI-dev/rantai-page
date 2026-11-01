@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { Check, ShieldCheck, Zap } from "lucide-react"
 import { useTranslations } from "next-intl"
 
+import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 
 // Visuals for the inner-page heroes: a few product fragments floating on the
@@ -16,17 +17,28 @@ const ease = [0.22, 1, 0.36, 1] as const
 const W = 560
 const H = 480
 
-/** Lays the visual out at a fixed design size and scales it to fit. */
+/** Phones get compact layouts: fewer cards, drawn larger, all in view. */
+function useCompact() {
+  return useMediaQuery("(max-width: 639px)")
+}
+
 /**
- * Lays the visual out at a fixed design size and scales it to fit. With a
- * `zoom` above 1 the cards grow past the desk and get cropped at its edges;
- * layouts keep each card's header inside the middle of the canvas so the
- * product names stay visible.
+ * Lays the visual out at a fixed design size (`w` × `h`) and scales it to
+ * fit. With a `zoom` above 1 the cards grow past the desk and get cropped at
+ * its edges; layouts keep each card's header inside the middle of the canvas
+ * so the product names stay visible.
  */
 function Canvas({
   zoom = 1,
+  w = W,
+  h = H,
   children,
-}: Readonly<{ zoom?: number; children: React.ReactNode }>) {
+}: Readonly<{
+  zoom?: number
+  w?: number
+  h?: number
+  children: React.ReactNode
+}>) {
   const ref = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
   useEffect(() => {
@@ -34,19 +46,19 @@ function Canvas({
     if (!el) return
     const ro = new ResizeObserver(([e]) =>
       setScale(
-        Math.min(e.contentRect.width / W, e.contentRect.height / H) * zoom
+        Math.min(e.contentRect.width / w, e.contentRect.height / h) * zoom
       )
     )
     ro.observe(el)
     return () => ro.disconnect()
-  }, [zoom])
+  }, [zoom, w, h])
   return (
     <div ref={ref} className="absolute inset-0">
       <div
         className="absolute top-1/2 left-1/2 origin-center"
         style={{
-          width: W,
-          height: H,
+          width: w,
+          height: h,
           transform: `translate(-50%, -50%) scale(${scale})`,
         }}
       >
@@ -140,6 +152,7 @@ function useCount(to: number, run: number, ms = 900) {
  */
 export function ServicesVisual() {
   const reduce = useReducedMotion()
+  const compact = useCompact()
   const tsv = useTranslations("services.heroVisual")
   // Stage names in the page's language (the pipeline logic uses indexes).
   const stageLabels = tsv.raw("stages") as string[]
@@ -176,6 +189,188 @@ export function ServicesVisual() {
     })
   }
 
+  const pipelineCard = (
+    <Lift>
+      <div className={cn(card, "relative overflow-hidden p-5")}>
+        <div className="flex items-center justify-between">
+          <p className="text-[12px] text-neutral-500">{tsv("pipeline")}</p>
+          <span className="text-[11px] text-neutral-500 tabular-nums">
+            {clock}
+          </span>
+        </div>
+        {/* Progress with a light sweep running across it */}
+        <div className="relative mt-3 h-1.5 overflow-hidden rounded-full bg-neutral-100">
+          <motion.div
+            className="h-full rounded-full bg-[#10b981]"
+            animate={{ width: `${(done / stages.length) * 100}%` }}
+            transition={{ duration: 0.38, ease }}
+          />
+        </div>
+        <ul className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2.5">
+          {stages.map((label, i) => {
+            const state = i < done ? "done" : i === done ? "now" : "next"
+            return (
+              <li key={label} className="flex items-center gap-2 text-[13px]">
+                <span
+                  className={cn(
+                    "grid size-[18px] shrink-0 place-items-center rounded-full border transition-colors duration-200",
+                    state === "done" &&
+                      "border-[#10b981] bg-[#10b981] text-white",
+                    state === "now" && "border-[#f97316]",
+                    state === "next" && "border-neutral-300"
+                  )}
+                >
+                  {state === "done" && (
+                    <motion.span
+                      initial={{ scale: 0, rotate: -45 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 600,
+                        damping: 18,
+                      }}
+                    >
+                      <Check className="size-3" strokeWidth={3} />
+                    </motion.span>
+                  )}
+                  {state === "now" && (
+                    <span className="size-2 animate-ping rounded-full bg-[#f97316]" />
+                  )}
+                </span>
+                <span
+                  className={cn(
+                    "transition-colors",
+                    state === "next" ? "text-neutral-400" : "text-neutral-800"
+                  )}
+                >
+                  {stageLabels[i] ?? label}
+                </span>
+              </li>
+            )
+          })}
+        </ul>
+        <div className="relative mt-4 h-9">
+          <AnimatePresence mode="wait">
+            {shipped ? (
+              <motion.div
+                key="shipped"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 24,
+                }}
+                className="absolute inset-0 flex items-center gap-2 rounded-xl bg-[#10b981] px-3 text-[12.5px] font-medium text-white"
+              >
+                <Zap className="size-3.5 fill-current" />
+                {tsv("shipped")}
+                <span className="ml-auto text-white/80 tabular-nums">
+                  {clock}
+                </span>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="running"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 flex items-center gap-2 rounded-xl bg-neutral-50 px-3 text-[12.5px] text-neutral-500"
+              >
+                <span className="size-1.5 animate-pulse rounded-full bg-[#f97316]" />
+                {tsv("running", {
+                  stage: stageLabels[Math.min(done, stages.length - 1)],
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {/* A flash across the card the moment it ships */}
+          <AnimatePresence>
+            {shipped && !reduce && (
+              <motion.span
+                key={`flash-${run}`}
+                className="pointer-events-none absolute -inset-x-6 -top-40 -bottom-6 bg-[#10b981]/15"
+                initial={{ opacity: 0.9 }}
+                animate={{ opacity: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.7 }}
+              />
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </Lift>
+  )
+  const deploysCard = (
+    <Lift>
+      <div className={cn(card, "p-4")}>
+        <p className="text-[12px] text-neutral-500">{tsv("deploys")}</p>
+        <div className="mt-1 flex items-baseline gap-2">
+          <span className="text-[30px] leading-none font-medium tracking-[-0.03em] tabular-nums">
+            {deploys}
+          </span>
+          <span className="text-[11px] font-medium text-[#059669]">
+            {tsv("faster")}
+          </span>
+        </div>
+        <div className="mt-3 flex h-10 items-end gap-1.5">
+          {[30, 42, 38, 55, 64, 78, 100].map((h, i) => (
+            <motion.span
+              key={`${run}-${i}`}
+              className="flex-1 rounded-sm bg-[#f97316]"
+              style={{ opacity: 0.35 + i * 0.1 }}
+              initial={{ height: 0 }}
+              animate={{ height: `${h}%` }}
+              transition={{ duration: 0.5, ease, delay: i * 0.05 }}
+            />
+          ))}
+        </div>
+      </div>
+    </Lift>
+  )
+  const qualityCard = (
+    <Lift>
+      <div className={cn(card, "flex items-center gap-4 p-4")}>
+        <span className="relative grid size-14 shrink-0 place-items-center">
+          <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90">
+            <circle
+              cx="18"
+              cy="18"
+              r="15.5"
+              fill="none"
+              stroke="#f1f5f9"
+              strokeWidth="3"
+            />
+            <motion.circle
+              key={run}
+              cx="18"
+              cy="18"
+              r="15.5"
+              fill="none"
+              stroke="#10b981"
+              strokeWidth="3"
+              strokeLinecap="round"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 0.98 }}
+              transition={{ duration: 1.2, ease }}
+            />
+          </svg>
+          <span className="text-[15px] font-medium tabular-nums">{score}</span>
+        </span>
+        <span>
+          <span className="block text-[13px] font-medium">
+            {tsv("quality")}
+          </span>
+          <span className="mt-0.5 flex items-center gap-1.5 text-[11.5px] text-neutral-500">
+            <ShieldCheck className="size-3.5 text-[#0d9488]" />
+            {tsv("incidents")}
+          </span>
+        </span>
+      </div>
+    </Lift>
+  )
+
   return (
     <div
       className="absolute inset-0"
@@ -204,228 +399,64 @@ export function ServicesVisual() {
         </div>
       )}
 
-      <Canvas zoom={1.35}>
-        <motion.div
-          className="absolute inset-0"
-          animate={{ x: tilt.x * 8, y: tilt.y * 6 }}
-          transition={{ type: "spring", stiffness: 120, damping: 20 }}
-        >
-          {/* Release pipeline */}
+      {compact ? (
+        // Phones: the pipeline and the score, stacked and fully in view.
+        <Canvas w={300} h={310}>
           <Float
-            className="w-[310px]"
-            style={{ left: 72, top: 104 }}
-            rotate={-2}
-            delay={0}
-          >
-            <Lift>
-              <div className={cn(card, "relative overflow-hidden p-5")}>
-                <div className="flex items-center justify-between">
-                  <p className="text-[12px] text-neutral-500">
-                    {tsv("pipeline")}
-                  </p>
-                  <span className="text-[11px] text-neutral-500 tabular-nums">
-                    {clock}
-                  </span>
-                </div>
-                {/* Progress with a light sweep running across it */}
-                <div className="relative mt-3 h-1.5 overflow-hidden rounded-full bg-neutral-100">
-                  <motion.div
-                    className="h-full rounded-full bg-[#10b981]"
-                    animate={{ width: `${(done / stages.length) * 100}%` }}
-                    transition={{ duration: 0.38, ease }}
-                  />
-                </div>
-                <ul className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2.5">
-                  {stages.map((label, i) => {
-                    const state =
-                      i < done ? "done" : i === done ? "now" : "next"
-                    return (
-                      <li
-                        key={label}
-                        className="flex items-center gap-2 text-[13px]"
-                      >
-                        <span
-                          className={cn(
-                            "grid size-[18px] shrink-0 place-items-center rounded-full border transition-colors duration-200",
-                            state === "done" &&
-                              "border-[#10b981] bg-[#10b981] text-white",
-                            state === "now" && "border-[#f97316]",
-                            state === "next" && "border-neutral-300"
-                          )}
-                        >
-                          {state === "done" && (
-                            <motion.span
-                              initial={{ scale: 0, rotate: -45 }}
-                              animate={{ scale: 1, rotate: 0 }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 600,
-                                damping: 18,
-                              }}
-                            >
-                              <Check className="size-3" strokeWidth={3} />
-                            </motion.span>
-                          )}
-                          {state === "now" && (
-                            <span className="size-2 animate-ping rounded-full bg-[#f97316]" />
-                          )}
-                        </span>
-                        <span
-                          className={cn(
-                            "transition-colors",
-                            state === "next"
-                              ? "text-neutral-400"
-                              : "text-neutral-800"
-                          )}
-                        >
-                          {stageLabels[i] ?? label}
-                        </span>
-                      </li>
-                    )
-                  })}
-                </ul>
-                <div className="relative mt-4 h-9">
-                  <AnimatePresence mode="wait">
-                    {shipped ? (
-                      <motion.div
-                        key="shipped"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 500,
-                          damping: 24,
-                        }}
-                        className="absolute inset-0 flex items-center gap-2 rounded-xl bg-[#10b981] px-3 text-[12.5px] font-medium text-white"
-                      >
-                        <Zap className="size-3.5 fill-current" />
-                        {tsv("shipped")}
-                        <span className="ml-auto text-white/80 tabular-nums">
-                          {clock}
-                        </span>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="running"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 flex items-center gap-2 rounded-xl bg-neutral-50 px-3 text-[12.5px] text-neutral-500"
-                      >
-                        <span className="size-1.5 animate-pulse rounded-full bg-[#f97316]" />
-                        {tsv("running", {
-                          stage: stageLabels[Math.min(done, stages.length - 1)],
-                        })}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  {/* A flash across the card the moment it ships */}
-                  <AnimatePresence>
-                    {shipped && !reduce && (
-                      <motion.span
-                        key={`flash-${run}`}
-                        className="pointer-events-none absolute -inset-x-6 -top-40 -bottom-6 bg-[#10b981]/15"
-                        initial={{ opacity: 0.9 }}
-                        animate={{ opacity: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.7 }}
-                      />
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-            </Lift>
-          </Float>
-
-          {/* Deploys this week */}
-          <Float
-            className="w-[220px]"
-            style={{ left: 404, top: 62 }}
-            rotate={3}
-            delay={0.2}
-          >
-            <Lift>
-              <div className={cn(card, "p-4")}>
-                <p className="text-[12px] text-neutral-500">{tsv("deploys")}</p>
-                <div className="mt-1 flex items-baseline gap-2">
-                  <span className="text-[30px] leading-none font-medium tracking-[-0.03em] tabular-nums">
-                    {deploys}
-                  </span>
-                  <span className="text-[11px] font-medium text-[#059669]">
-                    {tsv("faster")}
-                  </span>
-                </div>
-                <div className="mt-3 flex h-10 items-end gap-1.5">
-                  {[30, 42, 38, 55, 64, 78, 100].map((h, i) => (
-                    <motion.span
-                      key={`${run}-${i}`}
-                      className="flex-1 rounded-sm bg-[#f97316]"
-                      style={{ opacity: 0.35 + i * 0.1 }}
-                      initial={{ height: 0 }}
-                      animate={{ height: `${h}%` }}
-                      transition={{ duration: 0.5, ease, delay: i * 0.05 }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </Lift>
-          </Float>
-
-          {/* Quality: the "better" half */}
-          <Float
-            className="w-[250px]"
-            style={{ left: 270, top: 340 }}
+            className="w-[290px]"
+            style={{ left: 5, top: 12 }}
             rotate={-1.5}
-            delay={0.4}
           >
-            <Lift>
-              <div className={cn(card, "flex items-center gap-4 p-4")}>
-                <span className="relative grid size-14 shrink-0 place-items-center">
-                  <svg
-                    viewBox="0 0 36 36"
-                    className="absolute inset-0 -rotate-90"
-                  >
-                    <circle
-                      cx="18"
-                      cy="18"
-                      r="15.5"
-                      fill="none"
-                      stroke="#f1f5f9"
-                      strokeWidth="3"
-                    />
-                    <motion.circle
-                      key={run}
-                      cx="18"
-                      cy="18"
-                      r="15.5"
-                      fill="none"
-                      stroke="#10b981"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: 0.98 }}
-                      transition={{ duration: 1.2, ease }}
-                    />
-                  </svg>
-                  <span className="text-[15px] font-medium tabular-nums">
-                    {score}
-                  </span>
-                </span>
-                <span>
-                  <span className="block text-[13px] font-medium">
-                    {tsv("quality")}
-                  </span>
-                  <span className="mt-0.5 flex items-center gap-1.5 text-[11.5px] text-neutral-500">
-                    <ShieldCheck className="size-3.5 text-[#0d9488]" />
-                    {tsv("incidents")}
-                  </span>
-                </span>
-              </div>
-            </Lift>
+            {pipelineCard}
           </Float>
-        </motion.div>
-      </Canvas>
+          <Float
+            className="w-[260px]"
+            style={{ left: 36, top: 214 }}
+            rotate={1}
+            delay={0.3}
+          >
+            {qualityCard}
+          </Float>
+        </Canvas>
+      ) : (
+        <Canvas zoom={1.35}>
+          <motion.div
+            className="absolute inset-0"
+            animate={{ x: tilt.x * 8, y: tilt.y * 6 }}
+            transition={{ type: "spring", stiffness: 120, damping: 20 }}
+          >
+            {/* Release pipeline */}
+            <Float
+              className="w-[310px]"
+              style={{ left: 72, top: 104 }}
+              rotate={-2}
+              delay={0}
+            >
+              {pipelineCard}
+            </Float>
+
+            {/* Deploys this week */}
+            <Float
+              className="w-[220px]"
+              style={{ left: 404, top: 62 }}
+              rotate={3}
+              delay={0.2}
+            >
+              {deploysCard}
+            </Float>
+
+            {/* Quality: the "better" half */}
+            <Float
+              className="w-[250px]"
+              style={{ left: 270, top: 340 }}
+              rotate={-1.5}
+              delay={0.4}
+            >
+              {qualityCard}
+            </Float>
+          </motion.div>
+        </Canvas>
+      )}
     </div>
   )
 }
@@ -505,6 +536,9 @@ export function PostsVisual({
 }>) {
   const tv = useTranslations("blog.visual")
   const reduce = useReducedMotion()
+  // Phones: the folder fills the desk and the pages show titles only, set
+  // large enough to read.
+  const compact = useCompact()
   const [open, setOpen] = useState(Boolean(reduce))
   const [lift, setLift] = useState<number | null>(null)
   useEffect(() => {
@@ -523,7 +557,7 @@ export function PostsVisual({
   const spring = { type: "spring", stiffness: 170, damping: 20 } as const
 
   return (
-    <Canvas zoom={1.15}>
+    <Canvas zoom={compact ? 1.25 : 1.15}>
       <div className="absolute top-[40%] left-1/2 h-[260px] w-[400px] -translate-x-1/2 [perspective:1100px]">
         {/* Back of the folder, with its tab */}
         <div className="absolute inset-0 rounded-[22px] bg-gradient-to-b from-[#0f9e8f] to-[#0b8276] shadow-[0_30px_60px_-30px_rgba(13,148,136,0.7)]">
@@ -575,10 +609,17 @@ export function PostsVisual({
                   />
                 )}
               </span>
-              <span className="mt-2 block px-1 text-[9.5px] font-medium tracking-[0.08em] text-neutral-500 uppercase">
-                {post.tag}
-              </span>
-              <span className="mx-1 mt-0.5 mb-1 line-clamp-2 block text-[12.5px] leading-snug font-medium text-neutral-900">
+              {!compact && (
+                <span className="mt-2 block px-1 text-[9.5px] font-medium tracking-[0.08em] text-neutral-500 uppercase">
+                  {post.tag}
+                </span>
+              )}
+              <span
+                className={cn(
+                  "mx-1 mb-1 line-clamp-2 leading-snug font-medium text-neutral-900",
+                  compact ? "mt-2 text-[17px]" : "mt-0.5 block text-[12.5px]"
+                )}
+              >
                 {post.title}
               </span>
             </motion.a>
@@ -598,10 +639,20 @@ export function PostsVisual({
         >
           <span className="absolute inset-x-6 top-4 h-px bg-white/30" />
           <span className="absolute bottom-6 left-7 text-left">
-            <span className="block text-[22px] font-medium tracking-[-0.02em] text-white">
+            <span
+              className={cn(
+                "block font-medium tracking-[-0.02em] text-white",
+                compact ? "text-[26px]" : "text-[22px]"
+              )}
+            >
               Insights
             </span>
-            <span className="block text-[12px] text-white/80">
+            <span
+              className={cn(
+                "block text-white/80",
+                compact ? "text-[17px]" : "text-[12px]"
+              )}
+            >
               {tv("latest")}
             </span>
           </span>
@@ -666,9 +717,11 @@ export function PeopleVisual({ people }: Readonly<{ people: Person[] }>) {
   // the loop never shows a seam. Outer columns rise, the middle one falls;
   // the wall pauses while the cursor is on it.
   return (
-    <div className="group/wall absolute inset-x-0 -inset-y-6 flex gap-3 [mask-image:linear-gradient(to_bottom,transparent,rgb(0_0_0/0.35)_5%,rgb(0_0_0/0.8)_10%,black_14%,black_86%,rgb(0_0_0/0.8)_90%,rgb(0_0_0/0.35)_95%,transparent)] sm:-inset-y-10">
+    // Phones show all three columns (smaller photos, more faces) under a
+    // shorter fade.
+    <div className="group/wall absolute inset-x-0 -inset-y-5 flex gap-2 [mask-image:linear-gradient(to_bottom,transparent,black_9%,black_91%,transparent)] sm:-inset-y-10 sm:gap-3 sm:[mask-image:linear-gradient(to_bottom,transparent,rgb(0_0_0/0.35)_5%,rgb(0_0_0/0.8)_10%,black_14%,black_86%,rgb(0_0_0/0.8)_90%,rgb(0_0_0/0.35)_95%,transparent)]">
       {cols.map((col, c) => (
-        <div key={c} className={cn("flex-1", c === 2 && "hidden sm:block")}>
+        <div key={c} className="flex-1">
           <div
             className={cn(
               "flex flex-col group-hover/wall:[animation-play-state:paused] motion-reduce:animate-none",
@@ -680,7 +733,10 @@ export function PeopleVisual({ people }: Readonly<{ people: Person[] }>) {
             )}
           >
             {[0, 1].map((copy) => (
-              <div key={copy} className="flex flex-col gap-3 pb-3">
+              <div
+                key={copy}
+                className="flex flex-col gap-2 pb-2 sm:gap-3 sm:pb-3"
+              >
                 {col.map((p) => card(p, copy))}
               </div>
             ))}

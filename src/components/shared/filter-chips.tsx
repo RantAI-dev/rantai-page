@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "motion/react"
+import { motion, useReducedMotion } from "motion/react"
 import type { LucideIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -17,7 +17,9 @@ export type FilterOption = {
 
 /**
  * Pill filters shared by the library pages. On phones they scroll sideways
- * in one row instead of stacking into a tall list.
+ * in one row instead of stacking into a tall list: chips snap to the edge
+ * padding, the row fades out on the right to show there is more, and a
+ * tapped chip scrolls fully into view.
  */
 export function FilterChips({
   options,
@@ -32,12 +34,13 @@ export function FilterChips({
   label: string
   className?: string
 }>) {
+  const reduce = useReducedMotion()
   return (
     <div
       role="group"
       aria-label={label}
       className={cn(
-        "-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden",
+        "-mx-5 flex snap-x scroll-px-5 gap-2 overflow-x-auto px-5 [scrollbar-width:none] max-sm:[mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden",
         className
       )}
     >
@@ -48,9 +51,16 @@ export function FilterChips({
             key={o.value}
             type="button"
             aria-pressed={active}
-            onClick={() => onChange(o.value)}
+            onClick={(e) => {
+              onChange(o.value)
+              e.currentTarget.scrollIntoView({
+                behavior: reduce ? "auto" : "smooth",
+                block: "nearest",
+                inline: "nearest",
+              })
+            }}
             className={cn(
-              "relative isolate inline-flex h-10 shrink-0 items-center gap-2 rounded-full border px-4 text-sm whitespace-nowrap transition-colors duration-200",
+              "relative isolate inline-flex h-10 shrink-0 snap-start items-center gap-2 rounded-full border px-4 text-sm whitespace-nowrap transition-colors duration-200",
               active
                 ? "border-transparent text-background"
                 : "border-border text-muted-foreground hover:border-foreground/30 hover:text-foreground"
@@ -70,12 +80,14 @@ export function FilterChips({
                 strokeWidth={2}
                 style={{ color: active ? undefined : o.tone }}
               />
-            ) : o.tone && (
-              <span
-                aria-hidden="true"
-                className="size-2 rounded-full"
-                style={{ background: o.tone }}
-              />
+            ) : (
+              o.tone && (
+                <span
+                  aria-hidden="true"
+                  className="size-2 rounded-full"
+                  style={{ background: o.tone }}
+                />
+              )
             )}
             {o.label ?? o.value}
             {o.count !== undefined && (

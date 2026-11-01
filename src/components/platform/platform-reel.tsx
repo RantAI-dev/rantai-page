@@ -451,7 +451,7 @@ function StackedReel({ intro }: Readonly<{ intro: Intro }>) {
         {products.map((p) => (
           <section key={p.id} id={anchors[p.id]} className="scroll-mt-24">
             <PanelText product={p} />
-            <div className="relative mt-8 aspect-[4/5] overflow-hidden rounded-2xl border border-white/12 bg-neutral-950 md:aspect-[16/10]">
+            <div className="relative mt-8 aspect-[32/45] overflow-hidden rounded-2xl border border-white/12 bg-neutral-950 max-md:max-w-[368px] md:aspect-[16/10]">
               {demos[p.id] ? (
                 (() => {
                   const Demo = demos[p.id]

@@ -16,10 +16,13 @@ function TocList({
   headings,
   active,
   indicator,
+  roomy,
 }: Readonly<{
   headings: ArticleHeading[]
   active: string | null
   indicator?: boolean
+  /** Taller rows, for the tap-friendly dropdown on phones and tablets. */
+  roomy?: boolean
 }>) {
   return (
     <ul className="relative space-y-0.5 border-l border-neutral-200">
@@ -39,7 +42,8 @@ function TocList({
               data-toc
               aria-current={on ? "location" : undefined}
               className={cn(
-                "block py-1.5 pr-2 text-[13.5px] leading-snug transition-colors duration-200",
+                "block pr-2 leading-snug transition-colors duration-200",
+                roomy ? "py-2.5 text-[14.5px]" : "py-1.5 text-[13.5px]",
                 h.level === 3 ? "pl-7" : "pl-4",
                 on
                   ? "text-neutral-950"
@@ -187,13 +191,13 @@ export function ArticleReader({
 
         <div ref={bodyRef} className="min-w-0">
           {hasToc && (
-            <details className="group mt-10 rounded-xl bg-neutral-100 lg:hidden">
-              <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[14px] font-medium [&::-webkit-details-marker]:hidden">
+            <details className="group mt-8 rounded-xl bg-neutral-100 sm:mt-10 lg:hidden">
+              <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 py-3 text-[14px] font-medium [&::-webkit-details-marker]:hidden">
                 {t("onThisPage")}
                 <ChevronDown className="size-4 text-neutral-500 transition-transform duration-200 group-open:rotate-180" />
               </summary>
               <div className="px-2 pb-3">
-                <TocList headings={headings} active={active} />
+                <TocList headings={headings} active={active} roomy />
               </div>
             </details>
           )}

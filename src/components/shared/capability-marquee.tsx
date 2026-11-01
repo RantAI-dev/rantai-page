@@ -44,15 +44,19 @@ const rows: Capability[][] = [
 
 function Card({
   item,
-  duplicate,
-}: Readonly<{ item: Capability; duplicate: boolean }>) {
+  duplicate = false,
+  className,
+}: Readonly<{ item: Capability; duplicate?: boolean; className?: string }>) {
   const t = useTranslations("platform.capabilities.items")
   const Icon = item.icon
   const tone = item.tone
   return (
     <li
       aria-hidden={duplicate || undefined}
-      className="flex w-[300px] shrink-0 flex-col gap-8 rounded-2xl border border-neutral-200 bg-white p-6 sm:w-[340px]"
+      className={cn(
+        "flex shrink-0 flex-col gap-8 rounded-2xl border border-neutral-200 bg-white p-6",
+        className ?? "w-[300px] sm:w-[340px]"
+      )}
     >
       <div className="flex items-center justify-between">
         <span
@@ -82,7 +86,7 @@ function Row({
   reverse,
 }: Readonly<{ items: Capability[]; reverse?: boolean }>) {
   return (
-    <div className="group overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] motion-reduce:overflow-x-auto">
+    <div className="group overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] motion-reduce:overflow-x-auto max-md:hidden">
       <ul
         className={cn(
           "flex w-max animate-marquee gap-3 pr-3 group-hover:[animation-play-state:paused] motion-reduce:animate-none",
@@ -117,9 +121,20 @@ export function CapabilityMarquee() {
           className="mt-5 max-w-3xl text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-balance text-neutral-950"
         />
       </div>
-      <div className="mt-14 space-y-3">
+      <div className="mt-10 flex flex-col gap-3 md:mt-14">
         <Row items={rows[0]} />
         <Row items={rows[1]} reverse />
+        {/* Phones: one row the visitor swipes, a card at a time, with the
+            next one peeking in, instead of a moving strip cut at both edges. */}
+        <ul className="flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto overscroll-x-contain px-5 [scrollbar-width:none] sm:scroll-px-10 sm:px-10 md:hidden [&::-webkit-scrollbar]:hidden">
+          {rows.flat().map((item) => (
+            <Card
+              key={item.id}
+              item={item}
+              className="w-[80vw] max-w-[340px] snap-start gap-6"
+            />
+          ))}
+        </ul>
       </div>
     </section>
   )

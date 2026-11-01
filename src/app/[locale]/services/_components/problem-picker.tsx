@@ -493,6 +493,23 @@ export function ProblemPicker() {
   const flip = (toAfter: boolean) =>
     pinned ? scrollTo(pick, toAfter ? 0.75 : 0.15) : setAfter(toAfter)
 
+  // When the chips scroll sideways (phones), keep the picked one in view.
+  const tabsRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    const row = tabsRef.current
+    const chip = row?.children[pick] as HTMLElement | undefined
+    if (!row || !chip || row.scrollWidth <= row.clientWidth) return
+    const left =
+      chip.getBoundingClientRect().left -
+      row.getBoundingClientRect().left +
+      row.scrollLeft -
+      20
+    const right = left + chip.offsetWidth + 40
+    if (left >= row.scrollLeft && right <= row.scrollLeft + row.clientWidth)
+      return
+    row.scrollTo({ left, behavior: reduce ? "auto" : "smooth" })
+  }, [pick, reduce])
+
   // Links to #forward-deployed-engineering open on the engineers problem.
   useEffect(() => {
     if (window.location.hash === "#forward-deployed-engineering") {
@@ -535,13 +552,16 @@ export function ProblemPicker() {
   const body = (
     <>
       {/* Problems */}
+      {/* Phones: one swipeable row that snaps chip by chip, its edges fading
+          so the next problem peeks in. */}
       <div
+        ref={tabsRef}
         role="tablist"
         aria-label={t("tablist")}
         className={cn(
           "-mx-5 flex gap-2.5",
           pinned ? "mt-[min(2.5rem,4svh)]" : "mt-12",
-          "overflow-x-auto px-5 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden"
+          "snap-x snap-mandatory scroll-px-5 overflow-x-auto px-5 [scrollbar-width:none] max-sm:[mask-image:linear-gradient(to_right,transparent,black_20px,black_calc(100%-40px),transparent)] max-sm:pr-10 sm:mx-0 sm:snap-none sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden"
         )}
       >
         {problems.map((q, i) => {
@@ -554,7 +574,7 @@ export function ProblemPicker() {
               type="button"
               onClick={() => choose(i)}
               className={cn(
-                "relative isolate flex h-12 shrink-0 items-center gap-2.5 rounded-full border pr-5 pl-2 text-[15px] font-medium whitespace-nowrap transition-colors",
+                "relative isolate flex h-12 shrink-0 snap-start items-center gap-2.5 rounded-full border pr-5 pl-2 text-[15px] font-medium whitespace-nowrap transition-colors",
                 on
                   ? "border-transparent text-white"
                   : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:text-neutral-900"
@@ -716,7 +736,7 @@ export function ProblemPicker() {
       <section
         id="what-we-do"
         aria-labelledby="problem-heading"
-        className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-24 sm:px-10 lg:px-14 lg:py-32"
+        className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-20 sm:px-10 sm:py-24 lg:px-14 lg:py-32"
       >
         {header}
         {body}

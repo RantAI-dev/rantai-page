@@ -183,7 +183,9 @@ function SoftwareVisual({ playing, hover }: Readonly<SceneProps>) {
             style={{ background: hover ? c : "rgb(255 255 255 / 0.15)" }}
           />
         ))}
-        <span className="ml-2 text-[10.5px] text-white/40">app/page.tsx</span>
+        <span className="ml-2 text-[11px] text-white/40 md:text-[10.5px]">
+          app/page.tsx
+        </span>
       </div>
       <div className="h-[66px] space-y-1 p-3 [font-family:ui-monospace,monospace] text-[11px] whitespace-pre">
         {code.map((line, i) => {
@@ -291,7 +293,7 @@ function AiVisual({ playing, hover }: Readonly<SceneProps>) {
           />
         ))}
       </div>
-      <p className="mt-2 text-[10.5px] text-neutral-500">
+      <p className="mt-2 text-[11px] text-neutral-500 md:text-[10.5px]">
         {top >= 90 ? t("reached") : t("training")}
       </p>
     </div>
@@ -390,7 +392,7 @@ function ServiceCard({
               </h3>
               {s.badge ? (
                 <span
-                  className="relative shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-medium tracking-[0.06em] text-neutral-900 uppercase"
+                  className="relative shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium tracking-[0.06em] text-neutral-900 uppercase md:text-[10.5px]"
                   style={{ background: `${s.tone}24` }}
                 >
                   <span className="relative flex items-center gap-1.5">
@@ -428,7 +430,7 @@ export function ServicesOverview() {
     <section
       id="services"
       aria-labelledby="services-heading"
-      className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-24 sm:px-10 lg:px-14 lg:py-32"
+      className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-20 sm:px-10 sm:py-24 lg:px-14 lg:py-32"
     >
       <Eyebrow className="text-neutral-500">{t("eyebrow")}</Eyebrow>
       <SplitReveal
@@ -437,7 +439,7 @@ export function ServicesOverview() {
         className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-neutral-950"
       />
 
-      <div className="mt-14 grid gap-3 md:grid-cols-3">
+      <div className="mt-10 grid gap-3 sm:mt-14 md:grid-cols-3">
         {services.map((s, i) => (
           <ServiceCard key={s.title} s={s} index={i} />
         ))}

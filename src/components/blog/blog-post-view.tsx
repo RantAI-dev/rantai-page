@@ -92,13 +92,13 @@ export async function BlogPostView({
       <header className="pt-14 sm:pt-20">
         <Link
           href={backHref}
-          className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground max-sm:-my-2.5 max-sm:py-2.5"
         >
           <ArrowLeftIcon className="size-4 transition-transform duration-300 group-hover:-translate-x-1" />
           {backLabel ?? t("back")}
         </Link>
 
-        <Eyebrow className="mt-10 flex text-muted-foreground">
+        <Eyebrow className="mt-8 flex text-muted-foreground sm:mt-10">
           {post.tag}
         </Eyebrow>
 
@@ -107,7 +107,7 @@ export async function BlogPostView({
         </h1>
 
         {post.excerpt && (
-          <p className="mt-6 text-xl leading-relaxed text-muted-foreground">
+          <p className="mt-5 text-[17px] leading-relaxed text-muted-foreground sm:mt-6 sm:text-xl">
             {post.excerpt}
           </p>
         )}
@@ -126,7 +126,7 @@ export async function BlogPostView({
           >
             <button
               type="button"
-              className="inline-flex h-9 items-center gap-2 rounded-full bg-neutral-100 px-4 text-sm text-foreground transition-colors hover:bg-neutral-200/70"
+              className="inline-flex h-10 items-center gap-2 rounded-full bg-neutral-100 px-4 text-sm text-foreground transition-colors hover:bg-neutral-200/70 sm:h-9"
             >
               <Share2 className="size-3.5" />
               {t("share")}
@@ -135,7 +135,7 @@ export async function BlogPostView({
         </div>
 
         {post.thumbnail && (
-          <div className="relative mt-10 aspect-video w-full overflow-hidden rounded-2xl bg-muted">
+          <div className="relative mt-8 aspect-video w-full overflow-hidden rounded-2xl bg-muted sm:mt-10">
             <Image
               src={post.thumbnail}
               alt={post.title}
@@ -165,12 +165,12 @@ export async function BlogPostView({
         <ArticleReader headings={headings} header={header}>
           <MotionInView
             transition={{ delay: 0.1, duration: 0.6, ease: "easeOut" }}
-            className="pt-12 pb-24 lg:pb-32"
+            className="pt-10 pb-20 sm:pt-12 sm:pb-24 lg:pb-32"
           >
             <div
               // Articles are written in English; say so on other locales.
               lang={locale === "en" ? undefined : "en"}
-              className="prose prose-lg max-w-none wrap-anywhere prose-neutral prose-headings:scroll-mt-24 prose-headings:font-medium prose-headings:tracking-[-0.025em] prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 hover:prose-a:opacity-70 prose-blockquote:border-l-2 prose-blockquote:border-brand-1 prose-blockquote:font-normal prose-blockquote:text-muted-foreground prose-blockquote:not-italic prose-code:before:content-none prose-code:after:content-none prose-img:rounded-xl prose-hr:border-border"
+              className="prose prose-lg max-w-none wrap-anywhere prose-neutral prose-headings:scroll-mt-24 prose-headings:font-medium prose-headings:tracking-[-0.025em] max-sm:prose-h2:text-[26px] max-sm:prose-h3:text-[21px] prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 hover:prose-a:opacity-70 prose-blockquote:border-l-2 prose-blockquote:border-brand-1 prose-blockquote:font-normal prose-blockquote:text-muted-foreground prose-blockquote:not-italic prose-code:before:content-none prose-code:after:content-none prose-img:rounded-xl prose-hr:border-border pointer-coarse:[&_.code-copy]:py-2 pointer-coarse:[&_.heading-anchor]:hidden max-sm:[&_table]:block max-sm:[&_table]:overflow-x-auto"
               dangerouslySetInnerHTML={{ __html: html }}
             />
             {next && <NextArticle post={next} />}

@@ -383,7 +383,7 @@ function SequenceRow({
                       />
                     </div>
                   </div>
-                  <div className="px-8 pt-5 pb-[min(2rem,3dvh)]">
+                  <div className="px-8 pt-5 pb-[min(2rem,3dvh)] max-md:px-6 max-md:pb-6">
                     <h3 className="text-2xl font-medium tracking-[-0.03em]">
                       {s.title}
                     </h3>

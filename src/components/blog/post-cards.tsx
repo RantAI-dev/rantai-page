@@ -214,28 +214,61 @@ export function FeaturedPostSplit({
   )
 }
 
-/** Compact card: image, a quiet meta line, a two-line title. */
+/**
+ * Compact card: image, a quiet meta line, a two-line title. With `rowOnMobile`
+ * it becomes a row on phones (small thumbnail beside the text) so a long list
+ * stays scannable; from `sm` up it is the same card.
+ */
 export function PostCard({
   post,
   tagColor,
   fallbackGradient = "from-neutral-800 to-neutral-950",
+  rowOnMobile = false,
 }: Readonly<{
   post: PostCardData
   tagColor?: string
   fallbackGradient?: string
+  rowOnMobile?: boolean
 }>) {
   return (
-    <Link href={`/blog/${post.slug}`} className="group flex flex-col">
+    <Link
+      href={`/blog/${post.slug}`}
+      className={cn(
+        "group flex flex-col",
+        rowOnMobile && "max-sm:flex-row max-sm:items-center max-sm:gap-4"
+      )}
+    >
       <Thumb
         post={post}
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        sizes={
+          rowOnMobile
+            ? "(max-width: 640px) 120px, (max-width: 1024px) 50vw, 33vw"
+            : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        }
         fallbackGradient={fallbackGradient}
-        className="aspect-[16/10] rounded-xl"
+        className={cn(
+          "aspect-[16/10] rounded-xl",
+          rowOnMobile && "max-sm:aspect-[4/3] max-sm:w-28 max-sm:shrink-0"
+        )}
       />
-      <Meta post={post} tagColor={tagColor} className="mt-4" />
-      <h3 className="mt-2 line-clamp-2 text-[17px] leading-snug font-medium tracking-[-0.015em] text-neutral-950 decoration-neutral-300 underline-offset-4 group-hover:underline">
-        {post.title}
-      </h3>
+      <div className={cn(rowOnMobile && "max-sm:min-w-0 max-sm:flex-1")}>
+        <Meta
+          post={post}
+          tagColor={tagColor}
+          className={cn(
+            "mt-4",
+            rowOnMobile && "max-sm:mt-0 max-sm:text-[12px]"
+          )}
+        />
+        <h3
+          className={cn(
+            "mt-2 line-clamp-2 text-[17px] leading-snug font-medium tracking-[-0.015em] text-neutral-950 decoration-neutral-300 underline-offset-4 group-hover:underline",
+            rowOnMobile && "max-sm:mt-1.5 max-sm:text-[16px]"
+          )}
+        >
+          {post.title}
+        </h3>
+      </div>
     </Link>
   )
 }

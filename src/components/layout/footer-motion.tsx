@@ -285,7 +285,7 @@ export function BackToTop() {
     <button
       type="button"
       onClick={scrollToTop}
-      className="group inline-flex items-center gap-2 rounded-full transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-1"
+      className="group inline-flex items-center gap-2 rounded-full whitespace-nowrap transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-1 max-sm:min-h-10"
     >
       {t("backToTop")}
       <span className="grid size-7 place-items-center rounded-full border border-border transition-colors group-hover:border-foreground group-hover:bg-foreground group-hover:text-background">

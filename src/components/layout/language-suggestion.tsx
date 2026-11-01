@@ -53,16 +53,21 @@ export function LanguageSuggestion() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 12 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed bottom-4 left-4 z-[90] flex max-w-[calc(100vw-2rem)] items-center gap-3 rounded-2xl bg-white py-2.5 pr-2 pl-3.5 text-neutral-950 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.07] sm:bottom-6 sm:left-6"
+          className="fixed inset-x-3 bottom-3 z-[90] flex items-center gap-1.5 rounded-2xl bg-white py-2 pr-1 pl-3.5 text-neutral-950 shadow-[0_18px_40px_-16px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.07] sm:right-auto sm:bottom-6 sm:left-6 sm:max-w-[calc(100vw-2rem)] sm:gap-3 sm:py-2.5 sm:pr-2 sm:pl-3.5"
         >
-          <Languages className="size-4 shrink-0 text-neutral-500" aria-hidden />
-          <p className="text-[14px]">Tersedia dalam Bahasa Indonesia</p>
+          <Languages
+            className="size-4 shrink-0 text-neutral-500 max-sm:hidden"
+            aria-hidden
+          />
+          <p className="min-w-0 flex-1 text-[13.5px] sm:flex-initial sm:text-[14px]">
+            Tersedia dalam Bahasa Indonesia
+          </p>
           <Link
             href={pathname}
             locale="id"
             hrefLang="id"
             onClick={() => remember("id")}
-            className="shrink-0 rounded-full bg-neutral-950 px-3.5 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-neutral-800"
+            className="inline-flex h-9 shrink-0 items-center rounded-full bg-neutral-950 px-3.5 text-[13px] font-medium text-white transition-colors hover:bg-neutral-800 sm:h-auto sm:px-3.5 sm:py-1.5"
           >
             Lihat
           </Link>
@@ -70,7 +75,7 @@ export function LanguageSuggestion() {
             type="button"
             onClick={() => remember("en")}
             aria-label="Tutup, tetap dalam bahasa Inggris"
-            className="grid size-8 shrink-0 place-items-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-950"
+            className="grid size-10 shrink-0 place-items-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-950 sm:size-8"
           >
             <X className="size-4" />
           </button>
