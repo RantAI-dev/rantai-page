@@ -30,7 +30,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     if (res.ok) {
       router.push("/admin")
     } else {
-      toast.error("Invalid credentials")
+      // The server says why: wrong credentials, or too many attempts.
+      const data = await res.json().catch(() => ({}))
+      toast.error(data.error ?? "Invalid credentials")
     }
   }
 

@@ -3,6 +3,7 @@ import { revalidateTeam } from "@/lib/revalidate";
 import { db } from "@/lib/db";
 import { teamMembers } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth";
+import { parseTeamInput, readJson } from "@/lib/admin-input";
 import { eq } from "drizzle-orm";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -10,12 +11,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const body = await req.json();
-  const { name, role, bio, imageUrl, linkedin, github, orderIndex } = body;
+  const input = parseTeamInput(await readJson(req));
+  if (!input.ok) return NextResponse.json({ error: input.error }, { status: 400 });
 
   const [member] = await db
     .update(teamMembers)
-    .set({ name, role, bio, imageUrl, linkedin, github, orderIndex, updatedAt: new Date() })
+    .set({ ...input.data, updatedAt: new Date() })
     .where(eq(teamMembers.id, id))
     .returning();
 

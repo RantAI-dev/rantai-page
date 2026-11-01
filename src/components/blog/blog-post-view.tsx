@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ArrowLeftIcon, ArrowRight, Share2 } from "lucide-react";
 
 import { prepareArticle } from "@/lib/blog/article-html";
+import { sanitizeBlogHtml } from "@/lib/blog/sanitize";
 import type { BlogPost, PostListItem } from "@/lib/blog/posts";
 import { siteConfig } from "@/lib/config";
 import { ArticleReader } from "@/components/blog/article-reader";
@@ -60,7 +61,11 @@ export function BlogPostView({
   next,
 }: BlogPostViewProps) {
   const mins = readingTime(post.contentHtml ?? "");
-  const { html, headings } = prepareArticle(post.contentHtml ?? "");
+  // Sanitized again on read: also covers posts saved before sanitizing on
+  // write, and the admin preview, which renders this same view.
+  const { html, headings } = prepareArticle(
+    sanitizeBlogHtml(post.contentHtml ?? "")
+  );
   const date = new Date(post.date).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
