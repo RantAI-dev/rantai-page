@@ -73,8 +73,14 @@ function useBorderLight(ref: React.RefObject<HTMLDivElement | null>) {
 export function FooterPrompt({
   label,
   subject,
+  email: customEmail,
   prompts: given,
-}: Readonly<{ label: string; subject: string; prompts?: string[] }>) {
+}: Readonly<{
+  label: string
+  subject: string
+  email?: string
+  prompts?: string[]
+}>) {
   const t = useTranslations("common.footer.prompt")
   const prompts = given ?? (t.raw("examples") as string[])
   const [value, setValue] = useState("")
@@ -90,7 +96,7 @@ export function FooterPrompt({
     return () => clearTimeout(timer)
   }, [sent])
 
-  const email = siteConfig.links.email
+  const email = customEmail ?? siteConfig.links.email
   const href = `mailto:${email}?subject=${encodeURIComponent(subject)}${
     value ? `&body=${encodeURIComponent(value)}` : ""
   }`

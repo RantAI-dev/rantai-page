@@ -12,6 +12,7 @@ import { SectionNav } from "@/components/layout/section-nav"
 import { ForTeams } from "./_components/for-teams"
 import { SiteShell } from "@/components/layout/site-shell"
 import { BookLibrary } from "./_components/book-library"
+import { siteConfig } from "@/lib/config"
 
 export async function generateMetadata({
   params,
@@ -54,6 +55,7 @@ export default async function AcademyPage({
         description: t("cta.description"),
         label: t("cta.label"),
         subject: t("cta.subject"),
+        email: siteConfig.links.academyEmail,
         prompts: t.raw("cta.prompts") as string[],
       }}
     >

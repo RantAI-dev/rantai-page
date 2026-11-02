@@ -165,7 +165,7 @@ export function ForTeams() {
             transition={{ duration: 0.7, ease, delay: i * 0.08 }}
           >
             <a
-              href={`mailto:${siteConfig.links.email}?subject=${encodeURIComponent(t(`offers.${o.id}.subject`))}`}
+              href={`mailto:${siteConfig.links.academyEmail}?subject=${encodeURIComponent(t(`offers.${o.id}.subject`))}`}
               className="group flex h-full flex-col rounded-2xl bg-neutral-100 p-3"
             >
               <Desk tone={o.tone}>

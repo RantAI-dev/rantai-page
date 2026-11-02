@@ -9,7 +9,12 @@ import {
   FooterWordmark,
   Reveal,
 } from "@/components/layout/footer-motion"
-import { GithubIcon, LinkedInIcon } from "@/components/shared/icons"
+import {
+  GithubIcon,
+  InstagramIcon,
+  LinkedInIcon,
+  YouTubeIcon,
+} from "@/components/shared/icons"
 import { FooterPrompt } from "@/components/layout/footer-prompt"
 import { SplitReveal } from "@/components/shared/split-reveal"
 import { siteConfig } from "@/lib/config"
@@ -82,6 +87,18 @@ function footerSocials(t: Translate) {
       external: true,
     },
     {
+      label: "Instagram",
+      href: siteConfig.links.instagram,
+      icon: <InstagramIcon size={16} />,
+      external: true,
+    },
+    {
+      label: "YouTube",
+      href: siteConfig.links.youtube,
+      icon: <YouTubeIcon size={16} />,
+      external: true,
+    },
+    {
       label: t("email", { email: siteConfig.links.email }),
       href: `mailto:${siteConfig.links.email}`,
       icon: <Mail aria-hidden="true" className="size-[17px]" />,
@@ -103,6 +120,8 @@ export type FooterCta = {
   label: string
   /** Email subject; defaults to a generic one. */
   subject?: string
+  /** Email address to send to; defaults to siteConfig.links.email. */
+  email?: string
   /** Example requests typed into the composer and offered as chips. */
   prompts?: string[]
   showServicesLink?: boolean
@@ -149,6 +168,7 @@ export async function Footer({ cta: given }: Readonly<{ cta?: FooterCta }>) {
             <FooterPrompt
               label={cta.label}
               subject={cta.subject ?? t("cta.subject")}
+              email={cta.email}
               prompts={cta.prompts}
             />
           </Reveal>

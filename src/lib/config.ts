@@ -6,8 +6,11 @@ export const siteConfig = {
   links: {
     website: "https://www.rantai.dev",
     email: "contacts@rantai.dev",
-    github: "https://github.com/rantai",
-    linkedin: "https://linkedin.com/company/rantai",
+    academyEmail: "rantai.academy@rantai.dev",
+    github: "https://github.com/RantAI-dev",
+    linkedin: "https://www.linkedin.com/company/rantai-dev/home/",
+    instagram: "https://www.instagram.com/rantaidev",
+    youtube: "https://www.youtube.com/@RantAI-dev",
   },
   navItems: [
     { href: "/", label: "Home" },

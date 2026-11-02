@@ -57,6 +57,30 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/linkedin",
+        destination: "https://www.linkedin.com/company/rantai-dev/home/",
+        permanent: false,
+      },
+      {
+        source: "/github",
+        destination: "https://github.com/RantAI-dev",
+        permanent: false,
+      },
+      {
+        source: "/instagram",
+        destination: "https://www.instagram.com/rantaidev",
+        permanent: false,
+      },
+      {
+        source: "/youtube",
+        destination: "https://www.youtube.com/@RantAI-dev",
+        permanent: false,
+      },
+    ]
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }]
   },
