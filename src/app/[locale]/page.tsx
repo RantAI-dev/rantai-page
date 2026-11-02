@@ -40,7 +40,12 @@ const organization = {
   logo: `${siteConfig.url}/rant-ai.png`,
   email: siteConfig.links.email,
   description: siteConfig.description,
-  sameAs: [siteConfig.links.github, siteConfig.links.linkedin],
+  sameAs: [
+    siteConfig.links.github,
+    siteConfig.links.linkedin,
+    siteConfig.links.instagram,
+    siteConfig.links.youtube,
+  ],
 }
 
 async function Announcement() {
