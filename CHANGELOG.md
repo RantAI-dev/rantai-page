@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/RantAI-dev/rantai-page/compare/v2.2.0...v2.2.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* update LinkedIn redirect and add social links ([07ff116](https://github.com/RantAI-dev/rantai-page/commit/07ff1169812541acd54eb2dcc5d92d54d8506207))
+
 ## [2.2.0](https://github.com/RantAI-dev/rantai-page/compare/v2.1.0...v2.2.0) (2026-11-01)
 
 
