@@ -56,7 +56,7 @@ const products: P[] = [
     name: "RantAI Lakehouse",
     icon: Database,
     tone: "#14b8a6",
-    src: "/products/lake-dashboard.jpg",
+    src: "/products/lake-dashboard.webp",
   },
   { id: "llmops", name: "RantAI LLMOps", icon: BrainCircuit, tone: "#8b5cf6" },
 ]
@@ -169,10 +169,13 @@ function BentoMixed() {
         </Tile>
         <Tile p={lake} className="flex-1" delay={0.55}>
           <Image
-            src="/products/lake-dashboard.jpg"
+            src="/products/lake-dashboard.webp"
             alt=""
             fill
             sizes="35vw"
+            // In the hero, so it is often the page's largest paint
+            loading="eager"
+            fetchPriority="high"
             className="object-cover object-[0%_18%]"
           />
         </Tile>

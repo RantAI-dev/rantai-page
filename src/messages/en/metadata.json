@@ -52,5 +52,9 @@
       "eyebrow": "Company",
       "title": "The people\nbehind RantAI."
     }
+  },
+  "contact": {
+    "title": "Contact",
+    "description": "Tell RantAI what you want to build: products, engineering, or training for your team. Or book a free discovery call."
   }
 }

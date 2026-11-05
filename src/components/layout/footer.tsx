@@ -66,7 +66,7 @@ function footerColumns(t: Translate): { title: string; links: FooterLink[] }[] {
         { label: t("team"), href: "/our-team" },
         { label: t("academy"), href: "/academy" },
         { label: t("insights"), href: "/blog" },
-        { label: t("contact"), href: `mailto:${siteConfig.links.email}` },
+        { label: t("contact"), href: "/contact" },
       ],
     },
   ]
@@ -127,11 +127,13 @@ export type FooterCta = {
   showServicesLink?: boolean
 }
 
-export async function Footer({ cta: given }: Readonly<{ cta?: FooterCta }>) {
+export async function Footer({
+  cta: given,
+}: Readonly<{ cta?: FooterCta | false }>) {
   const t = await getTranslations("common.footer")
   const columns = footerColumns(t)
   const socials = footerSocials(t)
-  const cta: FooterCta = given ?? {
+  const cta: FooterCta | false = given ?? {
     eyebrow: t("cta.eyebrow"),
     title: t("cta.title"),
     label: t("cta.label"),
@@ -143,48 +145,50 @@ export async function Footer({ cta: given }: Readonly<{ cta?: FooterCta }>) {
       id="contact"
       className="flex scroll-mt-20 flex-col gap-3 px-3 pb-3 sm:gap-4 sm:px-4 sm:pb-4"
     >
-      <FooterCtaCard labelledBy="footer-cta-heading">
-        <div className="mx-auto flex max-w-3xl flex-col items-center px-6 py-16 text-center max-sm:items-start max-sm:px-8 max-sm:pt-16 max-sm:pb-12 max-sm:text-left sm:py-32">
-          {cta.eyebrow && (
-            <Reveal>
-              <p className="mb-5 text-xs font-medium tracking-[0.14em] text-white/50 uppercase max-sm:mb-4">
-                {cta.eyebrow}
-              </p>
-            </Reveal>
-          )}
-          <SplitReveal
-            id="footer-cta-heading"
-            text={cta.title}
-            className="text-[clamp(2rem,4.4vw,3.5rem)] leading-[1.05] font-medium tracking-[-0.04em] text-balance"
-          />
-          {cta.description && (
-            <Reveal index={2}>
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-pretty text-white/60 max-sm:mt-4 max-sm:max-w-none max-sm:text-[15px] sm:text-lg">
-                {cta.description}
-              </p>
-            </Reveal>
-          )}
-          <Reveal index={3} className="mt-10 w-full max-sm:mt-8">
-            <FooterPrompt
-              label={cta.label}
-              subject={cta.subject ?? t("cta.subject")}
-              email={cta.email}
-              prompts={cta.prompts}
+      {cta && (
+        <FooterCtaCard labelledBy="footer-cta-heading">
+          <div className="mx-auto flex max-w-3xl flex-col items-center px-6 py-16 text-center max-sm:items-start max-sm:px-8 max-sm:pt-16 max-sm:pb-12 max-sm:text-left sm:py-32">
+            {cta.eyebrow && (
+              <Reveal>
+                <p className="mb-5 text-xs font-medium tracking-[0.14em] text-white/50 uppercase max-sm:mb-4">
+                  {cta.eyebrow}
+                </p>
+              </Reveal>
+            )}
+            <SplitReveal
+              id="footer-cta-heading"
+              text={cta.title}
+              className="text-[clamp(2rem,4.4vw,3.5rem)] leading-[1.05] font-medium tracking-[-0.04em] text-balance"
             />
-          </Reveal>
-          {cta.showServicesLink && (
-            <Reveal index={5}>
-              <Link
-                href="/services"
-                className={`mt-8 inline-flex items-center gap-1 text-sm text-white/55 hover:text-white max-sm:mt-6 max-sm:min-h-10 max-sm:bg-none max-sm:text-[15px] ${linkUnderline}`}
-              >
-                {t("exploreServices")}
-                <ArrowUpRight className="size-3.5" aria-hidden="true" />
-              </Link>
+            {cta.description && (
+              <Reveal index={2}>
+                <p className="mt-5 max-w-xl text-base leading-relaxed text-pretty text-white/60 max-sm:mt-4 max-sm:max-w-none max-sm:text-[15px] sm:text-lg">
+                  {cta.description}
+                </p>
+              </Reveal>
+            )}
+            <Reveal index={3} className="mt-10 w-full max-sm:mt-8">
+              <FooterPrompt
+                label={cta.label}
+                subject={cta.subject ?? t("cta.subject")}
+                email={cta.email}
+                prompts={cta.prompts}
+              />
             </Reveal>
-          )}
-        </div>
-      </FooterCtaCard>
+            {cta.showServicesLink && (
+              <Reveal index={5}>
+                <Link
+                  href="/services"
+                  className={`mt-8 inline-flex items-center gap-1 text-sm text-white/55 hover:text-white max-sm:mt-6 max-sm:min-h-10 max-sm:bg-none max-sm:text-[15px] ${linkUnderline}`}
+                >
+                  {t("exploreServices")}
+                  <ArrowUpRight className="size-3.5" aria-hidden="true" />
+                </Link>
+              </Reveal>
+            )}
+          </div>
+        </FooterCtaCard>
+      )}
 
       {/* Links sit straight on the page, with a faded wordmark below */}
       <div className="relative overflow-hidden px-6 pt-14 sm:px-10 lg:px-16 lg:pt-20">

@@ -11,7 +11,8 @@ export async function SiteShell({
 }: Readonly<{
   children: React.ReactNode
   announcement?: React.ReactNode
-  cta?: FooterCta
+  /** The footer's call to action; false hides it (the contact page). */
+  cta?: FooterCta | false
 }>) {
   const t = await getTranslations("common.shell")
   return (

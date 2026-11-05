@@ -27,6 +27,23 @@ export async function generateMetadata({
   })
 }
 
+// The hero's three books: covers kept in the repo (small WebP copies), so
+// the first screen doesn't wait on the blob store. Left, front, right.
+const heroBooks = [
+  {
+    cover: "/academy/computational-physics-via-rust.webp",
+    name: "Computational Physics via Rust",
+  },
+  {
+    cover: "/academy/data-science-for-commercial.webp",
+    name: "Data Science for Commercial",
+  },
+  {
+    cover: "/academy/machine-learning-via-rust.webp",
+    name: "Machine Learning via Rust",
+  },
+]
+
 export default async function AcademyPage({
   params,
 }: {
@@ -64,11 +81,7 @@ export default async function AcademyPage({
         eyebrow={t("hero.eyebrow")}
         title={t("hero.title")}
         description={t("hero.description")}
-        visual={
-          <BooksVisual
-            books={books.map((b) => ({ cover: b.imageUrl, name: b.name }))}
-          />
-        }
+        visual={<BooksVisual books={heroBooks} />}
       />
       <section
         id="library"

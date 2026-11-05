@@ -15,6 +15,7 @@ const namespaces = [
   "academy",
   "blog",
   "company",
+  "contact",
   "notFound",
 ] as const
 

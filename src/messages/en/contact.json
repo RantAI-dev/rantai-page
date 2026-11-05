@@ -1,0 +1,86 @@
+{
+  "hero": {
+    "eyebrow": "Contact",
+    "title": "Tell us what you\nwant to build.",
+    "description": "A few lines are enough. We read every message and reply by email."
+  },
+  "direct": {
+    "title": "Or reach us directly",
+    "general": "Products and engineering",
+    "academy": "Academy and training",
+    "call": "Book a free discovery call",
+    "callMeta": "60 minutes · your team and two of our engineers",
+    "callSubject": "Discovery call",
+    "follow": "Follow RantAI"
+  },
+  "form": {
+    "label": "Contact form",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Work email",
+    "emailPlaceholder": "you@company.com",
+    "company": "Company",
+    "optional": "Optional",
+    "topic": "What is it about?",
+    "topics": {
+      "products": "Products",
+      "engineering": "Engineering",
+      "academy": "Academy",
+      "other": "Something else"
+    },
+    "message": "Message",
+    "messagePlaceholder": "The workflow, the problem, or the question you have in mind",
+    "send": "Send message",
+    "note": "Sending opens your email app with the message ready to go.",
+    "opening": "Opening your email app…",
+    "fallback": "Nothing opened? Write to {email}.",
+    "copy": "Copy address",
+    "copied": "Copied",
+    "required": "Please fill this in",
+    "invalidEmail": "Enter a valid email address",
+    "subject": "{topic} · {name}",
+    "bodyName": "Name",
+    "bodyEmail": "Email",
+    "bodyCompany": "Company"
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Questions we\noften hear.",
+    "more": "Something else on your mind?",
+    "ask": "Ask us",
+    "items": [
+      {
+        "q": "How does a project start?",
+        "a": "With a free 60-minute discovery call between your team and two RantAI engineers. We look at the workflow, the data and the people who will use it, then give you an honest fit check and a rough timeline. No commitment."
+      },
+      {
+        "q": "How long until something is live?",
+        "a": "Usually about two months: a one-page scope in week 1, the build in weeks 2–5, and a pilot with real users in weeks 6–8. Smaller fixes, like a slow app, often take 3–6 weeks."
+      },
+      {
+        "q": "Can it run on our own infrastructure?",
+        "a": "Yes. Our engineers work in your repositories and your cloud, and our products deploy on your own infrastructure, so your data stays with you."
+      },
+      {
+        "q": "Who owns the code?",
+        "a": "You do. The code lives in your repository from day one, and at handover your team gets the runbook, the architecture docs and training."
+      },
+      {
+        "q": "Are we tied to one AI model?",
+        "a": "No. Our platforms support 100+ LLMs, so you can switch model providers without rebuilding anything. They are built on open-source foundations, with no hidden dependencies."
+      },
+      {
+        "q": "Do you work within Indonesian regulations?",
+        "a": "Yes. Personal data protection (UU PDP), keeping data in Indonesia and an audit trail for every action are designed in from day one."
+      },
+      {
+        "q": "What happens after handover?",
+        "a": "Your team owns the system and we stay on call, with monitoring dashboards, alerts and support after go-live."
+      },
+      {
+        "q": "Can you train our team?",
+        "a": "Yes. RantAI Academy runs hands-on classes for engineers, from prompting to agents, and writes books built on your own data and use cases."
+      }
+    ]
+  }
+}

@@ -23,7 +23,7 @@ import {
   type MotionValue,
 } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { SplitReveal } from "@/components/shared/split-reveal"
 import { useMediaQuery } from "@/hooks/use-media-query"
@@ -206,6 +206,40 @@ const MONTHS = 9
 const col = (m: number) => `${(m / MONTHS) * 100}%`
 
 /** The problem as a product moment: the pilot bar just keeps growing. */
+/**
+ * Centres a mock window in the box and scales it down when the box is
+ * shorter than the window (some tablet and laptop sizes), so it never runs
+ * into the box's edges.
+ */
+function Fit({ children }: Readonly<{ children: React.ReactNode }>) {
+  const outer = useRef<HTMLDivElement>(null)
+  const inner = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1)
+  useEffect(() => {
+    const o = outer.current
+    const i = inner.current
+    if (!o || !i) return
+    const update = () =>
+      setScale(Math.min(1, o.clientHeight / Math.max(1, i.offsetHeight)))
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(o)
+    ro.observe(i)
+    return () => ro.disconnect()
+  }, [])
+  return (
+    <div ref={outer} className="flex h-full w-full items-center justify-center">
+      <div
+        ref={inner}
+        className="w-full max-w-md"
+        style={scale < 1 ? { transform: `scale(${scale})` } : undefined}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
 function StalledVisual({
   progress,
 }: Readonly<{ progress: MotionValue<number> }>) {
@@ -244,8 +278,8 @@ function StalledVisual({
     "absolute -left-0 -translate-x-full pr-3 text-[11px] leading-7 text-neutral-500"
 
   return (
-    <div className="flex h-full w-full items-center justify-center">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_30px_70px_-35px_rgba(0,0,0,0.35),0_1px_0_rgba(0,0,0,0.02)]">
+    <Fit>
+      <div className="w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_30px_70px_-35px_rgba(0,0,0,0.35),0_1px_0_rgba(0,0,0,0.02)]">
         <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
           <span className="flex items-center gap-2 text-[11px]">
             <span className="text-neutral-400">{t("projects")}</span>
@@ -374,7 +408,7 @@ function StalledVisual({
           </span>
         </motion.div>
       </div>
-    </div>
+    </Fit>
   )
 }
 
@@ -456,8 +490,8 @@ function BoundaryVisual({
   useMotionValueEvent(blocked, "change", (v) => setBlocked(v > 0.5))
 
   return (
-    <div className="flex h-full w-full items-center justify-center">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_30px_70px_-35px_rgba(0,0,0,0.35),0_1px_0_rgba(0,0,0,0.02)]">
+    <Fit>
+      <div className="w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_30px_70px_-35px_rgba(0,0,0,0.35),0_1px_0_rgba(0,0,0,0.02)]">
         {/* Window bar */}
         <div className="flex items-center gap-2 border-b border-neutral-100 px-4 py-3">
           <span className="flex gap-1.5">
@@ -537,7 +571,7 @@ function BoundaryVisual({
           </motion.div>
         </div>
       </div>
-    </div>
+    </Fit>
   )
 }
 

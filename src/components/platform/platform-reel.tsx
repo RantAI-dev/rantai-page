@@ -16,7 +16,6 @@ import { Eyebrow } from "@/components/shared/eyebrow"
 import { smoothScrollTo } from "@/components/layout/smooth-scroll"
 import { SplitReveal } from "@/components/shared/split-reveal"
 import { ProductLogo, productIdFrom } from "@/components/shared/product-logo"
-import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 
 import { DemoChipSlot, demos } from "@/components/platform/demos"
@@ -89,9 +88,9 @@ function useStickyProgress(ref: React.RefObject<HTMLElement | null>) {
 function useIsDesktop() {
   const [desktop, setDesktop] = useState(false)
   useEffect(() => {
-    // Below 1280px the media column is too narrow for the demos to read, so
-    // those screens get the stacked list instead.
-    const q = window.matchMedia("(min-width: 1280px)")
+    // From 1024px (landscape tablets, small laptops) the side-by-side reel
+    // fits; narrower screens get the pinned phone reel.
+    const q = window.matchMedia("(min-width: 1024px)")
     const update = () => setDesktop(q.matches)
     update()
     q.addEventListener("change", update)
@@ -597,10 +596,9 @@ export function PlatformReel({
   const t = useTranslations("platform.reel")
   const intro = introProp ?? { eyebrow: t("eyebrow"), title: t("title") }
   const desktop = useIsDesktop()
-  const phone = useMediaQuery("(max-width: 767px)")
   const reduce = useReducedMotion()
   if (reduce) return <StackedReel intro={intro} />
   if (desktop) return <DesktopReel intro={intro} />
-  if (phone) return <PhoneReel intro={intro} />
-  return <StackedReel intro={intro} />
+  // Phones and tablets: pinned too, one product at a time.
+  return <PhoneReel intro={intro} />
 }

@@ -52,5 +52,9 @@
       "eyebrow": "Perusahaan",
       "title": "Orang-orang\ndi balik RantAI."
     }
+  },
+  "contact": {
+    "title": "Kontak",
+    "description": "Ceritakan kepada RantAI apa yang ingin Anda bangun: produk, engineering, atau pelatihan untuk tim Anda. Atau jadwalkan discovery call gratis."
   }
 }

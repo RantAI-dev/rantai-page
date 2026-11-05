@@ -27,7 +27,7 @@ const claw: Shot = {
   y: -0.0573,
 }
 const lake = (name: string): Shot => ({
-  src: `/products/lake-${name}.jpg`,
+  src: `/products/lake-${name}.webp`,
   size: 1,
   x: 0,
   y: 0,
@@ -140,20 +140,111 @@ function noise3(x: number, y: number, z: number) {
 
 const SCRAMBLE = "@#%*+=-:;.01xX/<>"
 
+/**
+ * Everything about the planet that doesn't change frame to frame, worked
+ * out once per canvas size: each cell's place on the sphere, its light and
+ * rim, and a table of the land noise around every row. The spin only turns
+ * the sphere about its vertical axis, so a frame just looks up the land at
+ * (longitude + spin), instead of two noise samples per character.
+ */
+type EarthCache = {
+  w: number
+  h: number
+  dpr: number
+  cx: number
+  cy: number
+  xs: Float32Array
+  ys: Float32Array
+  rows: Uint16Array
+  lon: Float32Array
+  shade: Float32Array // 0.25 + light
+  rim: Float32Array // rim * 0.9
+  land: Float32Array[] // per row, LON samples around the sphere
+}
+const CELL = 12
+const CW = CELL * 0.62
+const LON = 1024
+const FONT = `500 ${CELL - 1}px ui-monospace, SFMono-Regular, Menlo, monospace`
+const caches = new WeakMap<CanvasRenderingContext2D, EarthCache>()
+
+function earthCache(w: number, h: number, dpr: number): EarthCache {
+  const radius = Math.max(w, h) * 0.75
+  const cx = w / 2
+  // Phones: the panorama is a band above the text, so the planet's top
+  // sits just under the cards (64% down), whatever the band's height.
+  const cy = w < 640 ? h * 0.64 + radius : h + radius * 0.58
+  const xs: number[] = []
+  const ys: number[] = []
+  const rows: number[] = []
+  const lon: number[] = []
+  const shade: number[] = []
+  const rim: number[] = []
+  const rowNy: number[] = []
+  for (let y = 0, row = 0; y < h; y += CELL, row++) {
+    const ny = (y - cy) / radius
+    rowNy.push(ny)
+    for (let x = 0; x < w; x += CW) {
+      const nx = (x - cx) / radius
+      const d2 = nx * nx + ny * ny
+      if (d2 > 1) continue
+      const nz = Math.sqrt(1 - d2)
+      xs.push(x)
+      ys.push(y)
+      rows.push(row)
+      lon.push(Math.atan2(nx, nz))
+      shade.push(0.25 + Math.max(0, nx * -0.35 + ny * -0.75 + nz * 0.55))
+      rim.push(Math.pow(1 - nz, 3) * 0.9)
+    }
+  }
+  // Land noise around each row that has cells (rx, rz on a circle of
+  // radius sqrt(1 - ny²)), sampled at LON longitudes.
+  const used = new Set(rows)
+  const land = rowNy.map((ny, row) => {
+    const t = new Float32Array(used.has(row) ? LON : 0)
+    const r = Math.sqrt(Math.max(0, 1 - ny * ny))
+    for (let i = 0; i < t.length; i++) {
+      const a = (i / LON) * Math.PI * 2
+      const rx = r * Math.sin(a)
+      const rz = r * Math.cos(a)
+      t[i] =
+        noise3(rx * 3 + 10, ny * 3, rz * 3) * 0.65 +
+        noise3(rx * 7, ny * 7, rz * 7) * 0.35
+    }
+    return t
+  })
+  return {
+    w,
+    h,
+    dpr,
+    cx,
+    cy,
+    xs: Float32Array.from(xs),
+    ys: Float32Array.from(ys),
+    rows: Uint16Array.from(rows),
+    lon: Float32Array.from(lon),
+    shade: Float32Array.from(shade),
+    rim: Float32Array.from(rim),
+    land,
+  }
+}
+
 function drawEarth(
   ctx: CanvasRenderingContext2D,
   w: number,
   h: number,
   spin: number,
   /** Cursor in canvas pixels, with 0–1 strength (fades in and out). */
-  lamp: { x: number; y: number; k: number }
+  lamp: { x: number; y: number; k: number },
+  dpr: number
 ) {
+  let c = caches.get(ctx)
+  if (!c || c.w !== w || c.h !== h || c.dpr !== dpr) {
+    c = earthCache(w, h, dpr)
+    caches.set(ctx, c)
+  }
   ctx.clearRect(0, 0, w, h)
   const radius = Math.max(w, h) * 0.75
-  const cx = w / 2
-  // Phones: the panorama is a band above the text, so the planet's top
-  // sits just under the cards (64% down), whatever the band's height.
-  const cy = w < 640 ? h * 0.64 + radius : h + radius * 0.58
+  const { cx, cy } = c
   // Dark body behind the characters, so the ring is hidden by the planet.
   // It fades out past the rim, letting the cards sink softly behind it
   // instead of being cut by a hard edge.
@@ -165,58 +256,54 @@ function drawEarth(
   body.addColorStop(1, "rgba(0,0,0,0)")
   ctx.fillStyle = body
   ctx.fillRect(0, 0, w, h)
-  const cell = 12
-  const cw = cell * 0.62
-  ctx.font = `500 ${cell - 1}px ui-monospace, SFMono-Regular, Menlo, monospace`
-  ctx.textBaseline = "top"
+
   const buckets: number[][] = ramp.split("").map(() => [])
   // Characters under the cursor: brighter, and some flicker to random glyphs.
   const lit: { x: number; y: number; a: number; c: string }[] = []
   const reach = 150
-  for (let y = 0; y < h; y += cell) {
-    for (let x = 0; x < w; x += cw) {
-      const nx = (x - cx) / radius
-      const ny = (y - cy) / radius
-      const d2 = nx * nx + ny * ny
-      if (d2 > 1) continue
-      const nz = Math.sqrt(1 - d2)
-      const rx = nx * Math.cos(spin) + nz * Math.sin(spin)
-      const rz = -nx * Math.sin(spin) + nz * Math.cos(spin)
-      const land =
-        noise3(rx * 3 + 10, ny * 3, rz * 3) * 0.65 +
-        noise3(rx * 7, ny * 7, rz * 7) * 0.35
-      const light = Math.max(0, nx * -0.35 + ny * -0.75 + nz * 0.55)
-      const rim = Math.pow(1 - nz, 3)
-      const v = Math.min(
-        0.999,
-        (land > 0.52 ? 0.55 + land * 0.5 : 0.12 + land * 0.15) *
-          (0.25 + light) +
-          rim * 0.9
-      )
-      const i = Math.floor(v * ramp.length)
-      if (lamp.k > 0) {
-        const d = Math.hypot(x - lamp.x, y - lamp.y)
-        if (d < reach) {
-          const f = (1 - d / reach) ** 2 * lamp.k
-          const c =
-            Math.random() < f * 0.35
-              ? SCRAMBLE[Math.floor(Math.random() * SCRAMBLE.length)]
-              : ramp[Math.max(i, 2)]
-          lit.push({ x, y, a: Math.min(1, 0.1 + i * 0.06 + f * 0.8), c })
-          continue
-        }
+  const turn = (spin / (Math.PI * 2)) * LON
+  for (let k = 0; k < c.xs.length; k++) {
+    // Longitude after the spin, as a fractional index into the row's table.
+    let f = (c.lon[k] / (Math.PI * 2)) * LON + turn
+    f = ((f % LON) + LON) % LON
+    const i0 = f | 0
+    const t = c.land[c.rows[k]]
+    const landV = t[i0] + (t[(i0 + 1) % LON] - t[i0]) * (f - i0)
+    const v = Math.min(
+      0.999,
+      (landV > 0.52 ? 0.55 + landV * 0.5 : 0.12 + landV * 0.15) * c.shade[k] +
+        c.rim[k]
+    )
+    const i = Math.floor(v * ramp.length)
+    const x = c.xs[k]
+    const y = c.ys[k]
+    if (lamp.k > 0) {
+      const d = Math.hypot(x - lamp.x, y - lamp.y)
+      if (d < reach) {
+        const fk = (1 - d / reach) ** 2 * lamp.k
+        const ch =
+          Math.random() < fk * 0.35
+            ? SCRAMBLE[Math.floor(Math.random() * SCRAMBLE.length)]
+            : ramp[Math.max(i, 2)]
+        lit.push({ x, y, a: Math.min(1, 0.1 + i * 0.06 + fk * 0.8), c: ch })
+        continue
       }
-      if (i > 0) buckets[i].push(x, y)
     }
+    if (i > 0) buckets[i].push(x, y)
   }
+  ctx.font = FONT
+  ctx.textBaseline = "top"
   buckets.forEach((cells, i) => {
+    if (!cells.length) return
     ctx.fillStyle = `rgba(255,255,255,${0.08 + i * 0.06})`
     for (let k = 0; k < cells.length; k += 2)
       ctx.fillText(ramp[i], cells[k], cells[k + 1])
   })
-  for (const l of lit) {
-    ctx.fillStyle = `rgba(255,255,255,${l.a})`
-    ctx.fillText(l.c, l.x, l.y)
+  if (lit.length) {
+    for (const l of lit) {
+      ctx.fillStyle = `rgba(255,255,255,${l.a})`
+      ctx.fillText(l.c, l.x, l.y)
+    }
   }
 }
 
@@ -258,6 +345,10 @@ export function HeroPanorama() {
     const pointer = { x: -999, y: -999, tx: 0, ty: 0, inside: false }
     let lastEarth = 0
     let visible = false
+    // Until the page has loaded and the browser is idle, the panorama is one
+    // still frame: the spin, the planet and the videos wait, so they don't
+    // compete with the first paint and hydration.
+    let waiting = !reduce
     // Last values written per strip, so styles are only touched on change.
     const shownWas: (boolean | null)[] = strips.map(() => null)
     const filterWas: string[] = strips.map(() => "")
@@ -401,7 +492,7 @@ export function HeroPanorama() {
         // Videos only play while their card is in view.
         const video = el.firstElementChild
         if (video instanceof HTMLVideoElement) {
-          const play = shown && !reduce
+          const play = shown && !reduce && !waiting
           if (play && video.paused) video.play().catch(() => {})
           else if (!play && !video.paused) video.pause()
         }
@@ -438,14 +529,21 @@ export function HeroPanorama() {
           canvas.height = Math.round(h * dpr)
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-        drawEarth(ctx, w, h, earthSpin, {
-          x: pointer.x - earthRect.left,
-          y: pointer.y - earthRect.top,
-          k: reduce ? 0 : lampK,
-        })
+        drawEarth(
+          ctx,
+          w,
+          h,
+          earthSpin,
+          {
+            x: pointer.x - earthRect.left,
+            y: pointer.y - earthRect.top,
+            k: reduce ? 0 : lampK,
+          },
+          dpr
+        )
         lastEarth = now
       }
-      frame = visible && !reduce ? requestAnimationFrame(render) : 0
+      frame = visible && !reduce && !waiting ? requestAnimationFrame(render) : 0
     }
 
     // Pointer: tilt and lamp follow the cursor; drag spins the panorama.
@@ -507,8 +605,28 @@ export function HeroPanorama() {
     })
     io.observe(scene)
     frame = requestAnimationFrame(render)
+    let idle = 0
+    const wake = () => {
+      waiting = false
+      if (!frame) frame = requestAnimationFrame(render)
+    }
+    const afterLoad = () => {
+      // Safari has no requestIdleCallback: a short timeout instead.
+      idle =
+        typeof window.requestIdleCallback === "function"
+          ? window.requestIdleCallback(wake, { timeout: 1500 })
+          : (setTimeout(wake, 300) as unknown as number)
+    }
+    if (waiting) {
+      if (document.readyState === "complete") afterLoad()
+      else window.addEventListener("load", afterLoad, { once: true })
+    }
     return () => {
       cancelAnimationFrame(frame)
+      window.removeEventListener("load", afterLoad)
+      if (typeof window.cancelIdleCallback === "function")
+        window.cancelIdleCallback(idle)
+      clearTimeout(idle)
       ro.disconnect()
       io.disconnect()
       card.removeEventListener("pointermove", onMove)
