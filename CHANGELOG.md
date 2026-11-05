@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/RantAI-dev/rantai-page/compare/v2.3.0...v2.4.0) (2026-11-05)
+
+
+### Features
+
+* add a contact page and FAQ, speed up the hero ([d2977db](https://github.com/RantAI-dev/rantai-page/commit/d2977db127c0666350c8f2890d2cc032ec15345c))
+
 ## [2.3.0](https://github.com/RantAI-dev/rantai-page/compare/v2.2.1...v2.3.0) (2026-11-05)
 
 
