@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 const ease = [0.22, 1, 0.36, 1] as const
 
 const headline =
-  "text-[clamp(2.75rem,7.6vw,7rem)] leading-[0.94] font-medium tracking-[-0.05em] text-balance"
+  "text-[clamp(3rem,7.6vw,7rem)] leading-[0.94] font-medium tracking-[-0.05em] text-balance"
 
 // A streak of light sweeps across the button on hover.
 const buttonSheen =
@@ -45,7 +45,7 @@ export function HomeHero() {
       {!introDone && (
         <PageIntro target={cardRef} onReveal={reveal} onDone={finishIntro} />
       )}
-      <div className="h-[calc(100svh-6.5rem)] min-h-[600px] px-3 sm:px-4">
+      <div className="h-[calc(100svh-6.5rem)] min-h-[520px] px-3 sm:min-h-[600px] sm:px-4">
         <div
           ref={cardRef}
           className="dark relative isolate flex h-full flex-col justify-end overflow-hidden rounded-[28px] bg-black text-white"
@@ -53,14 +53,17 @@ export function HomeHero() {
           {/* Product screens turn behind an ASCII Earth: our AI systems
               around real-world operations */}
           {/* Visible from the start: the intro window looks onto it */}
+          {/* Phones: the visual gets the top of the card to itself and fades
+              into the text below it, instead of sitting behind the text. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 -z-10"
+            className="pointer-events-none relative isolate min-h-[220px] flex-1 sm:absolute sm:inset-0 sm:-z-10"
           >
             <HeroPanorama />
+            <div className="absolute inset-x-0 bottom-0 h-1/5 bg-gradient-to-t from-black to-transparent sm:hidden" />
           </div>
 
-          <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-5 pb-8 text-center sm:px-8 sm:pb-10">
+          <div className="relative mx-auto flex w-full max-w-6xl flex-col items-start px-5 pb-5 text-left sm:items-center sm:px-8 sm:pb-10 sm:text-center">
             <div className="relative">
               <SplitReveal
                 id="hero-heading"
@@ -103,18 +106,22 @@ export function HomeHero() {
               )}
             </div>
             <motion.p
-              // Shown from the first paint on phones (no fade): it is the
-              // largest text there, the one load speed is measured by.
-              className="mt-6 max-w-2xl text-base leading-relaxed text-white/70 max-md:transform-none! max-md:opacity-100! sm:text-xl"
-              initial={reduce ? false : { opacity: 0, y: 12 }}
+              // The largest text on phones, the one load speed (LCP) is
+              // measured by. It fades in from 1%, not 0: browsers skip fully
+              // transparent text, which would delay LCP until the fade ends.
+              className="mt-4 max-w-[310px] text-base leading-relaxed text-white/70 sm:mt-6 sm:max-w-2xl sm:text-xl"
+              initial={reduce ? false : { opacity: 0.01, y: 12 }}
               animate={ready ? { opacity: 1, y: 0 } : undefined}
               transition={{ duration: 0.6, ease, delay: 0.35 }}
             >
-              {t("description")}
+              {/* Phones get a shorter line: the headline already says
+                  "real-world operations". */}
+              <span className="sm:hidden">{t("descriptionShort")}</span>
+              <span className="hidden sm:inline">{t("description")}</span>
             </motion.p>
 
             <motion.div
-              className="mt-9 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row"
+              className="mt-5 flex w-full flex-wrap items-center gap-3 sm:mt-9 sm:w-auto sm:flex-nowrap sm:justify-center sm:gap-x-3 sm:gap-y-3"
               initial={reduce ? false : { opacity: 0, y: 16 }}
               animate={ready ? { opacity: 1, y: 0 } : undefined}
               transition={{ duration: 0.8, ease, delay: 0.5 }}
@@ -123,7 +130,7 @@ export function HomeHero() {
                 href={`mailto:${siteConfig.links.email}`}
                 size="lg"
                 icon="external"
-                className={cn("w-full sm:w-auto", buttonSheen)}
+                className={buttonSheen}
               >
                 {t("talk")}
               </PillLink>
@@ -131,22 +138,22 @@ export function HomeHero() {
                 href="#platform"
                 size="lg"
                 variant="outline"
-                className="w-full backdrop-blur-sm sm:w-auto"
+                className="backdrop-blur-sm"
               >
                 {t("explore")}
               </PillLink>
             </motion.div>
 
             <motion.div
-              className="mt-12 flex w-full flex-col items-center gap-2 border-t border-white/10 pt-4 sm:mt-14 sm:flex-row sm:justify-center sm:gap-10"
+              className="mt-6 flex w-full items-center justify-between gap-4 sm:mt-14 sm:justify-center sm:gap-10 sm:border-t sm:border-white/10 sm:pt-4"
               initial={reduce ? false : { opacity: 0, y: 16 }}
               animate={ready ? { opacity: 1, y: 0 } : undefined}
               transition={{ duration: 0.8, ease, delay: 0.7 }}
             >
-              <span className="text-xs font-medium tracking-[0.08em] text-white/60 uppercase">
+              <span className="text-[11px] font-medium tracking-[0.08em] text-white/60 uppercase sm:text-xs">
                 {t("partners")}
               </span>
-              <ul className="flex items-center gap-6 sm:gap-10">
+              <ul className="flex items-center gap-4 sm:gap-10">
                 {partners.map((partner) => (
                   <li key={partner.name}>
                     <Image
@@ -154,7 +161,7 @@ export function HomeHero() {
                       alt={partner.name}
                       width={210}
                       height={140}
-                      className="h-14 w-auto opacity-75 brightness-0 invert transition-opacity hover:opacity-100 sm:h-[72px]"
+                      className="h-9 w-auto opacity-75 brightness-0 invert transition-opacity hover:opacity-100 sm:h-[72px]"
                     />
                   </li>
                 ))}

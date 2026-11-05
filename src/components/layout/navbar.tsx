@@ -146,16 +146,34 @@ export function Navbar() {
                 aria-label={t("mobile")}
                 className="flex flex-1 flex-col px-4"
               >
-                {navItems.map((item) => (
-                  <SheetClose asChild key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="flex min-h-14 items-center border-b border-border text-lg font-medium"
-                    >
-                      {t(item.key)}
-                    </Link>
-                  </SheetClose>
-                ))}
+                {/* The logo is the only way home on desktop; on phones the
+                    menu lists it too, so it's easy to find. */}
+                {[{ href: "/", key: "homePage" } as const, ...navItems].map(
+                  (item) => {
+                    const active =
+                      item.href === "/"
+                        ? pathname === "/"
+                        : pathname === item.href ||
+                          pathname.startsWith(`${item.href}/`)
+                    return (
+                      <SheetClose asChild key={item.href}>
+                        <Link
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                          className="flex min-h-14 items-center justify-between border-b border-border text-lg font-medium text-foreground/60 transition-colors aria-[current=page]:text-foreground"
+                        >
+                          {t(item.key)}
+                          {active && (
+                            <span
+                              aria-hidden="true"
+                              className="mr-1 size-1.5 rounded-full bg-brand-1"
+                            />
+                          )}
+                        </Link>
+                      </SheetClose>
+                    )
+                  }
+                )}
                 <LanguageSwitcher size="lg" className="mt-8 self-start" />
               </nav>
             </SheetContent>

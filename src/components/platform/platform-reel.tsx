@@ -16,9 +16,10 @@ import { Eyebrow } from "@/components/shared/eyebrow"
 import { smoothScrollTo } from "@/components/layout/smooth-scroll"
 import { SplitReveal } from "@/components/shared/split-reveal"
 import { ProductLogo, productIdFrom } from "@/components/shared/product-logo"
+import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 
-import { demos } from "@/components/platform/demos"
+import { DemoChipSlot, demos } from "@/components/platform/demos"
 import {
   Media,
   useProducts,
@@ -38,7 +39,7 @@ type Intro = { eyebrow: string; title: string }
 
 function PlatformIntro({ intro }: Readonly<{ intro: Intro }>) {
   return (
-    <div className="mx-auto mb-14 max-w-3xl text-center">
+    <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
       <Eyebrow className="text-white/50">{intro.eyebrow}</Eyebrow>
       <SplitReveal
         id="platform-heading"
@@ -58,7 +59,7 @@ function Features({
       {product.features.map((f) => (
         <li
           key={f}
-          className="rounded-full border border-white/12 px-3 py-1 text-xs text-white/70"
+          className="shrink-0 rounded-full border border-white/12 px-3 py-1 text-xs whitespace-nowrap text-white/70"
         >
           {f}
         </li>
@@ -154,30 +155,42 @@ function PanelText({
   return (
     <>
       {id && (
-        <span className="mb-6 inline-flex items-center gap-2.5 rounded-full bg-white/[0.06] py-1.5 pr-4 pl-1.5 ring-1 ring-white/10">
+        <span className="mb-6 inline-flex items-center gap-2.5 rounded-full bg-white/[0.06] py-1.5 pr-4 pl-1.5 ring-1 ring-white/10 max-sm:hidden">
           <span className="grid size-8 place-items-center rounded-full bg-white">
             <ProductLogo id={id} className="h-4" />
           </span>
           <span className="text-sm text-white/70">{product.name}</span>
         </span>
       )}
-      <h3
-        aria-label={name}
-        className={cn(
-          "pb-[0.08em] leading-[0.86] font-medium tracking-[-0.06em] whitespace-nowrap",
-          // Longer names step down so they never reach the demo beside them.
-          name.length > 6
-            ? "text-[clamp(2.75rem,5vw,5.75rem)]"
-            : "text-[clamp(3rem,7vw,7.5rem)]"
+      {/* Phones: the logo sits beside the name instead of in a pill above
+          it (the pill repeats the name), so a whole panel fits one screen. */}
+      <div className="flex items-center gap-3">
+        {id && (
+          <span
+            aria-hidden="true"
+            className="grid size-10 shrink-0 place-items-center rounded-full bg-white sm:hidden"
+          >
+            <ProductLogo id={id} className="h-5" />
+          </span>
         )}
-      >
-        {d ? <FocusName name={name} d={d} /> : name}
-      </h3>
-      <p className="mt-5 max-w-sm text-lg leading-relaxed text-white/60">
+        <h3
+          aria-label={name}
+          className={cn(
+            "pb-[0.08em] leading-[0.86] font-medium tracking-[-0.06em] whitespace-nowrap",
+            // Longer names step down so they never reach the demo beside them.
+            name.length > 6
+              ? "text-[clamp(2.75rem,5vw,5.75rem)]"
+              : "text-[clamp(3rem,7vw,7.5rem)]"
+          )}
+        >
+          {d ? <FocusName name={name} d={d} /> : name}
+        </h3>
+      </div>
+      <p className="mt-5 max-w-sm text-lg leading-relaxed text-white/60 max-sm:mt-1.5 max-sm:text-base">
         {product.tagline}
       </p>
-      <Features product={product} className="mt-6" />
-      <div className="mt-9">
+      <Features product={product} className="mt-6 max-sm:hidden" />
+      <div className="mt-9 max-sm:mt-5">
         <VisitButton product={product} />
       </div>
     </>
@@ -364,7 +377,7 @@ function DesktopReel({ intro }: Readonly<{ intro: Intro }>) {
   }
 
   return (
-    <div className="pt-20">
+    <div className="pt-14 sm:pt-20">
       <div className="px-14">
         <PlatformIntro intro={intro} />
       </div>
@@ -441,26 +454,132 @@ function DesktopReel({ intro }: Readonly<{ intro: Intro }>) {
   )
 }
 
-/** Phones, tablets and reduced motion get a plain vertical list. */
+/** A demo in its frame, with its prompt chips below the frame on phones. */
+function FramedDemo({
+  product,
+  frameClassName,
+}: Readonly<{ product: Product; frameClassName: string }>) {
+  const [slot, setSlot] = useState<HTMLElement | null>(null)
+  const Demo = demos[product.id]
+  return (
+    <DemoChipSlot.Provider value={slot}>
+      <div className={frameClassName}>
+        {Demo ? <Demo /> : <Media product={product} />}
+      </div>
+      <div ref={setSlot} className="mt-3 empty:hidden sm:hidden" />
+    </DemoChipSlot.Provider>
+  )
+}
+
+/** Phones: like the desktop reel, one product at a time, sliding to the
+ *  next as you scroll, with a rail on top that shows where you are. The
+ *  demo takes whatever height is left, so a panel always fits the screen. */
+function PhoneReel({ intro }: Readonly<{ intro: Intro }>) {
+  const t = useTranslations("platform.reel")
+  const products = useProducts()
+  const ref = useRef<HTMLDivElement>(null)
+  const progress = useStickyProgress(ref)
+  const n = products.length
+  const pos = useTransform(progress, (p) => reelPosition(p, n))
+  const x = useTransform(pos, (p) => `${(-p / n) * 100}%`)
+  const [index, setIndex] = useState(0)
+  useEffect(() => pos.on("change", (p) => setIndex(Math.round(p))), [pos])
+  const height = n * 130
+
+  const jump = (i: number) => {
+    const el = ref.current
+    if (!el) return
+    const top = el.getBoundingClientRect().top + window.scrollY
+    const span = el.offsetHeight - window.innerHeight
+    smoothScrollTo(top + span * holdCentre(i, n), 1.1)
+  }
+
+  return (
+    <div className="pt-16">
+      <div className="px-5">
+        <PlatformIntro intro={intro} />
+      </div>
+      <div ref={ref} style={{ height: `${height}svh` }} className="relative">
+        {products.map((p, i) =>
+          anchors[p.id] ? (
+            <span
+              key={p.id}
+              id={anchors[p.id]}
+              aria-hidden="true"
+              className="absolute left-0 h-px w-px"
+              style={{
+                top: `calc((${height}svh - 100svh + 4rem) * ${holdCentre(i, n)})`,
+              }}
+            />
+          ) : null
+        )}
+        <div className="sticky top-16 flex h-[calc(100svh-4rem)] flex-col overflow-hidden">
+          <nav aria-label={t("rail")} className="flex gap-1.5 px-5 pt-2 pb-4">
+            {products.map((p, i) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => jump(i)}
+                aria-current={i === index}
+                className="relative flex-1 pt-2.5 text-left"
+              >
+                <span className="absolute inset-x-0 top-0 h-px bg-white/15" />
+                <RailFill progress={progress} index={i} count={n} />
+                <span
+                  className={cn(
+                    "text-[12px] transition-colors",
+                    i === index ? "text-white" : "text-white/50"
+                  )}
+                >
+                  {p.name.replace("RantAI ", "")}
+                </span>
+              </button>
+            ))}
+          </nav>
+          <div className="relative min-h-0 flex-1">
+            <motion.div
+              className="absolute inset-y-0 left-0 flex"
+              style={{ x, width: `${n * 100}%` }}
+            >
+              {products.map((p, i) => {
+                return (
+                  <section
+                    key={p.id}
+                    aria-hidden={i !== index || undefined}
+                    inert={i !== index || undefined}
+                    className="flex h-full flex-col px-5 pb-4"
+                    style={{ width: `${100 / n}%` }}
+                  >
+                    <PanelText product={p} />
+                    <FramedDemo
+                      product={p}
+                      frameClassName="relative mt-5 min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/12 bg-neutral-950"
+                    />
+                  </section>
+                )
+              })}
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** Tablets and reduced motion get a plain vertical list. */
 function StackedReel({ intro }: Readonly<{ intro: Intro }>) {
   const products = useProducts()
   return (
-    <div className="px-5 py-20 sm:px-10">
+    <div className="px-5 py-14 sm:px-10 sm:py-20">
       <PlatformIntro intro={intro} />
-      <div className="space-y-16">
+      <div className="space-y-12 sm:space-y-16">
         {products.map((p) => (
           <section key={p.id} id={anchors[p.id]} className="scroll-mt-24">
             <PanelText product={p} />
-            <div className="relative mt-8 aspect-[32/45] overflow-hidden rounded-2xl border border-white/12 bg-neutral-950 max-md:max-w-[368px] md:aspect-[16/10]">
-              {demos[p.id] ? (
-                (() => {
-                  const Demo = demos[p.id]
-                  return <Demo />
-                })()
-              ) : (
-                <Media product={p} />
-              )}
-            </div>
+            <FramedDemo
+              product={p}
+              frameClassName="relative mt-8 aspect-[32/45] overflow-hidden rounded-2xl border border-white/12 bg-neutral-950 max-md:max-w-[368px] max-sm:aspect-[32/40] max-sm:mt-5 max-sm:max-w-[330px] md:aspect-[16/10]"
+            />
           </section>
         ))}
       </div>
@@ -470,7 +589,7 @@ function StackedReel({ intro }: Readonly<{ intro: Intro }>) {
 
 /**
  * Homepage platform section: the four products on a horizontal reel driven
- * by vertical scroll (desktop), or stacked (phones, reduced motion).
+ * by vertical scroll (desktop and phones), or stacked (tablets, reduced motion).
  */
 export function PlatformReel({
   intro: introProp,
@@ -478,10 +597,10 @@ export function PlatformReel({
   const t = useTranslations("platform.reel")
   const intro = introProp ?? { eyebrow: t("eyebrow"), title: t("title") }
   const desktop = useIsDesktop()
+  const phone = useMediaQuery("(max-width: 767px)")
   const reduce = useReducedMotion()
-  return desktop && !reduce ? (
-    <DesktopReel intro={intro} />
-  ) : (
-    <StackedReel intro={intro} />
-  )
+  if (reduce) return <StackedReel intro={intro} />
+  if (desktop) return <DesktopReel intro={intro} />
+  if (phone) return <PhoneReel intro={intro} />
+  return <StackedReel intro={intro} />
 }

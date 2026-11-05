@@ -1,377 +1,61 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import Image from "next/image"
 import {
   AnimatePresence,
+  animate,
   motion,
-  useMotionValue,
-  useMotionValueEvent,
+  useInView,
   useReducedMotion,
   useScroll,
-  useTransform,
-  type MotionValue,
 } from "motion/react"
-import {
-  ArrowRight,
-  Bot,
-  Boxes,
-  Check,
-  Gauge,
-  Hash,
-  NotebookPen,
-  Server,
-  Users,
-  type LucideIcon,
-} from "lucide-react"
+import { ArrowRight, ArrowUp, Check } from "lucide-react"
 import { useTranslations } from "next-intl"
 
-import { Eyebrow } from "@/components/shared/eyebrow"
 import { smoothScrollTo } from "@/components/layout/smooth-scroll"
+import { Eyebrow } from "@/components/shared/eyebrow"
 import { SplitReveal } from "@/components/shared/split-reveal"
+import { useEdgeFade } from "@/hooks/use-edge-fade"
+import { useMediaQuery } from "@/hooks/use-media-query"
 import { siteConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
-// "What's slowing you down?" Visitors pick the problem they have; the
-// panel shows it before and after we step in, which service fits, and how
-// long it usually takes. Figures are illustrative.
+// "What's slowing you down?" as a short chat: the visitor taps one of the
+// four problems, it is sent as their message, RantAI "types" and answers
+// with the service, the outcome, a small before → after visual, the steps
+// and how long it usually takes. The order is shuffled on each visit and
+// the first one plays when the chat scrolls into view. On phones the chat is pinned instead and scrolling
+// walks through the four problems (tapping one still works: it scrolls
+// there). Figures are illustrative.
 
 const ease = [0.22, 1, 0.36, 1] as const
-
-type Problem = {
-  id: string
-  chip: string
-  icon: LucideIcon
-  tone: string
-  service: string
-  outcome: string
-  steps: string[]
-  weeks: string
-  Before: () => React.JSX.Element
-  After: () => React.JSX.Element
-}
-
-const card =
-  "rounded-2xl border border-black/[0.07] bg-white text-neutral-900 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.3),0_1px_2px_rgba(0,0,0,0.04)]"
-
-/* ------------------------------------------------------------------ */
-/*  Slow app: response times                                           */
-/* ------------------------------------------------------------------ */
-
-function Latency({ good }: Readonly<{ good: boolean }>) {
-  const bad =
-    "M0,62 L20,40 L40,58 L60,18 L80,50 L100,10 L120,44 L140,22 L160,52 L180,8 L200,36"
-  const ok =
-    "M0,82 L20,80 L40,83 L60,79 L80,81 L100,80 L120,82 L140,79 L160,81 L180,80 L200,81"
-  const t = useTranslations("services.problems.latency")
-  const tone = good ? "#10b981" : "#ef4444"
-  return (
-    <div className={cn(card, "w-full max-w-[440px] p-5")}>
-      <div className="flex items-baseline justify-between">
-        <p className="text-[12px] text-neutral-500">{t("label")}</p>
-        <motion.p
-          key={String(good)}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-[28px] leading-none font-medium tracking-[-0.03em] tabular-nums"
-          style={{ color: tone }}
-        >
-          {good ? t("good") : t("bad")}
-        </motion.p>
-      </div>
-      <svg
-        viewBox="0 0 200 92"
-        className="mt-4 h-[140px] w-full overflow-visible"
-      >
-        {[23, 46, 69].map((y) => (
-          <line
-            key={y}
-            x1="0"
-            x2="200"
-            y1={y}
-            y2={y}
-            stroke="rgb(0 0 0 / 0.06)"
-          />
-        ))}
-        <motion.path
-          key={String(good)}
-          d={good ? ok : bad}
-          fill="none"
-          stroke={tone}
-          strokeWidth="2.5"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        />
-      </svg>
-      <p className="mt-2 text-[12px] text-neutral-500">
-        {good ? t("goodCaption") : t("badCaption")}
-      </p>
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Legacy system: one monolith, then services, no downtime            */
-/* ------------------------------------------------------------------ */
-
-function Legacy({ good }: Readonly<{ good: boolean }>) {
-  const t = useTranslations("services.problems.legacy")
-  const parts = t.raw("parts") as string[]
-  return (
-    <div className={cn(card, "w-full max-w-[440px] p-5")}>
-      <div className="flex items-center justify-between">
-        <p className="text-[12px] text-neutral-500">{t("label")}</p>
-        <span
-          className={cn(
-            "rounded-full px-2.5 py-0.5 text-[11px] font-medium",
-            good
-              ? "bg-[#10b981]/12 text-[#059669]"
-              : "bg-[#ef4444]/10 text-[#dc2626]"
-          )}
-        >
-          {good ? t("goodBadge") : t("badBadge")}
-        </span>
-      </div>
-      <div className="relative mt-4 h-[150px]">
-        <AnimatePresence mode="popLayout">
-          {good ? (
-            parts.map((p, i) => (
-              <motion.div
-                key={i}
-                className="absolute flex h-[66px] w-[calc(50%-6px)] flex-col justify-between rounded-xl border border-[#3b82f6]/25 bg-[#3b82f6]/[0.06] p-3"
-                style={{
-                  left: i % 2 ? "calc(50% + 6px)" : 0,
-                  top: i < 2 ? 0 : 78,
-                }}
-                initial={{
-                  opacity: 0,
-                  scale: 0.8,
-                  x: i % 2 ? -40 : 40,
-                  y: i < 2 ? 30 : -30,
-                }}
-                animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.6, ease, delay: i * 0.08 }}
-              >
-                <Boxes className="size-4 text-[#3b82f6]" />
-                <span className="text-[12.5px] font-medium">
-                  {t("service", { name: p })}
-                </span>
-              </motion.div>
-            ))
-          ) : (
-            <motion.div
-              key="monolith"
-              className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-neutral-300 bg-neutral-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-            >
-              <Server className="size-6 text-neutral-400" />
-              <span className="text-[13px] font-medium text-neutral-600">
-                legacy-erp.war
-              </span>
-              <span className="text-[11px] text-neutral-400">
-                {t("deployAll")}
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  AI stuck in the demo: a notebook, then a live endpoint             */
-/* ------------------------------------------------------------------ */
-
-function DemoToProd({ good }: Readonly<{ good: boolean }>) {
-  const t = useTranslations("services.problems.demo")
-  const stats = t.raw("stats") as { value: string; label: string }[]
-  return (
-    <AnimatePresence mode="wait">
-      {good ? (
-        <motion.div
-          key="prod"
-          className={cn(card, "w-full max-w-[440px] p-5")}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-        >
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-2 text-[13px] font-medium">
-              <Bot className="size-4 text-[#8b5cf6]" /> invoice-agent
-            </span>
-            <span className="flex items-center gap-1.5 text-[11px] text-[#059669]">
-              <span className="size-1.5 animate-pulse rounded-full bg-[#10b981]" />
-              {t("live")}
-            </span>
-          </div>
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            {stats.map(({ value: v, label: l }, i) => (
-              <motion.div
-                key={i}
-                className="rounded-xl bg-neutral-50 px-3 py-2.5"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + i * 0.08 }}
-              >
-                <p className="text-[18px] font-medium tracking-[-0.02em] tabular-nums">
-                  {v}
-                </p>
-                <p className="text-[11px] text-neutral-500">{l}</p>
-              </motion.div>
-            ))}
-          </div>
-          <p className="mt-4 rounded-lg bg-neutral-50 px-3 py-2 [font-family:ui-monospace,monospace] text-[11px] text-neutral-600">
-            {t("monitored")}
-          </p>
-        </motion.div>
-      ) : (
-        <motion.div
-          key="demo"
-          className={cn(card, "w-full max-w-[440px] overflow-hidden")}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-        >
-          <div className="flex items-center gap-2 border-b border-black/[0.06] px-4 py-2.5 text-[12px] text-neutral-500">
-            <NotebookPen className="size-3.5" /> demo_final_v3.ipynb
-          </div>
-          <div className="space-y-2 p-4 [font-family:ui-monospace,monospace] text-[11.5px]">
-            <p className="text-neutral-700">model.predict(sample_invoice)</p>
-            <p className="text-[#059669]">{t("works")}</p>
-            <p className="text-neutral-700">deploy_to_production()</p>
-            <p className="text-[#dc2626]">{t("broken")}</p>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Short on engineers: a backlog, then our team joins and it moves    */
-/* ------------------------------------------------------------------ */
-
-function Backlog({ good }: Readonly<{ good: boolean }>) {
-  const t = useTranslations("services.problems.backlog")
-  const tickets = t.raw("tickets") as string[]
-  const columns = t.raw("columns") as string[]
-  return (
-    <div className={cn(card, "w-full max-w-[440px] p-5")}>
-      <div className="flex items-center justify-between">
-        <p className="flex items-center gap-1.5 text-[12px] text-neutral-500">
-          <Hash className="size-3.5" /> product-team
-        </p>
-        <div className="flex">
-          {[
-            { i: "YT", c: "#a3a3a3" },
-            ...(good
-              ? [
-                  { i: "RA", c: "#3b82f6" },
-                  { i: "MC", c: "#8b5cf6" },
-                  { i: "IS", c: "#10b981" },
-                ]
-              : []),
-          ].map((p, k) => (
-            <motion.span
-              key={p.i}
-              className="-ml-1.5 grid size-6 place-items-center rounded-full border-2 border-white text-[8px] font-semibold text-white first:ml-0"
-              style={{ background: p.c }}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 500,
-                damping: 22,
-                delay: k * 0.1,
-              }}
-            >
-              {p.i}
-            </motion.span>
-          ))}
-        </div>
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        {columns.map((col, c) => (
-          <div key={c} className="rounded-xl bg-neutral-50 p-2.5">
-            <p className="px-1 text-[11px] font-medium text-neutral-500">
-              {col}
-            </p>
-            <ul className="mt-2 min-h-[132px] space-y-1.5">
-              {tickets
-                .map((label, i) => ({ label, i }))
-                .filter(({ i }) =>
-                  good ? (c === 1 ? i < 4 : i >= 4) : c === 0
-                )
-                .map(({ label, i }) => (
-                  <motion.li
-                    key={i}
-                    layoutId={`ticket-${i}`}
-                    className="flex items-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 text-[11.5px] shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
-                    transition={{ duration: 0.5, ease }}
-                  >
-                    {c === 1 && (
-                      <Check
-                        className="size-3 text-[#10b981]"
-                        strokeWidth={3}
-                      />
-                    )}
-                    {label}
-                  </motion.li>
-                ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
+const TYPING_MS = 1000
 
 type ProblemId = "slow" | "legacy" | "ai" | "people"
 
+type Problem = {
+  id: ProblemId
+  service: string
+  chip: string
+  outcome: string
+  steps: string[]
+  weeks: string
+  metric: { from: string; to: string; caption: string }
+}
+
 // What stays in code; the words come from messages (`problems.items.<id>`).
 // Service names are product names and stay in English.
-const problemMeta: (Omit<Problem, "chip" | "outcome" | "steps" | "weeks"> & {
-  id: ProblemId
-})[] = [
-  {
-    id: "slow",
-    icon: Gauge,
-    tone: "#ef4444",
-    service: "Software Engineering",
-    Before: () => <Latency good={false} />,
-    After: () => <Latency good />,
-  },
-  {
-    id: "legacy",
-    icon: Server,
-    tone: "#3b82f6",
-    service: "Software Engineering",
-    Before: () => <Legacy good={false} />,
-    After: () => <Legacy good />,
-  },
-  {
-    id: "ai",
-    icon: Bot,
-    tone: "#8b5cf6",
-    service: "AI Engineering",
-    Before: () => <DemoToProd good={false} />,
-    After: () => <DemoToProd good />,
-  },
-  {
-    id: "people",
-    icon: Users,
-    tone: "#10b981",
-    service: "Forward Deployed Engineering",
-    Before: () => <Backlog good={false} />,
-    After: () => <Backlog good />,
-  },
+const problemMeta: { id: ProblemId; service: string }[] = [
+  { id: "slow", service: "Software Engineering" },
+  { id: "legacy", service: "Software Engineering" },
+  { id: "ai", service: "AI Engineering" },
+  { id: "people", service: "Forward Deployed Engineering" },
 ]
+
+// Links to #forward-deployed-engineering open on the engineers problem.
+const FDE_HASH = "#forward-deployed-engineering"
+const PROBLEMS = 4
 
 /** The four problems with their text in the current language. */
 function useProblems(): Problem[] {
@@ -382,393 +66,753 @@ function useProblems(): Problem[] {
     outcome: t(`${m.id}.outcome`),
     steps: t.raw(`${m.id}.steps`) as string[],
     weeks: t(`${m.id}.weeks`),
+    metric: t.raw(`${m.id}.metric`) as Problem["metric"],
   }))
 }
 
-function ProgressSegment({
-  progress,
-  index,
-  count,
-  tone,
-  label,
-  active,
-}: Readonly<{
-  progress: MotionValue<number>
-  index: number
-  count: number
-  tone: string
-  label: string
-  active: boolean
-}>) {
-  const fill = useTransform(progress, (v) =>
-    Math.min(1, Math.max(0, v * count - index))
+/**
+ * A figure such as "4", "1.2M" or "1,2 jt" that counts up to its value once
+ * shown. Keeps the language's decimal mark and any unit around it.
+ */
+function CountUp({
+  value,
+  delay = 0,
+}: Readonly<{ value: string; delay?: number }>) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const reduce = useReducedMotion()
+  useEffect(() => {
+    const el = ref.current
+    const m = /^(\D*)(\d+(?:[.,]\d+)?)(.*)$/.exec(value)
+    if (!el || !m || reduce) return
+    const [, pre, num, post] = m
+    const mark = num.includes(",") ? "," : "."
+    const decimals = num.split(mark)[1]?.length ?? 0
+    const target = Number(num.replace(",", "."))
+    const show = (v: number) => {
+      el.textContent = `${pre}${v.toFixed(decimals).replace(".", mark)}${post}`
+    }
+    show(0)
+    const controls = animate(0, target, {
+      duration: 1.2,
+      delay,
+      ease,
+      onUpdate: show,
+      onComplete: () => {
+        el.textContent = value
+      },
+    })
+    return () => controls.stop()
+  }, [value, delay, reduce])
+  return <span ref={ref}>{value}</span>
+}
+
+/* ------------------------------------------------------------------ */
+/*  Visuals: one small before → after picture per problem              */
+/* ------------------------------------------------------------------ */
+
+/** "App is slow": p95 latency high and noisy, then a drop that stays low. */
+function LatencyDrop() {
+  const reduce = useReducedMotion()
+  const d =
+    "M0 16 L14 12 L28 18 L42 10 L56 15 L70 9 L84 17 L98 12 L112 16 L126 11 L140 14 L156 30 L170 58 L184 64 L198 62 L212 65 L226 63 L240 66 L254 64 L268 65 L284 63 L300 64"
+  // Drawn left to right by a clip, so the stroke keeps its width when the
+  // chart stretches (pathLength and non-scaling strokes don't mix).
+  return (
+    <motion.svg
+      viewBox="0 0 300 76"
+      preserveAspectRatio="none"
+      className="h-full w-full"
+      aria-hidden="true"
+      initial={{ clipPath: reduce ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)" }}
+      animate={{ clipPath: "inset(0 0% 0 0)" }}
+      transition={{ duration: reduce ? 0 : 1.6, ease: "easeInOut", delay: 0.2 }}
+    >
+      {[18, 38, 58].map((y) => (
+        <line
+          key={y}
+          x1="0"
+          x2="300"
+          y1={y}
+          y2={y}
+          className="stroke-neutral-200"
+          strokeDasharray="2 4"
+          vectorEffect="non-scaling-stroke"
+        />
+      ))}
+      <path d={`${d} L300 76 L0 76 Z`} className="fill-neutral-900/[0.04]" />
+      <path
+        d={d}
+        fill="none"
+        className="stroke-neutral-900"
+        strokeWidth={1.75}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
+      />
+    </motion.svg>
+  )
+}
+
+/** "Legacy": one block that splits into four independent services. */
+function MonolithSplit() {
+  const reduce = useReducedMotion()
+  const [split, setSplit] = useState(false)
+  useEffect(() => {
+    const id = window.setTimeout(() => setSplit(true), reduce ? 0 : 700)
+    return () => window.clearTimeout(id)
+  }, [reduce])
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        "flex h-full items-stretch",
+        !reduce &&
+          "transition-[gap] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        split ? "gap-2.5" : "gap-0"
+      )}
+    >
+      {[0, 1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className={cn(
+            "flex flex-1 flex-col justify-center gap-1.5 bg-white px-3 ring-1 ring-neutral-200",
+            !reduce &&
+              "transition-[border-radius,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            split
+              ? "rounded-lg shadow-[0_8px_20px_-12px_rgba(0,0,0,0.25)]"
+              : cn(
+                  "rounded-none",
+                  i === 0 && "rounded-l-lg",
+                  i === 3 && "rounded-r-lg"
+                )
+          )}
+        >
+          <span
+            className={cn(
+              "size-1.5 rounded-full transition-colors duration-500",
+              split ? "bg-neutral-900" : "bg-neutral-300"
+            )}
+          />
+          <span className="h-1 w-3/4 rounded-full bg-neutral-200" />
+          <span className="h-1 w-1/2 rounded-full bg-neutral-200" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/** "AI stuck in a demo": requests served climbing week by week. */
+function RequestsClimb() {
+  const reduce = useReducedMotion()
+  const bars = Array.from({ length: 18 }, (_, i) =>
+    Math.max(0.05, Math.pow(i / 17, 2.1))
   )
   return (
-    <div className="flex flex-col gap-2">
-      <span className="h-1 overflow-hidden rounded-full bg-neutral-200">
+    <div aria-hidden="true" className="flex h-full items-end gap-[3px]">
+      {bars.map((h, i) => (
         <motion.span
-          className="block h-full origin-left rounded-full"
-          style={{ scaleX: fill, background: tone }}
+          key={i}
+          className={cn(
+            "flex-1 origin-bottom rounded-t-[3px]",
+            i < 3 ? "bg-neutral-200" : "bg-neutral-900"
+          )}
+          style={{ height: `${h * 100}%` }}
+          initial={{ scaleY: reduce ? 1 : 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{
+            duration: reduce ? 0 : 0.5,
+            ease,
+            delay: reduce ? 0 : 0.2 + i * 0.06,
+          }}
         />
+      ))}
+    </div>
+  )
+}
+
+/** "Short on engineers": backlog items ticked off one after another. */
+function BacklogShipped() {
+  const reduce = useReducedMotion()
+  const widths = ["w-[72%]", "w-[54%]", "w-[64%]", "w-[44%]"]
+  return (
+    <ul aria-hidden="true" className="flex h-full flex-col justify-between">
+      {widths.map((w, i) => {
+        const delay = reduce ? 0 : 0.35 + i * 0.32
+        return (
+          <li key={w} className="flex items-center gap-2.5">
+            <motion.span
+              className="grid size-3.5 shrink-0 place-items-center rounded-full sm:size-4"
+              initial={{
+                backgroundColor: reduce ? "#171717" : "#ffffff",
+                boxShadow: "inset 0 0 0 1px #d4d4d4",
+              }}
+              animate={{
+                backgroundColor: "#171717",
+                boxShadow: "inset 0 0 0 1px #171717",
+              }}
+              transition={{ duration: reduce ? 0 : 0.3, delay }}
+            >
+              <motion.span
+                initial={{ opacity: reduce ? 1 : 0, scale: reduce ? 1 : 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: reduce ? 0 : 0.3, delay }}
+              >
+                <Check className="size-2.5 text-white" strokeWidth={3} />
+              </motion.span>
+            </motion.span>
+            <motion.span
+              className={cn("h-1.5 rounded-full", w)}
+              initial={{ backgroundColor: reduce ? "#e5e5e5" : "#a3a3a3" }}
+              animate={{ backgroundColor: "#e5e5e5" }}
+              transition={{ duration: reduce ? 0 : 0.4, delay }}
+            />
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+const visuals: Record<ProblemId, () => React.JSX.Element> = {
+  slow: LatencyDrop,
+  legacy: MonolithSplit,
+  ai: RequestsClimb,
+  people: BacklogShipped,
+}
+
+/** The figure card in a reply: before → after, its caption, the visual. */
+function Figure({ p }: Readonly<{ p: Problem }>) {
+  const Visual = visuals[p.id]
+  return (
+    <figure className="rounded-2xl bg-neutral-50 p-4 ring-1 ring-black/[0.04] sm:p-5">
+      <figcaption className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <span className="flex items-baseline gap-2 leading-none font-medium tracking-[-0.04em]">
+          <span className="text-[17px] text-neutral-400 sm:text-[19px]">
+            {p.metric.from}
+          </span>
+          <ArrowRight
+            aria-hidden="true"
+            className="size-4 shrink-0 self-center text-neutral-300"
+            strokeWidth={1.75}
+          />
+          <span className="text-[26px] text-neutral-950 tabular-nums sm:text-[30px]">
+            {p.id === "slow" ? (
+              p.metric.to
+            ) : (
+              <CountUp value={p.metric.to} delay={0.2} />
+            )}
+          </span>
+        </span>
+        <span className="text-[12px] text-neutral-500 sm:text-[13px]">
+          {p.metric.caption}
+        </span>
+      </figcaption>
+      <div className="mt-3 h-16 sm:mt-4 sm:h-[76px]">
+        <Visual />
+      </div>
+    </figure>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Chat pieces                                                        */
+/* ------------------------------------------------------------------ */
+
+function Avatar() {
+  return (
+    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.06]">
+      <Image
+        src="/rant-ai.png"
+        alt=""
+        width={36}
+        height={36}
+        className="size-4"
+      />
+    </span>
+  )
+}
+
+/** RantAI's side of the chat: the mark on the left, content on the right. */
+function FromRantAI({
+  children,
+  wide,
+}: Readonly<{ children: React.ReactNode; wide?: boolean }>) {
+  const t = useTranslations("services.problems.chat")
+  // `wide`: on phones the content takes the full width and the mark sits
+  // inline with its first line (see Reply), so less of it wraps.
+  return (
+    <div className="flex items-start gap-3">
+      <span className={cn(wide && "max-sm:hidden")}>
+        <Avatar />
       </span>
-      <span
+      <div className="min-w-0 flex-1">
+        <span className="sr-only">{t("name")}: </span>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function Typing() {
+  const t = useTranslations("services.problems.chat")
+  return (
+    <FromRantAI>
+      <span className="inline-flex h-7 items-center gap-1 rounded-full bg-neutral-100 px-3">
+        <span className="sr-only">{t("typing")}</span>
+        {[0, 1, 2].map((i) => (
+          <motion.span
+            key={i}
+            aria-hidden="true"
+            className="size-1.5 rounded-full bg-neutral-400"
+            animate={{ opacity: [0.3, 1, 0.3], y: [0, -2, 0] }}
+            transition={{
+              duration: 1,
+              repeat: Infinity,
+              delay: i * 0.15,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </span>
+    </FromRantAI>
+  )
+}
+
+/** The answer: service, outcome, figure, steps, timeline and next steps. */
+function Reply({ p, onHow }: Readonly<{ p: Problem; onHow: () => void }>) {
+  const t = useTranslations("services.problems")
+  const reduce = useReducedMotion()
+  const mail = `mailto:${siteConfig.links.email}?subject=${encodeURIComponent(p.chip)}`
+  const item = {
+    hidden: { opacity: 0, y: reduce ? 0 : 6 },
+    shown: { opacity: 1, y: 0, transition: { duration: 0.45, ease } },
+  }
+  return (
+    <FromRantAI wide>
+      <motion.div
+        initial={reduce ? "shown" : "hidden"}
+        animate="shown"
+        transition={{ staggerChildren: reduce ? 0 : 0.12 }}
+      >
+        <motion.p
+          variants={item}
+          className="flex items-center gap-2 text-[12px] text-neutral-500"
+        >
+          <span className="sm:hidden">
+            <Avatar />
+          </span>
+          {p.service}
+        </motion.p>
+        <motion.p
+          variants={item}
+          className="mt-1 text-[17px] leading-snug font-medium tracking-[-0.02em] text-balance text-neutral-950 sm:text-[19px]"
+        >
+          {p.outcome}
+        </motion.p>
+        <motion.div variants={item} className="mt-3 sm:mt-3.5">
+          <Figure p={p} />
+        </motion.div>
+        <motion.div variants={item} className="mt-3 sm:mt-3.5">
+          <p className="sr-only">{t("approach")}</p>
+          {/* Short phones: the pinned card has no room for the steps */}
+          <ol className="space-y-1 text-[14px] text-neutral-600 max-sm:[@media(max-height:800px)]:hidden">
+            {p.steps.map((s, i) => (
+              <li key={s} className="flex items-baseline gap-2.5">
+                <span className="text-[11px] text-neutral-400 tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                {s}
+              </li>
+            ))}
+          </ol>
+          <p className="mt-2.5 text-[13px] text-neutral-500">
+            {t.rich("typically", {
+              weeks: p.weeks,
+              b: (chunks) => (
+                <span className="font-medium text-neutral-900">{chunks}</span>
+              ),
+            })}
+          </p>
+        </motion.div>
+        <motion.div
+          variants={item}
+          className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-0 max-sm:flex-nowrap max-sm:gap-x-4 sm:mt-3.5"
+        >
+          <a
+            href={mail}
+            className="group inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-neutral-950 px-4.5 text-[14px] font-medium text-white transition-colors hover:bg-neutral-800 max-sm:h-10 max-sm:gap-1.5 max-sm:px-4 max-sm:text-[13px]"
+          >
+            {t("talk")}
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+          </a>
+          <a
+            href="#how-we-work"
+            onClick={(e) => {
+              e.preventDefault()
+              onHow()
+            }}
+            className="inline-flex min-h-11 items-center text-[14px] whitespace-nowrap text-neutral-500 transition-colors hover:text-neutral-900 max-sm:min-h-10 max-sm:text-[13px] max-sm:[@media(max-height:800px)]:hidden"
+          >
+            {t("seeHow")}
+          </a>
+        </motion.div>
+      </motion.div>
+    </FromRantAI>
+  )
+}
+
+/** Free text goes to our inbox, like the footer's composer. */
+function Composer() {
+  const t = useTranslations("services.problems.chat")
+  const [value, setValue] = useState("")
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        window.location.href = `mailto:${siteConfig.links.email}?subject=${encodeURIComponent(t("subject"))}${
+          value ? `&body=${encodeURIComponent(value)}` : ""
+        }`
+      }}
+      className="flex items-center gap-2 rounded-2xl bg-neutral-100/80 py-1.5 pr-1.5 pl-4 ring-1 ring-transparent transition-shadow focus-within:bg-white focus-within:ring-neutral-300"
+    >
+      <label htmlFor="problem-ask" className="sr-only">
+        {t("label")}
+      </label>
+      <input
+        id="problem-ask"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={t("placeholder")}
+        autoComplete="off"
+        className="h-9 min-w-0 flex-1 bg-transparent text-base text-neutral-900 outline-none placeholder:text-neutral-400 sm:text-[14px]"
+      />
+      <button
+        type="submit"
+        aria-label={t("send")}
         className={cn(
-          "truncate text-[12px] transition-colors duration-300",
-          active ? "font-medium text-neutral-900" : "text-neutral-500"
+          "grid size-9 shrink-0 place-items-center rounded-full transition-colors",
+          value
+            ? "bg-neutral-950 text-white hover:bg-neutral-800"
+            : "bg-white text-neutral-400 ring-1 ring-neutral-200"
         )}
       >
-        {label}
-      </span>
-    </div>
+        <ArrowUp className="size-4" aria-hidden="true" />
+      </button>
+    </form>
   )
 }
 
-/** The tall scroll track; reports how far through it the page has scrolled. */
-function PinnedTrack({
-  trackRef,
-  onProgress,
-  children,
-}: Readonly<{
-  trackRef: React.RefObject<HTMLDivElement | null>
-  onProgress: (v: number) => void
-  children: React.ReactNode
-}>) {
-  const { scrollYProgress } = useScroll({
-    target: trackRef,
-    offset: ["start start", "end end"],
-  })
-  useMotionValueEvent(scrollYProgress, "change", onProgress)
-  return (
-    <div ref={trackRef} data-problem-track className="relative h-[420svh]">
-      {children}
-    </div>
-  )
-}
+/* ------------------------------------------------------------------ */
+/*  The section                                                        */
+/* ------------------------------------------------------------------ */
 
-function useIsDesktop() {
-  const [desktop, setDesktop] = useState(false)
-  useEffect(() => {
-    const q = window.matchMedia("(min-width: 1024px)")
-    const update = () => setDesktop(q.matches)
-    update()
-    q.addEventListener("change", update)
-    return () => q.removeEventListener("change", update)
-  }, [])
-  return desktop
-}
+type Turn = { n: number; i: number; answered: boolean }
 
 export function ProblemPicker() {
   const t = useTranslations("services.problems")
-  const problems = useProblems()
-  const reduce = useReducedMotion()
-  const desktop = useIsDesktop()
-  // Desktop: the section pins and scroll walks through the problems, each
-  // showing its "before" and then its fix. Elsewhere it is click-driven.
-  const pinned = desktop && !reduce
-  const [pick, setPick] = useState(0)
-  const [after, setAfter] = useState(false)
-  const p = problems[pick]
-
-  const trackRef = useRef<HTMLDivElement | null>(null)
-  const progress = useMotionValue(0)
-  const onProgress = (v: number) => {
-    progress.set(v)
-    const seg = Math.min(
-      problems.length - 0.001,
-      Math.max(0, v) * problems.length
-    )
-    const i = Math.floor(seg)
-    setPick(i)
-    setAfter(seg - i > 0.45)
-  }
-  /** Scroll to problem `i`, on its before (0.15) or after (0.75) half. */
-  const scrollTo = (i: number, half: number) => {
-    const el = trackRef.current
-    if (!el) return
-    const top = el.getBoundingClientRect().top + window.scrollY
-    const span = el.offsetHeight - window.innerHeight
-    smoothScrollTo(top + span * ((i + half) / problems.length))
-  }
-  const choose = (i: number) => (pinned ? scrollTo(i, 0.15) : setPick(i))
-  const flip = (toAfter: boolean) =>
-    pinned ? scrollTo(pick, toAfter ? 0.75 : 0.15) : setAfter(toAfter)
-
-  // When the chips scroll sideways (phones), keep the picked one in view.
-  const tabsRef = useRef<HTMLDivElement | null>(null)
+  const tc = useTranslations("services.problems.chat")
+  const all = useProblems()
+  // A different order on each visit (the chips, the scroll walk on phones
+  // and the opener all follow it). Server render keeps the written order.
+  const [order, setOrder] = useState<number[] | null>(null)
   useEffect(() => {
-    const row = tabsRef.current
-    const chip = row?.children[pick] as HTMLElement | undefined
-    if (!row || !chip || row.scrollWidth <= row.clientWidth) return
-    const left =
-      chip.getBoundingClientRect().left -
-      row.getBoundingClientRect().left +
-      row.scrollLeft -
-      20
-    const right = left + chip.offsetWidth + 40
-    if (left >= row.scrollLeft && right <= row.scrollLeft + row.clientWidth)
-      return
-    row.scrollTo({ left, behavior: reduce ? "auto" : "smooth" })
-  }, [pick, reduce])
-
-  // Links to #forward-deployed-engineering open on the engineers problem.
-  useEffect(() => {
-    if (window.location.hash === "#forward-deployed-engineering") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- reads the URL once on load
-      setPick(3)
+    const o = Array.from({ length: PROBLEMS }, (_, i) => i)
+    for (let i = o.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[o[i], o[j]] = [o[j], o[i]]
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- once, on mount
+    setOrder(o)
   }, [])
+  const problems = order ? order.map((i) => all[i]) : all
+  const fde = Math.max(
+    0,
+    problems.findIndex((q) => q.id === "people")
+  )
+  const reduce = useReducedMotion()
+  const chatRef = useRef<HTMLDivElement>(null)
+  const logRef = useRef<HTMLDivElement>(null)
+  const inView = useInView(chatRef, { once: true, amount: 0.45 })
+  const [turn, setTurn] = useState<Turn | null>(null)
+  const timer = useRef<number | undefined>(undefined)
+  const { ref: chipsRef, style: chipsFade } = useEdgeFade<HTMLDivElement>()
+  const rowRef = useRef<HTMLDivElement | null>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const current = useRef(-1)
+  // True while "See how we work" skips past the track (no asks).
+  const leaving = useRef(false)
+  const phone = useMediaQuery("(max-width: 639px)")
+  // Phones: the card pins under the navbar (4.5rem) for the whole track.
+  const { scrollYProgress } = useScroll({
+    target: trackRef,
+    offset: ["start 72px", "end end"],
+  })
 
-  // Click-driven: each pick shows the "before" first, then the fix.
+  /** Sends problem `i` as the visitor's message; RantAI answers after a beat. */
+  const ask = useCallback(
+    (i: number) => {
+      window.clearTimeout(timer.current)
+      const n = Date.now()
+      current.current = i
+      setTurn({ n, i, answered: !!reduce })
+      logRef.current?.scrollTo({ top: 0 })
+      // If the picked chip is cut off at an edge of the scrolling row, bring
+      // it just into view (the row, not the page). A chip already in full
+      // view leaves the row where it is.
+      const row = rowRef.current
+      const chip = row?.children[i] as HTMLElement | undefined
+      if (row && chip && row.scrollWidth > row.clientWidth) {
+        const pad = 24
+        const box = row.getBoundingClientRect()
+        const c = chip.getBoundingClientRect()
+        const left = c.left - box.left
+        const right = c.right - box.left
+        const shift =
+          left < pad
+            ? left - pad
+            : right > row.clientWidth - pad
+              ? right - (row.clientWidth - pad)
+              : 0
+        if (shift)
+          row.scrollTo({
+            left: row.scrollLeft + shift,
+            behavior: reduce ? "auto" : "smooth",
+          })
+      }
+      if (reduce) return
+      timer.current = window.setTimeout(
+        () => setTurn((c) => (c?.n === n ? { ...c, answered: true } : c)),
+        TYPING_MS
+      )
+    },
+    [reduce]
+  )
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  // Phones: each quarter of the track asks the next problem.
   useEffect(() => {
-    if (pinned) return
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset per pick
-    setAfter(Boolean(reduce))
-    if (reduce) return
-    const timer = setTimeout(() => setAfter(true), 1800)
-    return () => clearTimeout(timer)
-  }, [pick, reduce, pinned])
+    if (!phone) return
+    return scrollYProgress.on("change", (v) => {
+      const step = Math.min(PROBLEMS - 1, Math.max(0, Math.floor(v * PROBLEMS)))
+      if (!leaving.current && step !== current.current) ask(step)
+    })
+  }, [phone, scrollYProgress, ask])
 
-  const View = after ? p.After : p.Before
-  const mail = `mailto:${siteConfig.links.email}?subject=${encodeURIComponent(p.chip)}`
+  /**
+   * "See how we work": glide to the next section. Phones first skip
+   * (instantly, the card stays pinned so nothing visibly jumps) to the end
+   * of the track, so the glide doesn't page through the other problems.
+   */
+  const goHow = useCallback(() => {
+    const el = document.getElementById("how-we-work")
+    if (!el) return
+    const track = trackRef.current
+    if (phone && track) {
+      const end =
+        track.getBoundingClientRect().top +
+        window.scrollY +
+        track.offsetHeight -
+        window.innerHeight
+      if (window.scrollY < end) {
+        leaving.current = true
+        window.scrollTo(0, end)
+        window.setTimeout(() => (leaving.current = false), 1400)
+      }
+    }
+    // Land where the phases are pinned in place (the start of their track,
+    // less the sticky offset), not on the section's top edge.
+    const start = [
+      ...el.querySelectorAll<HTMLElement>("[data-how-start]"),
+    ].find((t) => t.offsetParent)
+    const sticky = start?.firstElementChild
+    const y = start
+      ? start.getBoundingClientRect().top +
+        window.scrollY -
+        (sticky ? parseFloat(getComputedStyle(sticky).top) || 0 : 0) +
+        // Phones build each phase's mockup with the scroll: go far enough
+        // into the first phase (3/4 of its fifth) that it's complete.
+        (phone ? (start.offsetHeight - window.innerHeight) * 0.15 : 1)
+      : el.getBoundingClientRect().top + window.scrollY - 80
+    // Unhurried: longer trips take longer, within 1.2–2s.
+    const trip = Math.abs(y - window.scrollY) / window.innerHeight
+    smoothScrollTo(y, Math.min(2, Math.max(1.2, 0.8 + trip * 0.4)))
+    history.replaceState(null, "", "#how-we-work")
+  }, [phone])
 
-  const header = (
-    <>
-      <span id="forward-deployed-engineering" className="block scroll-mt-20" />
-      <Eyebrow className="text-neutral-500">{t("eyebrow")}</Eyebrow>
-      <SplitReveal
-        id="problem-heading"
-        text={t("title")}
-        className={cn(
-          "mt-5 font-medium tracking-[-0.045em] text-neutral-950",
-          pinned
-            ? "text-[clamp(2.25rem,4.2vw,4rem)]"
-            : "text-[clamp(2.25rem,5vw,4.5rem)]",
-          "leading-[1]"
-        )}
-      />
-    </>
+  /** Tapped chip or link: phones scroll to that problem's part of the track. */
+  const pick = useCallback(
+    (i: number) => {
+      const track = trackRef.current
+      if (!phone || !track) return ask(i)
+      const top = track.getBoundingClientRect().top + window.scrollY
+      const start = top - 72
+      const end = top + track.offsetHeight - window.innerHeight
+      smoothScrollTo(start + (end - start) * ((i + 0.5) / PROBLEMS), 0.9)
+    },
+    [phone, ask]
   )
 
-  const body = (
-    <>
-      {/* Problems */}
-      {/* Phones: one swipeable row that snaps chip by chip, its edges fading
-          so the next problem peeks in. */}
-      <div
-        ref={tabsRef}
-        role="tablist"
-        aria-label={t("tablist")}
-        className={cn(
-          "-mx-5 flex gap-2.5",
-          pinned ? "mt-[min(2.5rem,4svh)]" : "mt-12",
-          "snap-x snap-mandatory scroll-px-5 overflow-x-auto px-5 [scrollbar-width:none] max-sm:[mask-image:linear-gradient(to_right,transparent,black_20px,black_calc(100%-40px),transparent)] max-sm:pr-10 sm:mx-0 sm:snap-none sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden"
-        )}
-      >
-        {problems.map((q, i) => {
-          const on = i === pick
-          return (
-            <button
-              key={q.id}
-              role="tab"
-              aria-selected={on}
-              type="button"
-              onClick={() => choose(i)}
-              className={cn(
-                "relative isolate flex h-12 shrink-0 snap-start items-center gap-2.5 rounded-full border pr-5 pl-2 text-[15px] font-medium whitespace-nowrap transition-colors",
-                on
-                  ? "border-transparent text-white"
-                  : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:text-neutral-900"
-              )}
-            >
-              {on && (
-                <motion.span
-                  layoutId="problem-pill"
-                  className="absolute inset-0 -z-10 rounded-full bg-neutral-950"
-                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                />
-              )}
-              <span
-                className="grid size-8 place-items-center rounded-full"
-                style={{
-                  background: on ? "rgb(255 255 255 / 0.12)" : `${q.tone}14`,
-                  color: on ? "#fff" : q.tone,
-                }}
-              >
-                <q.icon className="size-4" />
-              </span>
-              {q.chip}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* The answer */}
-      <div className="mt-6 grid gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-        <div
-          className="relative flex h-[440px] flex-col items-center gap-6 overflow-hidden rounded-[28px] p-6 transition-colors duration-700 sm:p-10 lg:h-[min(470px,52svh)]"
-          style={{
-            backgroundColor: `${p.tone}0f`,
-            backgroundImage: `radial-gradient(${p.tone}2e 1.2px, transparent 1.4px)`,
-            backgroundSize: "18px 18px",
-          }}
-        >
-          {/* Before / after */}
-          <div className="flex rounded-full bg-white p-1 shadow-sm ring-1 ring-black/5">
-            {[t("before"), t("after")].map((label, i) => {
-              const on = (i === 1) === after
-              return (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => flip(i === 1)}
-                  className={cn(
-                    "relative isolate rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors",
-                    on
-                      ? "text-white"
-                      : "text-neutral-500 hover:text-neutral-800"
-                  )}
-                >
-                  {on && (
-                    <motion.span
-                      layoutId="before-after"
-                      className="absolute inset-0 -z-10 rounded-full"
-                      style={{ background: i === 1 ? p.tone : "#737373" }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 420,
-                        damping: 34,
-                      }}
-                    />
-                  )}
-                  {label}
-                </button>
-              )
-            })}
-          </div>
-          {/* Before and after cross-fade in one fixed slot, so nothing jumps */}
-          <div className="relative w-full flex-1">
-            <AnimatePresence initial={false}>
-              <motion.div
-                key={`${p.id}-${after}`}
-                aria-hidden="true"
-                className="absolute inset-0 flex items-center justify-center max-md:filter-none!"
-                initial={{ opacity: 0, scale: 0.97, filter: "blur(6px)" }}
-                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 1.02, filter: "blur(6px)" }}
-                transition={{ duration: 0.5, ease }}
-              >
-                <View />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-
-        <div className="relative h-[460px] overflow-hidden rounded-[28px] bg-neutral-100 lg:h-[min(470px,52svh)]">
-          <AnimatePresence initial={false}>
-            <motion.div
-              key={p.id}
-              className="absolute inset-0 flex flex-col p-7 sm:p-9"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.5, ease }}
-            >
-              <span
-                className="flex w-fit items-center gap-2 rounded-full px-3 py-1 text-[12px] font-medium text-neutral-900"
-                style={{ background: `${p.tone}24` }}
-              >
-                <span
-                  className="size-1.5 rounded-full"
-                  style={{ background: p.tone }}
-                />
-                {p.service}
-              </span>
-              <h3 className="mt-5 line-clamp-2 min-h-[2.1em] text-[clamp(1.6rem,2.3vw,2.25rem)] leading-[1.05] font-medium tracking-[-0.035em] text-neutral-950">
-                {p.outcome}
-              </h3>
-              <ol className="mt-6 space-y-3">
-                {p.steps.map((s, i) => (
-                  <li
-                    key={s}
-                    className="flex items-center gap-3 text-[16px] text-neutral-700"
-                  >
-                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-white text-[12px] font-medium text-neutral-500 tabular-nums">
-                      {i + 1}
-                    </span>
-                    {s}
-                  </li>
-                ))}
-              </ol>
-              <div className="mt-auto flex flex-wrap items-center justify-between gap-4 border-t border-black/[0.07] pt-6">
-                <span className="w-full text-[14px] text-neutral-600">
-                  {t.rich("typically", {
-                    weeks: p.weeks,
-                    b: (chunks) => (
-                      <span className="font-medium text-neutral-900">
-                        {chunks}
-                      </span>
-                    ),
-                  })}
-                </span>
-                <a
-                  href="#how-we-work"
-                  className="text-[14px] font-medium text-neutral-600 transition-colors hover:text-neutral-900"
-                >
-                  {t("seeHow")}
-                </a>
-                <a
-                  href={mail}
-                  className="group inline-flex h-11 items-center gap-2 rounded-full bg-neutral-950 px-5 text-[14px] font-medium text-white"
-                >
-                  {t("talk")}
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                </a>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-    </>
-  )
-
-  if (!pinned)
-    return (
-      <section
-        id="what-we-do"
-        aria-labelledby="problem-heading"
-        className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-20 sm:px-10 sm:py-24 lg:px-14 lg:py-32"
-      >
-        {header}
-        {body}
-      </section>
+  // The first problem (or the engineers one, from a link) plays once
+  // in view.
+  useEffect(() => {
+    if (!inView || turn) return
+    const hash = window.location.hash === FDE_HASH
+    const id = window.setTimeout(
+      () => (hash ? pick(fde) : ask(0)),
+      reduce ? 0 : 500
     )
+    return () => window.clearTimeout(id)
+  }, [inView, turn, ask, pick, reduce, fde])
+
+  // A link to #forward-deployed-engineering while already on the page.
+  useEffect(() => {
+    const onHash = () => {
+      if (window.location.hash === FDE_HASH) pick(fde)
+    }
+    window.addEventListener("hashchange", onHash)
+    return () => window.removeEventListener("hashchange", onHash)
+  }, [pick, fde])
+
+  const shown = turn ? problems[turn.i] : null
 
   return (
     <section
       id="what-we-do"
       aria-labelledby="problem-heading"
-      className="scroll-mt-20 pt-24 lg:pt-28"
+      className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-20 sm:px-10 sm:py-24 lg:px-14"
     >
-      <PinnedTrack trackRef={trackRef} onProgress={onProgress}>
-        <div className="sticky top-16 mx-auto flex h-[calc(100svh-4rem)] max-w-[1440px] flex-col justify-center px-14">
-          {header}
-          {body}
-          {/* How far through the four problems, filling with the scroll */}
-          <div className="mt-6 grid grid-cols-4 gap-3">
-            {problems.map((q, i) => (
-              <ProgressSegment
-                key={q.id}
-                progress={progress}
-                index={i}
-                count={problems.length}
-                tone={q.tone}
-                label={q.chip}
-                active={i === pick}
-              />
-            ))}
+      <span id="forward-deployed-engineering" className="block scroll-mt-20" />
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-16 xl:gap-24">
+        <div>
+          <Eyebrow className="text-neutral-500">{t("eyebrow")}</Eyebrow>
+          <SplitReveal
+            id="problem-heading"
+            text={t("title")}
+            className="mt-5 text-[clamp(2.25rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] text-neutral-950"
+          />
+          <p className="mt-5 max-w-sm text-[16px] leading-relaxed text-pretty text-neutral-500 lg:mt-7 lg:text-[17px]">
+            {t("lead")}
+          </p>
+        </div>
+
+        {/* The chat window. Phones: pinned on a tall track */}
+        <div ref={trackRef} className="min-w-0 max-sm:h-[340svh]">
+          <div
+            ref={chatRef}
+            className="flex flex-col overflow-hidden rounded-[24px] bg-white shadow-[0_30px_80px_-40px_rgba(0,0,0,0.3),0_1px_2px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.07] max-sm:sticky max-sm:top-[4.5rem] max-sm:-mx-1 max-sm:h-[calc(100svh-5.5rem)] lg:rounded-[28px]"
+          >
+            <div className="flex h-12 shrink-0 items-center gap-2.5 border-b border-neutral-100 px-4 sm:h-14 sm:px-6">
+              <Avatar />
+              <p className="text-[14px] text-neutral-900">
+                <span className="font-medium">{tc("name")}</span>
+                <span className="text-neutral-400"> · {tc("team")}</span>
+              </p>
+            </div>
+
+            {/* Messages: a fixed height so nothing around it jumps. Phones have
+              no inner scroll, so a swipe always moves the page */}
+            <div
+              ref={logRef}
+              role="log"
+              aria-live="polite"
+              className="min-h-0 flex-1 overflow-hidden px-4 py-4 sm:h-[500px] sm:flex-none sm:overflow-y-auto sm:overscroll-contain sm:px-6 sm:py-5 lg:h-[min(500px,calc(100vh-330px))] lg:min-h-[440px]"
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                {!shown || !turn ? (
+                  <motion.div
+                    key="hello"
+                    exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                  >
+                    <FromRantAI>
+                      <p className="pt-1 text-[15px] text-neutral-700">
+                        {tc("greeting")}
+                      </p>
+                    </FromRantAI>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key={turn.n}
+                    className="space-y-4 sm:space-y-5"
+                    initial={{ opacity: reduce ? 1 : 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                  >
+                    <motion.div
+                      className="flex justify-end"
+                      initial={{ opacity: 0, y: reduce ? 0 : 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: reduce ? 0 : 0.4, ease }}
+                    >
+                      <p className="max-w-[85%] rounded-[18px] rounded-br-md bg-neutral-100 px-4 py-2.5 text-[15px] text-neutral-900">
+                        <span className="sr-only">{tc("you")}: </span>
+                        {shown.chip}
+                      </p>
+                    </motion.div>
+                    <AnimatePresence mode="wait" initial={false}>
+                      {turn.answered ? (
+                        <motion.div
+                          key="reply"
+                          initial={{ opacity: 1 }}
+                          animate={{ opacity: 1 }}
+                        >
+                          <Reply p={shown} onHow={goHow} />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="typing"
+                          initial={{ opacity: 0 }}
+                          animate={{
+                            opacity: 1,
+                            transition: { delay: 0.25, duration: 0.3 },
+                          }}
+                          exit={{ opacity: 0, transition: { duration: 0.15 } }}
+                        >
+                          <Typing />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Suggestions and the composer */}
+            <div className="shrink-0 border-t border-neutral-100 px-3 pt-3 pb-3 sm:px-4 sm:pb-4">
+              <div
+                ref={(el) => {
+                  rowRef.current = el
+                  chipsRef(el)
+                }}
+                style={chipsFade}
+                role="group"
+                aria-label={tc("suggestions")}
+                className="-mx-3 flex gap-2 overflow-x-auto px-3 pb-3 [scrollbar-width:none] sm:-mx-4 sm:gap-1.5 sm:px-4 [&::-webkit-scrollbar]:hidden"
+              >
+                {problems.map((q, i) => {
+                  const on = turn?.i === i
+                  return (
+                    <button
+                      key={q.id}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => pick(i)}
+                      className={cn(
+                        "inline-flex min-h-11 shrink-0 items-center rounded-full border px-4 text-[13px] whitespace-nowrap transition-colors duration-300 sm:min-h-9 sm:px-3 sm:tracking-[-0.01em]",
+                        on
+                          ? "border-neutral-300 bg-neutral-100 text-neutral-950"
+                          : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400 hover:text-neutral-900"
+                      )}
+                    >
+                      {q.chip}
+                    </button>
+                  )
+                })}
+              </div>
+              <Composer />
+            </div>
           </div>
         </div>
-      </PinnedTrack>
+      </div>
     </section>
   )
 }

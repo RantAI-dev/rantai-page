@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import {
   motion,
   useMotionValue,
+  useMotionValueEvent,
   useReducedMotion,
   useScroll,
   useTransform,
@@ -14,6 +15,7 @@ import { ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 import { DarkPanel } from "./dark-panel"
+import { ExpandingPanel } from "@/components/platform/expanding-panel"
 import { Eyebrow } from "@/components/shared/eyebrow"
 import { FooterAscii } from "@/components/effects/footer-ascii"
 import { PillLink } from "@/components/shared/pill-link"
@@ -36,14 +38,14 @@ type Links = { links: boolean; eyebrow?: string }
 function Header({ links, eyebrow }: Readonly<Links>) {
   const t = useTranslations("home.process")
   return (
-    <div className="mb-[min(2.5rem,4dvh)] max-w-3xl">
+    <div className="mb-[min(2.5rem,4dvh)] max-w-3xl max-md:mx-auto max-md:text-center">
       <Eyebrow className="text-white/50">{eyebrow ?? t("eyebrow")}</Eyebrow>
       <SplitReveal
         id="process-heading"
         text={t("title")}
         className="mt-5 text-[clamp(2.25rem,min(5.6vw,8dvh),5rem)] leading-[0.98] font-medium tracking-[-0.045em]"
       />
-      <div className="mt-[min(2rem,3dvh)] flex flex-col gap-3 sm:flex-row">
+      <div className="mt-[min(2rem,3dvh)] flex flex-col gap-3 max-md:hidden sm:flex-row">
         {links && (
           <PillLink href="/services#forward-deployed-engineering" size="lg">
             {t("fde")}
@@ -447,11 +449,96 @@ function PinnedSequence({ links, eyebrow }: Readonly<Links>) {
   )
 }
 
-/** Phones, tablets and reduced motion: the three cards, all in focus. */
+/**
+ * Phones: the heading scrolls by, then the steps pin and play one at a
+ * time (each with its animation), like the desktop sequence.
+ */
+function PhoneSequence({ links, eyebrow }: Readonly<Links>) {
+  const t = useTranslations("home.process")
+  const steps = t.raw("steps") as Step[]
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end end"],
+  })
+  const [active, setActive] = useState(0)
+  // Where the current step's animation is (0–1). It follows the scroll and
+  // finishes a little before the step ends, so each one is seen complete.
+  const [at, setAt] = useState(0)
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const i = Math.min(2, Math.floor(v * 3))
+    setActive(i)
+    setAt(Math.min(1, Math.max(0, (v * 3 - i) / 0.75)))
+  })
+  const Visual = visuals[active]
+
+  return (
+    <div className="pt-16">
+      <div className="px-5">
+        <Header links={links} eyebrow={eyebrow} />
+      </div>
+      <div ref={ref} className="relative h-[300svh]">
+        <div className="sticky top-16 flex h-[calc(100svh-4rem)] flex-col justify-center px-5 pb-6">
+          {/* No rail: the three steps as a short list. The one you're on is
+              lit and opens to show its line and its demo; the others wait,
+              dimmed, above and below it. */}
+          <ol className="space-y-3">
+            {steps.map((st, i) => {
+              const on = i === active
+              return (
+                <li key={st.title}>
+                  <h3
+                    className={cn(
+                      "text-[22px] font-medium tracking-[-0.03em] transition-[color,filter] duration-500",
+                      // The steps you're not on fade back, slightly out of
+                      // focus, so the current one leads.
+                      on ? "text-white" : "text-white/15 blur-[1.5px]"
+                    )}
+                  >
+                    {st.title}
+                  </h3>
+                  <motion.div
+                    className="-mx-5 overflow-hidden px-5"
+                    initial={false}
+                    animate={{ height: on ? "auto" : 0, opacity: on ? 1 : 0 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <p className="min-h-[3em] pt-1 leading-[1.5] text-white/60">
+                      {st.body}
+                    </p>
+                    {on && (
+                      <motion.div
+                        aria-hidden="true"
+                        className="relative -mx-5 mt-3 mb-1 h-[min(42svh,20rem)]"
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: 0.35,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
+                      >
+                        <Visual at={at} />
+                      </motion.div>
+                    )}
+                  </motion.div>
+                </li>
+              )
+            })}
+          </ol>
+        </div>
+      </div>
+      <div className="px-5 pb-16">
+        <Footnote links={links} />
+      </div>
+    </div>
+  )
+}
+
+/** Reduced motion: the three cards, all in focus. */
 function StaticSequence({ links, eyebrow }: Readonly<Links>) {
   const progress = useMotionValue(1)
   return (
-    <div className="px-5 py-24 sm:px-10">
+    <div className="px-5 py-16 sm:px-10 sm:py-24">
       <Header links={links} eyebrow={eyebrow} />
       <SequenceRow active={3} progress={progress} />
       <Footnote links={links} />
@@ -477,6 +564,19 @@ export function HomeProcess({
 }: Readonly<Partial<Links>>) {
   const desktop = useIsDesktop()
   const reduce = useReducedMotion()
+  if (!desktop && !reduce) {
+    // Phones: a full-screen dark panel (the navbar turns dark with it), as
+    // for the products above.
+    return (
+      <ExpandingPanel
+        id="how-we-work"
+        aria-labelledby="process-heading"
+        className="dark scroll-mt-20 text-white"
+      >
+        <PhoneSequence links={links} eyebrow={eyebrow} />
+      </ExpandingPanel>
+    )
+  }
   if (desktop && !reduce) {
     return (
       <section

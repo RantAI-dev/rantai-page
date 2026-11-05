@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { motion, useReducedMotion } from "motion/react"
+import { motion, useReducedMotion, useScroll } from "motion/react"
 import { ArrowUp } from "lucide-react"
 import { useTranslations } from "next-intl"
 
@@ -9,6 +9,7 @@ import { FooterAscii } from "@/components/effects/footer-ascii"
 import { scrollToTop } from "@/components/layout/smooth-scroll"
 import { cn } from "@/lib/utils"
 import { useDesktopMotion } from "@/hooks/use-desktop-motion"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -20,13 +21,69 @@ export function FooterCtaCard({
   children,
   labelledBy,
 }: Readonly<{ children: React.ReactNode; labelledBy: string }>) {
+  // Phones: like the dark panels above it, the card grows to the full width
+  // of the screen as it scrolls into place (the navbar goes dark with it),
+  // then settles back into a card. Wider screens keep the card.
+  const ref = useRef<HTMLElement>(null)
+  const phone = useMediaQuery("(max-width: 639px)")
+  const reduce = useReducedMotion()
+  // Full width by the time its top reaches the navbar (4rem).
+  const { scrollYProgress: enter } = useScroll({
+    target: ref,
+    offset: ["start end", "start 64px"],
+  })
+  // The card is shorter than the screen, so it only starts to shrink back
+  // once its bottom has risen past 40% of the screen.
+  const { scrollYProgress: exit } = useScroll({
+    target: ref,
+    offset: ["end 0.4", "end start"],
+  })
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const update = () => {
+      const on = phone && !reduce
+      const k = on
+        ? Math.min(
+            Math.min(1, Math.max(0, (enter.get() - 0.5) / 0.5)),
+            1 - Math.min(1, Math.max(0, exit.get() / 0.6))
+          )
+        : 0
+      el.style.setProperty("--k", String(k * k * (3 - 2 * k)))
+      const dark = on && k > 0.9
+      if (el.hasAttribute("data-nav-dark") !== dark) {
+        el.toggleAttribute("data-nav-dark", dark)
+        window.dispatchEvent(new Event("nav-theme"))
+      }
+    }
+    update()
+    const a = enter.on("change", update)
+    const b = exit.on("change", update)
+    return () => {
+      a()
+      b()
+    }
+  }, [enter, exit, phone, reduce])
+
   return (
     <section
+      ref={ref}
       aria-labelledby={labelledBy}
-      className="dark relative isolate overflow-hidden rounded-[28px] bg-black text-white"
+      className="dark relative isolate overflow-hidden rounded-[28px] bg-black text-white max-sm:-mx-3 max-sm:min-h-[calc(140dvh-4rem)] max-sm:overflow-clip max-sm:rounded-none max-sm:[clip-path:inset(0_calc((1-var(--k,0))*12px)_round_calc((1-var(--k,0))*28px))]"
     >
-      <FooterAscii className="-z-10" />
-      {children}
+      <FooterAscii className="-z-10 max-sm:opacity-45" />
+      {/* Phones: the text is left-aligned over the busier edge of the field,
+          so a soft scrim keeps it readable while the wave still shows */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(100deg,rgb(0_0_0/0.75)_10%,rgb(0_0_0/0.25)_75%)] sm:hidden"
+      />
+      {/* Phones: the panel is taller than the screen and its content stays
+          pinned in the middle, so the full-screen dark moment lasts a while
+          before the footer comes up */}
+      <div className="max-sm:sticky max-sm:top-16 max-sm:flex max-sm:h-[calc(100dvh-4rem)] max-sm:flex-col max-sm:justify-center">
+        {children}
+      </div>
     </section>
   )
 }

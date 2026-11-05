@@ -701,7 +701,7 @@ export function PeopleVisual({ people }: Readonly<{ people: Person[] }>) {
         src={p.photo}
         alt=""
         fill
-        sizes="(min-width: 1024px) 15vw, 40vw"
+        sizes="(min-width: 1024px) 15vw, 50vw"
         className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.05]"
       />
       <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-3.5 pt-10 pb-3 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -717,11 +717,11 @@ export function PeopleVisual({ people }: Readonly<{ people: Person[] }>) {
   // the loop never shows a seam. Outer columns rise, the middle one falls;
   // the wall pauses while the cursor is on it.
   return (
-    // Phones show all three columns (smaller photos, more faces) under a
-    // shorter fade.
+    // Phones show two columns (bigger photos, faces you can read) under a
+    // shorter fade; the third column joins from sm up.
     <div className="group/wall absolute inset-x-0 -inset-y-5 flex gap-2 [mask-image:linear-gradient(to_bottom,transparent,black_9%,black_91%,transparent)] sm:-inset-y-10 sm:gap-3 sm:[mask-image:linear-gradient(to_bottom,transparent,rgb(0_0_0/0.35)_5%,rgb(0_0_0/0.8)_10%,black_14%,black_86%,rgb(0_0_0/0.8)_90%,rgb(0_0_0/0.35)_95%,transparent)]">
       {cols.map((col, c) => (
-        <div key={c} className="flex-1">
+        <div key={c} className={cn("flex-1", c === 2 && "max-sm:hidden")}>
           <div
             className={cn(
               "flex flex-col group-hover/wall:[animation-play-state:paused] motion-reduce:animate-none",

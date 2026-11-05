@@ -41,7 +41,7 @@ function CleanGrid({ partners }: Readonly<{ partners: PartnerItem[] }>) {
   const reduce = useReducedMotion()
   const mail = `mailto:${siteConfig.links.email}?subject=${encodeURIComponent(t("subject"))}`
   return (
-    <div className="mt-14">
+    <div className="mt-10 sm:mt-14">
       <ul className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         {partners.map((p, i) => (
           <motion.li
@@ -80,10 +80,11 @@ function CleanGrid({ partners }: Readonly<{ partners: PartnerItem[] }>) {
           </a>
         </motion.li>
       </ul>
-      {/* Empty seats, fading away */}
+      {/* Empty seats, fading away (wide screens only: on a phone they read
+          as cards that failed to load) */}
       <div
         aria-hidden="true"
-        className="mt-2 grid grid-cols-2 gap-2 [mask-image:linear-gradient(to_bottom,black,transparent)] lg:grid-cols-4"
+        className="mt-2 grid grid-cols-2 gap-2 [mask-image:linear-gradient(to_bottom,black,transparent)] max-sm:hidden lg:grid-cols-4"
       >
         {Array.from({ length: 4 }, (_, i) => (
           <span
@@ -108,7 +109,7 @@ export function PartnersSection({
     <section
       id="proof"
       aria-labelledby="partners-heading"
-      className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-24 sm:px-10 lg:px-14 lg:py-32"
+      className="mx-auto max-w-[1440px] scroll-mt-20 px-5 py-16 sm:px-10 sm:py-24 lg:px-14 lg:py-32"
     >
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>

@@ -7,7 +7,7 @@
   },
   "cta": {
     "title": "Tinggalkan software lambat dan rapuh.",
-    "description": "Audit teknis gratis: kami tunjukkan risiko terbesar di stack Anda. Tanpa ikatan.",
+    "description": "Audit teknis gratis: kami temukan risiko terbesar di stack Anda.",
     "label": "Minta audit gratis",
     "subject": "Audit teknis gratis",
     "prompts": [
@@ -27,22 +27,24 @@
   "problems": {
     "eyebrow": "Yang kami bantu",
     "title": "Apa yang\nmenghambat Anda?",
-    "tablist": "Masalah",
-    "before": "Sebelum",
-    "after": "Dengan RantAI",
     "typically": "Biasanya <b>{weeks}</b>",
     "seeHow": "Lihat cara kerja ↓",
     "talk": "Diskusikan masalah ini",
     "items": {
       "slow": {
         "chip": "Aplikasi kami lambat",
-        "outcome": "Dari 2,8 s jadi 320 ms.",
+        "outcome": "Cepat lagi, bahkan saat trafik puncak.",
         "steps": [
           "Profiling jalur kritis",
           "Perbaiki query dan caching",
           "Load test sebelum rilis"
         ],
-        "weeks": "3–6 minggu"
+        "weeks": "3–6 minggu",
+        "metric": {
+          "from": "2,8 s",
+          "to": "320 ms",
+          "caption": "waktu respons p95"
+        }
       },
       "legacy": {
         "chip": "Sistem lama menghambat kami",
@@ -52,7 +54,12 @@
           "Migrasi bertahap",
           "Beralih tanpa gangguan"
         ],
-        "weeks": "8–16 minggu"
+        "weeks": "8–16 minggu",
+        "metric": {
+          "from": "1",
+          "to": "4",
+          "caption": "service mandiri, dari satu monolit"
+        }
       },
       "ai": {
         "chip": "AI kami mentok di demo",
@@ -62,7 +69,12 @@
           "Evaluasi dengan data uji Anda",
           "Deploy, pantau, latih ulang"
         ],
-        "weeks": "4–8 minggu"
+        "weeks": "4–8 minggu",
+        "metric": {
+          "from": "0",
+          "to": "1,2 jt",
+          "caption": "request terlayani di produksi"
+        }
       },
       "people": {
         "chip": "Kami kekurangan engineer",
@@ -72,53 +84,28 @@
           "Kerjakan backlog Anda",
           "Serah terima saat Anda siap"
         ],
-        "weeks": "Mulai 2 minggu"
+        "weeks": "Mulai 2 minggu",
+        "metric": {
+          "from": "0",
+          "to": "4",
+          "caption": "item backlog selesai di sprint awal"
+        }
       }
     },
-    "latency": {
-      "label": "Waktu respons p95",
-      "bad": "2,8 s",
-      "good": "320 ms",
-      "badCaption": "Melonjak tiap trafik puncak",
-      "goodCaption": "Stabil saat trafik puncak"
-    },
-    "legacy": {
-      "label": "Arsitektur",
-      "goodBadge": "Uptime 100% selama migrasi",
-      "badBadge": "Terakhir diubah: 2014",
-      "parts": ["Billing", "Orders", "Users", "Reports"],
-      "service": "Service {name}",
-      "deployAll": "Satu deploy untuk semuanya"
-    },
-    "demo": {
-      "live": "Live",
-      "stats": [
-        {
-          "value": "1,2 jt",
-          "label": "request"
-        },
-        {
-          "value": "99,9%",
-          "label": "uptime"
-        },
-        {
-          "value": "94%",
-          "label": "akurasi"
-        }
-      ],
-      "monitored": "Dipantau · retrain mingguan · di server Anda",
-      "works": "✓ Jalan di laptop saya",
-      "broken": "✗ Tanpa pemilik, monitoring, dan akses data"
-    },
-    "backlog": {
-      "columns": ["Backlog", "Selesai"],
-      "tickets": [
-        "Login SSO",
-        "Ekspor ke Excel",
-        "OCR invoice",
-        "Log audit",
-        "Aplikasi mobile"
-      ]
+    "list": "Masalah",
+    "approach": "Cara kami mengatasinya",
+    "lead": "Tanyakan saja. Kami tunjukkan hasilnya dan berapa lama prosesnya.",
+    "chat": {
+      "name": "RantAI",
+      "team": "Engineering",
+      "greeting": "Halo! Apa yang menghambat Anda? Pilih pertanyaan di bawah.",
+      "typing": "RantAI sedang mengetik",
+      "you": "Anda",
+      "suggestions": "Pertanyaan yang disarankan",
+      "label": "Tanyakan hal lain",
+      "placeholder": "Ada hal lain? Ceritakan di sini…",
+      "send": "Kirim lewat email",
+      "subject": "Pertanyaan tentang layanan RantAI"
     }
   },
   "engagement": {
@@ -273,8 +260,8 @@
       }
     },
     "visuals": {
-      "builtBy": "Dibangun dan dirawat oleh RantAI",
-      "shipping": "Merilis pembaruan",
+      "builtBy": "Dibuat dan dirawat RantAI",
+      "shipping": "Rilis baru",
       "compliance": "Kepatuhan",
       "region": "Region Jakarta",
       "rules": [

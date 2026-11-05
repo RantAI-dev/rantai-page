@@ -151,7 +151,9 @@ function drawEarth(
   ctx.clearRect(0, 0, w, h)
   const radius = Math.max(w, h) * 0.75
   const cx = w / 2
-  const cy = h + radius * 0.58
+  // Phones: the panorama is a band above the text, so the planet's top
+  // sits just under the cards (64% down), whatever the band's height.
+  const cy = w < 640 ? h * 0.64 + radius : h + radius * 0.58
   // Dark body behind the characters, so the ring is hidden by the planet.
   // It fades out past the rim, letting the cards sink softly behind it
   // instead of being cut by a hard edge.
@@ -270,7 +272,7 @@ export function HeroPanorama() {
       // buttons (about 68% of the hero).
       // Phones: a shorter card so the headline keeps a calm background.
       const narrow = w < 640
-      const cardH = h * (narrow ? 0.34 : 0.68)
+      const cardH = h * (narrow ? 0.44 : 0.68)
       const cardW = cardH / ASPECT
       R = Math.max(cardW * 1.4, w * 0.75)
       const gap = cardW * 0.07
@@ -285,7 +287,7 @@ export function HeroPanorama() {
       const sliceW = cardW / STRIPS
       const sliceA = sliceW / R
       scene.style.perspective = `${R}px`
-      ring.style.top = `${h * (narrow ? 0.24 : 0.43)}px`
+      ring.style.top = `${h * (narrow ? 0.34 : 0.43)}px`
       dim = narrow ? 0.55 : 1
       angles = []
       centres = []
@@ -556,12 +558,13 @@ export function HeroPanorama() {
         )}
       </div>
       <canvas ref={earthRef} className="absolute inset-0 size-full" />
-      {/* Shade behind the headline and copy */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_44%_30%_at_50%_58%,rgb(0_0_0/0.85),transparent)]" />
+      {/* Shade behind the headline and copy (on phones the text sits below
+          the panorama, so it needs none) */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_44%_30%_at_50%_58%,rgb(0_0_0/0.85),transparent)] max-sm:hidden" />
       <div className="absolute inset-x-0 top-0 h-[12%] bg-gradient-to-b from-black to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-[12%] bg-gradient-to-t from-black/80 to-transparent" />
       {/* Quiet patch behind the partner logos */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_42%_14%_at_50%_90%,rgb(0_0_0/0.95)_40%,transparent)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_42%_14%_at_50%_90%,rgb(0_0_0/0.95)_40%,transparent)] max-sm:hidden" />
     </div>
   )
 }
