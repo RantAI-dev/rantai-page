@@ -69,7 +69,7 @@ export async function NotFoundView({
   const t = await getTranslations("notFound")
   return (
     <SiteShell>
-      <section className="mx-auto grid max-w-[1440px] items-center gap-12 px-5 pt-10 pb-24 sm:px-10 sm:pt-14 lg:grid-cols-2 lg:gap-16 lg:px-14 lg:pt-16 lg:pb-32">
+      <section className="mx-auto grid max-w-[1440px] items-center gap-12 px-5 pt-10 pb-16 sm:px-10 sm:pt-14 sm:pb-24 lg:grid-cols-2 lg:gap-16 lg:px-14 lg:pt-16 lg:pb-32">
         <div>
           <Eyebrow className="text-muted-foreground">{t("eyebrow")}</Eyebrow>
           <h1 className="mt-5 text-[clamp(2.5rem,5vw,4.5rem)] leading-[1] font-medium tracking-[-0.045em] whitespace-pre-line text-neutral-950">
@@ -82,7 +82,7 @@ export async function NotFoundView({
         </div>
 
         <div
-          className="flex items-center justify-center rounded-[28px] p-6 sm:p-10"
+          className="flex min-w-0 items-center justify-center rounded-[28px] p-6 max-sm:-mx-1 max-sm:p-4 sm:p-10"
           style={{
             backgroundColor: "#f4f3ee",
             backgroundImage:
@@ -112,7 +112,7 @@ export async function NotFoundView({
                       <span className="block text-[14px] font-medium text-neutral-950">
                         {t(`destinations.${id}.label`)}
                       </span>
-                      <span className="block truncate text-[13px] text-neutral-500">
+                      <span className="block text-[13px] text-pretty text-neutral-500 sm:truncate">
                         {t(`destinations.${id}.line`)}
                       </span>
                     </span>

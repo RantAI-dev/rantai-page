@@ -79,14 +79,15 @@ function OwnProducts({ hover }: Readonly<Scene>) {
   ]
   return (
     <Rise className={cn(card, "w-full max-w-sm p-5")}>
-      <div className="flex items-center justify-between">
-        <p className="text-[12px] font-medium text-neutral-500">
+      {/* One line: the label gives way (truncates) before the status wraps */}
+      <div className="flex items-center justify-between gap-3">
+        <p className="min-w-0 truncate text-[12px] font-medium text-neutral-500">
           {t("builtBy")}
         </p>
         <AnimatePresence>
           {hover && (
             <motion.span
-              className="flex items-center gap-1 text-[11px] text-[#059669]"
+              className="flex shrink-0 items-center gap-1 text-[11px] whitespace-nowrap text-[#059669]"
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}

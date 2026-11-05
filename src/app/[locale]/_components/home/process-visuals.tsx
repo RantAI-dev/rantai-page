@@ -18,7 +18,12 @@ import { cn } from "@/lib/utils"
 // Small type, 1px lines, monospace for system output, quiet motion.
 // Content is illustrative: no real customers, numbers or results.
 
-type VisualProps = Readonly<{ active?: boolean; done?: boolean }>
+type VisualProps = Readonly<{
+  active?: boolean
+  done?: boolean
+  /** 0–1: drive the animation from outside (scroll) instead of a clock. */
+  at?: number
+}>
 
 const mono = "[font-family:ui-monospace,SFMono-Regular,Menlo,monospace]"
 
@@ -52,11 +57,11 @@ const options = [
   { id: "contract", x: 0.82, y: 0.72, color: "#d9868a" },
 ]
 
-export function DefineVisual({ active = true, done = false }: VisualProps) {
+export function DefineVisual({ active = true, done = false, at }: VisualProps) {
   // 1-6: dots land, 7: crosshair moves in, 8: picked
   const t = useTranslations("home.process.visuals.define")
-  const n = useTicker(8, 380, active, 8)
-  const step = done ? 8 : n
+  const n = useTicker(8, 380, active && at === undefined, 8)
+  const step = done ? 8 : at !== undefined ? Math.round(at * 8) : n
   const aiming = step >= 7
   const picked = step >= 8
   const target = options[0]
@@ -277,12 +282,12 @@ function Node({
   )
 }
 
-export function BuildVisual({ active = true, done = false }: VisualProps) {
+export function BuildVisual({ active = true, done = false, at }: VisualProps) {
   const reduce = useReducedMotion()
   // 0: nothing, 1-3: sources linked, 4: agent → team, 5+: live
   const t = useTranslations("home.process.visuals.build")
-  const n = useTicker(5, 650, active, 6)
-  const step = done ? 5 : n
+  const n = useTicker(5, 650, active && at === undefined, 6)
+  const step = done ? 5 : at !== undefined ? Math.round(at * 5) : n
   const live = step >= 5
   const paths = sources.map(
     (src) => `M62 ${src.y} C 120 ${src.y}, 120 70, 160 70`
@@ -401,13 +406,17 @@ function partial(p: number) {
   return curve.slice(0, n)
 }
 
-export function RunVisual({ active = true, done = false }: VisualProps) {
+export function RunVisual({ active = true, done = false, at }: VisualProps) {
   const reduce = useReducedMotion()
   const progress = useMotionValue(done || reduce ? 1 : 0)
 
   useEffect(() => {
     if (done || reduce) {
       progress.set(1)
+      return
+    }
+    if (at !== undefined) {
+      progress.set(at)
       return
     }
     if (!active) return
@@ -428,7 +437,7 @@ export function RunVisual({ active = true, done = false }: VisualProps) {
       stop = true
       progress.stop()
     }
-  }, [active, done, reduce, progress])
+  }, [active, done, reduce, progress, at])
 
   const line = useTransform(progress, (p) =>
     partial(p)

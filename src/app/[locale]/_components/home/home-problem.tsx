@@ -26,6 +26,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { useRef, useState } from "react"
 
 import { SplitReveal } from "@/components/shared/split-reveal"
+import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 
 const ease = [0.22, 1, 0.36, 1] as const
@@ -573,63 +574,13 @@ const tints = [
   "radial-gradient(ellipse at 50% 0%, rgb(95 194 154 / 0.16), transparent 60%), radial-gradient(ellipse at 0% 100%, rgb(79 179 201 / 0.12), transparent 55%)",
 ]
 
-/**
- * Phones and tablets: the three problems stacked, no pinning. Each visual
- * plays as its card scrolls up through the screen.
- */
-function ProblemCard({
-  item,
-  index,
-  total,
-  reduce,
-}: Readonly<{ item: Problem; index: number; total: number; reduce: boolean }>) {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 0.95", "end 0.5"],
-  })
-  const done = useMotionValue(1)
-  const progress = reduce ? done : scrollYProgress
-
-  return (
-    <li>
-      <div
-        ref={ref}
-        aria-hidden="true"
-        className="overflow-hidden rounded-3xl bg-neutral-100 p-4 sm:p-6"
-        style={{ backgroundImage: tints[index] }}
-      >
-        {index === 0 && (
-          <div className="relative mx-auto h-64 max-w-md">
-            <ScatteredVisual reduce={reduce} progress={progress} compact />
-          </div>
-        )}
-        {index === 1 && <StalledVisual progress={progress} />}
-        {index === 2 && <BoundaryVisual progress={progress} />}
-      </div>
-      <p
-        className="mt-6 text-xs text-neutral-500 tabular-nums"
-        aria-hidden="true"
-      >
-        <span className="text-neutral-950">0{index + 1}</span> / 0{total}
-      </p>
-      <SplitReveal
-        as="p"
-        text={item.title}
-        className="mt-2 text-[2rem] leading-[1.02] font-medium tracking-[-0.04em] text-balance text-neutral-950 sm:text-[2.5rem]"
-      />
-      <p className="mt-3 max-w-md text-base leading-relaxed text-pretty text-neutral-600">
-        {item.body}
-      </p>
-    </li>
-  )
-}
-
 export function HomeProblem() {
   const t = useTranslations("home.problem")
   const problems = t.raw("items") as Problem[]
   const ref = useRef<HTMLElement>(null)
   const reduce = Boolean(useReducedMotion())
+  // Phones and tablets: the file cards sit closer together.
+  const compact = useMediaQuery("(max-width: 1023px)")
   const [index, setIndex] = useState(0)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -655,23 +606,12 @@ export function HomeProblem() {
       ref={ref}
       id="problem"
       aria-labelledby="problem-heading"
-      className="relative lg:h-[420svh]"
+      className="relative h-[320svh] lg:h-[420svh]"
     >
       <h2 id="problem-heading" className="sr-only">
         {t("heading")}
       </h2>
-      <ol className="mx-auto grid max-w-2xl gap-16 px-5 pt-16 pb-6 sm:px-10 sm:pt-20 sm:pb-10 lg:hidden">
-        {problems.map((item, i) => (
-          <ProblemCard
-            key={item.title}
-            item={item}
-            index={i}
-            total={problems.length}
-            reduce={reduce}
-          />
-        ))}
-      </ol>
-      <div className="sticky top-16 hidden h-[calc(100svh-4rem)] items-center lg:flex">
+      <div className="sticky top-16 flex h-[calc(100svh-4rem)] items-center">
         <div className="mx-auto grid w-full max-w-[1440px] items-center gap-8 px-5 sm:px-10 lg:grid-cols-2 lg:gap-16 lg:px-14">
           <div className="order-2 lg:order-1">
             <div className="grid min-h-[11rem] sm:min-h-[14rem]">
@@ -687,7 +627,7 @@ export function HomeProblem() {
                   <p className="text-[clamp(2.5rem,5.4vw,5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance">
                     {item.title}
                   </p>
-                  <p className="mt-5 max-w-md text-lg leading-relaxed">
+                  <p className="mt-5 max-w-md text-lg leading-relaxed max-sm:mt-3 max-sm:text-base">
                     {item.body}
                   </p>
                 </div>
@@ -701,7 +641,7 @@ export function HomeProblem() {
                     className="text-[clamp(2.5rem,5.4vw,5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance text-neutral-950"
                   />
                   <motion.p
-                    className="mt-5 max-w-md text-lg leading-relaxed text-neutral-600"
+                    className="mt-5 max-w-md text-lg leading-relaxed text-neutral-600 max-sm:mt-3 max-sm:text-base"
                     initial={reduce ? false : { opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={
@@ -717,8 +657,11 @@ export function HomeProblem() {
               </AnimatePresence>
             </div>
             {/* Scroll progress: the rail fills as you scroll through each one */}
-            <div className="mt-8 flex items-center gap-4" aria-hidden="true">
-              <span className="text-xs text-neutral-500 tabular-nums">
+            <div
+              className="mt-8 flex items-center gap-4 max-sm:mt-5"
+              aria-hidden="true"
+            >
+              <span className="text-xs text-neutral-500 tabular-nums max-sm:hidden">
                 <span className="text-neutral-950">0{index + 1}</span> / 0
                 {problems.length}
               </span>
@@ -736,7 +679,7 @@ export function HomeProblem() {
           </div>
 
           <div
-            className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-3xl bg-neutral-100 transition-[background-image] duration-700 sm:aspect-[5/4] lg:order-2"
+            className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-3xl bg-neutral-100 transition-[background-image] duration-700 max-sm:aspect-auto max-sm:h-[min(54svh,26rem)] sm:aspect-[5/4] lg:order-2"
             style={{ backgroundImage: tints[index] }}
           >
             <AnimatePresence initial={false}>
@@ -744,7 +687,7 @@ export function HomeProblem() {
                 key={index}
                 // Absolute, so the box keeps its aspect ratio whatever the
                 // visual inside measures.
-                className="absolute inset-6"
+                className="absolute inset-6 max-sm:inset-4"
                 initial={reduce ? false : { opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={reduce ? undefined : { opacity: 0, scale: 0.97 }}
@@ -752,7 +695,11 @@ export function HomeProblem() {
                 aria-hidden="true"
               >
                 {index === 0 && (
-                  <ScatteredVisual reduce={reduce} progress={step} />
+                  <ScatteredVisual
+                    reduce={reduce}
+                    progress={step}
+                    compact={compact}
+                  />
                 )}
                 {index === 1 && <StalledVisual progress={step} />}
                 {index === 2 && <BoundaryVisual progress={step} />}

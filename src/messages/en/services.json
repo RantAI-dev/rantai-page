@@ -7,7 +7,7 @@
   },
   "cta": {
     "title": "Stop paying for slow, fragile software.",
-    "description": "Get a free technical audit. We'll identify the biggest risk in your stack — no commitment required.",
+    "description": "Get a free technical audit: we find the biggest risk in your stack.",
     "label": "Get my free audit",
     "subject": "Free technical audit",
     "prompts": [
@@ -27,22 +27,24 @@
   "problems": {
     "eyebrow": "Where we help",
     "title": "What's slowing\nyou down?",
-    "tablist": "Problems",
-    "before": "Before",
-    "after": "With RantAI",
     "typically": "Typically <b>{weeks}</b>",
     "seeHow": "See how we work ↓",
     "talk": "Talk to us about this",
     "items": {
       "slow": {
         "chip": "Our app is slow",
-        "outcome": "From 2.8 s to 320 ms.",
+        "outcome": "Fast again, even at peak traffic.",
         "steps": [
           "Profile the hot paths",
           "Fix queries and caching",
           "Load-test before release"
         ],
-        "weeks": "3–6 weeks"
+        "weeks": "3–6 weeks",
+        "metric": {
+          "from": "2.8 s",
+          "to": "320 ms",
+          "caption": "p95 response time"
+        }
       },
       "legacy": {
         "chip": "A legacy system holds us back",
@@ -52,7 +54,12 @@
           "Move it piece by piece",
           "Switch over with no outage"
         ],
-        "weeks": "8–16 weeks"
+        "weeks": "8–16 weeks",
+        "metric": {
+          "from": "1",
+          "to": "4",
+          "caption": "independent services, from one monolith"
+        }
       },
       "ai": {
         "chip": "Our AI is stuck in a demo",
@@ -62,7 +69,12 @@
           "Evaluate on your test set",
           "Deploy, monitor, retrain"
         ],
-        "weeks": "4–8 weeks"
+        "weeks": "4–8 weeks",
+        "metric": {
+          "from": "0",
+          "to": "1.2M",
+          "caption": "requests served in production"
+        }
       },
       "people": {
         "chip": "We're short on engineers",
@@ -72,53 +84,28 @@
           "Ship from your backlog",
           "Hand over when you're ready"
         ],
-        "weeks": "From 2 weeks"
+        "weeks": "From 2 weeks",
+        "metric": {
+          "from": "0",
+          "to": "4",
+          "caption": "backlog items shipped in the first sprints"
+        }
       }
     },
-    "latency": {
-      "label": "p95 response time",
-      "bad": "2.8 s",
-      "good": "320 ms",
-      "badCaption": "Spikes every time traffic peaks",
-      "goodCaption": "Steady under peak traffic"
-    },
-    "legacy": {
-      "label": "Architecture",
-      "goodBadge": "Uptime 100% during move",
-      "badBadge": "Last change: 2014",
-      "parts": ["Billing", "Orders", "Users", "Reports"],
-      "service": "{name} service",
-      "deployAll": "One deploy for everything"
-    },
-    "demo": {
-      "live": "Live",
-      "stats": [
-        {
-          "value": "1.2M",
-          "label": "requests"
-        },
-        {
-          "value": "99.9%",
-          "label": "uptime"
-        },
-        {
-          "value": "94%",
-          "label": "accuracy"
-        }
-      ],
-      "monitored": "Monitored · retrained weekly · on your servers",
-      "works": "✓ Works on my laptop",
-      "broken": "✗ No owner, no monitoring, no data access"
-    },
-    "backlog": {
-      "columns": ["Backlog", "Shipped"],
-      "tickets": [
-        "SSO login",
-        "Export to Excel",
-        "Invoice OCR",
-        "Audit log",
-        "Mobile app"
-      ]
+    "list": "Problems",
+    "approach": "How we fix it",
+    "lead": "Ask us. We'll show you what changes and how long it takes.",
+    "chat": {
+      "name": "RantAI",
+      "team": "Engineering",
+      "greeting": "Hi! What's slowing you down? Pick a question below.",
+      "typing": "RantAI is typing",
+      "you": "You",
+      "suggestions": "Suggested questions",
+      "label": "Ask something else",
+      "placeholder": "Something else? Tell us here…",
+      "send": "Send by email",
+      "subject": "A question about RantAI services"
     }
   },
   "engagement": {
@@ -269,8 +256,8 @@
       }
     },
     "visuals": {
-      "builtBy": "Built and maintained by RantAI",
-      "shipping": "Shipping updates",
+      "builtBy": "Built and run by RantAI",
+      "shipping": "Shipping",
       "compliance": "Compliance",
       "region": "Jakarta region",
       "rules": [

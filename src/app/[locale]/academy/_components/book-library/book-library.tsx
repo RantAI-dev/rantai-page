@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 
 import { FilterChips } from "@/components/shared/filter-chips"
+import { searchField } from "@/components/shared/search-field"
 import { cn } from "@/lib/utils"
 
 import { useBookFilter } from "./use-book-filter"
@@ -68,76 +69,86 @@ export function BookLibrary({ books }: BookLibraryProps) {
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Search, count and view switch */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative w-full sm:max-w-md">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-5 size-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t("searchPlaceholder")}
-            aria-label={t("searchLabel")}
-            className="h-12 w-full rounded-full border border-border bg-muted py-3 pr-11 pl-12 text-[15px] text-foreground transition-colors placeholder:text-muted-foreground focus:border-foreground/40 focus:bg-background focus:outline-none [&::-webkit-search-cancel-button]:hidden"
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              aria-label={t("clearSearch")}
-              className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
-            >
-              <XIcon className="size-4" />
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between gap-4 sm:justify-end">
-          <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">
-            {t("count", { shown: filteredBooks.length, total: books.length })}
-          </p>
-          <div
-            role="group"
-            aria-label={t("layout")}
-            className="flex rounded-full bg-muted p-1"
-          >
-            {(
-              [
-                ["grid", LayoutGridIcon, t("grid")],
-                ["list", ListIcon, t("list")],
-              ] as const
-            ).map(([mode, Icon, label]) => (
+      {/* Search, count and view switch; the blog uses the same toolbar */}
+      <div className="flex flex-col gap-4">
+        {/* Phones: search and view switch on one line; the filter and
+            count on the next */}
+        <div className="flex items-center gap-3 sm:justify-between sm:gap-4">
+          <div className="relative min-w-0 flex-1 sm:max-w-md">
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-5 size-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchLabel")}
+              className={searchField}
+            />
+            {searchQuery && (
               <button
-                key={mode}
                 type="button"
-                aria-label={label}
-                aria-pressed={viewMode === mode}
-                onClick={() => setViewMode(mode)}
-                className={cn(
-                  "grid size-10 place-items-center rounded-full transition-colors sm:size-9",
-                  viewMode === mode
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
+                onClick={() => setSearchQuery("")}
+                aria-label={t("clearSearch")}
+                className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
               >
-                <Icon className="size-4" />
+                <XIcon className="size-4" />
               </button>
-            ))}
+            )}
+          </div>
+
+          <div className="flex shrink-0 items-center gap-4">
+            <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase max-sm:hidden">
+              {t("count", { shown: filteredBooks.length, total: books.length })}
+            </p>
+            <div
+              role="group"
+              aria-label={t("layout")}
+              className="flex rounded-full bg-muted p-1"
+            >
+              {(
+                [
+                  ["grid", LayoutGridIcon, t("grid")],
+                  ["list", ListIcon, t("list")],
+                ] as const
+              ).map(([mode, Icon, label]) => (
+                <button
+                  key={mode}
+                  type="button"
+                  aria-label={label}
+                  aria-pressed={viewMode === mode}
+                  onClick={() => setViewMode(mode)}
+                  className={cn(
+                    "grid size-10 place-items-center rounded-full transition-colors sm:size-9",
+                    viewMode === mode
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Icon className="size-4" />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <FilterChips
-        label={t("categories")}
-        value={selectedCategory}
-        onChange={setSelectedCategory}
-        options={categories.map((cat) => ({
-          value: cat,
-          label: cat === "All" ? t("all") : undefined,
-          count: cat === "All" ? undefined : getCategoryCount(cat),
-          tone: cat === "All" ? undefined : getCategoryTone(cat).tone,
-        }))}
-      />
+        <div className="flex items-center gap-4">
+          <FilterChips
+            className="max-sm:min-w-0 max-sm:flex-1"
+            label={t("categories")}
+            value={selectedCategory}
+            onChange={setSelectedCategory}
+            options={categories.map((cat) => ({
+              value: cat,
+              label: cat === "All" ? t("all") : undefined,
+              count: cat === "All" ? undefined : getCategoryCount(cat),
+              tone: cat === "All" ? undefined : getCategoryTone(cat).tone,
+            }))}
+          />
+          <p className="shrink-0 text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase sm:hidden">
+            {t("count", { shown: filteredBooks.length, total: books.length })}
+          </p>
+        </div>
+      </div>
 
       {viewMode === "grid" ? (
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-4 xl:grid-cols-5">
@@ -147,10 +158,17 @@ export function BookLibrary({ books }: BookLibraryProps) {
                 key={book.code}
                 layout
                 {...linkProps(book)}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
+                // Each cover rises in as it scrolls into view, a beat after
+                // the one beside it.
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
                 exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.35, delay: Math.min(idx, 8) * 0.03 }}
+                transition={{
+                  duration: 0.6,
+                  ease: [0.22, 1, 0.36, 1],
+                  delay: (idx % 4) * 0.07,
+                }}
                 className="group flex flex-col"
               >
                 {/* The cover lifts like a book pulled off the shelf; the
@@ -205,10 +223,15 @@ export function BookLibrary({ books }: BookLibraryProps) {
                 key={book.code}
                 layout
                 {...linkProps(book)}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
                 exit={{ opacity: 0, x: -8 }}
-                transition={{ duration: 0.3, delay: Math.min(idx, 8) * 0.03 }}
+                transition={{
+                  duration: 0.5,
+                  ease: [0.22, 1, 0.36, 1],
+                  delay: Math.min(idx, 3) * 0.04,
+                }}
                 className="group flex items-center gap-4 rounded-2xl bg-muted p-3 transition-colors hover:bg-neutral-200/70"
               >
                 <div className="relative aspect-[2/3] h-24 shrink-0 overflow-hidden rounded-l-[2px] rounded-r-[4px] bg-neutral-200 sm:h-28">

@@ -72,7 +72,7 @@ export default async function AcademyPage({
       />
       <section
         id="library"
-        className="mx-auto max-w-[1440px] scroll-mt-20 px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
+        className="mx-auto max-w-[1440px] scroll-mt-20 px-5 pb-16 sm:px-10 sm:pb-24 lg:px-14 lg:pb-32"
       >
         <MotionInView className="pt-16 lg:pt-20">
           <BookLibrary books={books} />

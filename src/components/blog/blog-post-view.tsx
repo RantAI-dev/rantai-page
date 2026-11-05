@@ -33,7 +33,7 @@ async function NextArticle({ post }: Readonly<{ post: PostListItem }>) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group mt-16 flex items-center gap-5 border-t border-neutral-200 pt-8 sm:gap-7"
+      className="group mt-10 flex items-center gap-5 border-t border-neutral-200 pt-8 sm:mt-16 sm:gap-7"
     >
       <div className="relative aspect-[16/10] w-28 shrink-0 overflow-hidden rounded-lg bg-neutral-100 sm:w-44">
         {post.thumbnail && (

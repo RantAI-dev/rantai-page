@@ -21,6 +21,7 @@
     "label": "Pengantar",
     "title": "Sistem AI untuk operasional nyata.",
     "description": "AI agent, platform data, dan tim engineering untuk enterprise dan pemerintah, siap pakai di produksi.",
+    "descriptionShort": "AI agent, platform data, dan engineer untuk enterprise dan pemerintah.",
     "talk": "Bicara dengan tim kami",
     "explore": "Lihat produk",
     "partners": "Partner",
@@ -38,7 +39,7 @@
         "body": "Pilot memukau saat rapat, tapi tak sampai ke kerja harian."
       },
       {
-        "title": "Banyak tool memaksa data keluar.",
+        "title": "Tool lain minta data keluar.",
         "body": "Tool itu di cloud pihak lain, padahal data teregulasi tak boleh ke sana."
       }
     ],

@@ -165,7 +165,7 @@ function LeadTile({
 }: Readonly<{ member: TeamMember; big?: boolean; group: Group }>) {
   if (big) {
     return (
-      <div className="group col-span-2 grid grid-cols-2 overflow-hidden rounded-xl bg-[#262626]">
+      <div className="group grid h-full grid-cols-2 overflow-hidden rounded-xl bg-[#262626]">
         <div className="flex min-w-0 flex-col justify-end p-4 text-white sm:p-6">
           <div>
             <p className="text-[clamp(1.35rem,2.2vw,2rem)] leading-[1.05] font-medium tracking-[-0.03em] text-balance">
@@ -232,6 +232,32 @@ function MemberCard({
   )
 }
 
+/** Each card rises and fades in as it scrolls into view, a beat after the
+ *  one before it in its row. */
+function Reveal({
+  index,
+  reduce,
+  className,
+  children,
+}: Readonly<{
+  index: number
+  reduce: boolean | null
+  className?: string
+  children: React.ReactNode
+}>) {
+  return (
+    <motion.div
+      className={className}
+      initial={reduce ? false : { opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.6, ease, delay: (index % 2) * 0.08 }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
 function GroupBlock({
   group,
   people,
@@ -266,13 +292,22 @@ function GroupBlock({
       {lead ? (
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
           {people.map((m, i) => (
-            <LeadTile key={m.id} member={m} big={i === 0} group={group} />
+            <Reveal
+              key={m.id}
+              index={i}
+              reduce={reduce}
+              className={i === 0 ? "col-span-2" : undefined}
+            >
+              <LeadTile member={m} big={i === 0} group={group} />
+            </Reveal>
           ))}
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-x-3 gap-y-7 md:grid-cols-3 lg:grid-cols-6">
-          {people.map((m) => (
-            <MemberCard key={m.id} member={m} group={group} />
+          {people.map((m, i) => (
+            <Reveal key={m.id} index={i} reduce={reduce}>
+              <MemberCard member={m} group={group} />
+            </Reveal>
           ))}
         </div>
       )}
@@ -328,7 +363,7 @@ export function OurTeamGrid({ members }: { readonly members: TeamMember[] }) {
         />
       </div>
 
-      <div className="mt-14 flex flex-col gap-16 lg:gap-20">
+      <div className="mt-10 flex flex-col gap-10 sm:mt-14 sm:gap-16 lg:gap-20">
         <AnimatePresence mode="popLayout" initial={false}>
           {blocks.map(({ group, people }) => (
             <GroupBlock

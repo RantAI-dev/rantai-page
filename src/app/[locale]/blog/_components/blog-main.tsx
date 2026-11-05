@@ -12,6 +12,8 @@ import {
 import type { PostListItem, PostsPage } from "@/lib/blog/posts"
 import { gradientForColor } from "@/lib/blog/tag-colors"
 import { cn } from "@/lib/utils"
+import { FilterChips } from "@/components/shared/filter-chips"
+import { searchField } from "@/components/shared/search-field"
 
 type Post = PostListItem
 
@@ -105,66 +107,18 @@ export function BlogMain({
   const rest = isSearching ? posts : posts.slice(1)
 
   const showTags = tags.length > 1
-  const chips: { label: string; value: string | null }[] = [
-    { label: t("all"), value: null },
-    ...tags.map((name) => ({ label: name, value: name })),
-  ]
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        {showTags ? (
-          <div
-            role="tablist"
-            aria-label={t("filterLabel")}
-            className="-mx-5 flex snap-x scroll-px-5 gap-1.5 overflow-x-auto px-5 [scrollbar-width:none] max-sm:[mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden"
-          >
-            {chips.map((c) => {
-              const on = tag === c.value
-              return (
-                <button
-                  key={c.label}
-                  type="button"
-                  role="tab"
-                  aria-selected={on}
-                  onClick={() => setTag(c.value)}
-                  className={cn(
-                    "inline-flex h-10 shrink-0 snap-start items-center gap-2 rounded-full px-4 text-[14px] font-medium whitespace-nowrap transition-colors duration-200",
-                    on
-                      ? "bg-neutral-950 text-white"
-                      : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70 hover:text-neutral-950"
-                  )}
-                >
-                  {c.value && (
-                    <span
-                      className="size-1.5 rounded-full"
-                      style={{ background: tagDot(tagColors?.[c.value]) }}
-                    />
-                  )}
-                  {c.label}
-                </button>
-              )
-            })}
-          </div>
-        ) : (
-          <span />
-        )}
-
-        <div className="flex items-center gap-4">
-          {/* `+` denotes more pages available beyond what's loaded. */}
-          <p className="hidden shrink-0 text-[13px] text-neutral-500 tabular-nums sm:block">
-            {(() => {
-              const more = cursor ? "+" : ""
-              return isSearching
-                ? t("results", { count: posts.length, more })
-                : t("articles", { count: posts.length, more })
-            })()}
-          </p>
-          <div className="relative w-full lg:w-72">
+      {/* Same toolbar as the Academy library: search and count on one row,
+          topic chips under it */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-4 sm:justify-between">
+          <div className="relative min-w-0 flex-1 sm:max-w-md">
             {searching ? (
-              <Loader2Icon className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 animate-spin text-neutral-400" />
+              <Loader2Icon className="pointer-events-none absolute top-1/2 left-5 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
             ) : (
-              <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-neutral-400" />
+              <SearchIcon className="pointer-events-none absolute top-1/2 left-5 size-4 -translate-y-1/2 text-muted-foreground" />
             )}
             <input
               type="search"
@@ -172,24 +126,59 @@ export function BlogMain({
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t("searchPlaceholder")}
               aria-label={t("searchLabel")}
-              className="h-10 w-full rounded-full bg-neutral-100 py-2 pr-10 pl-10 text-[14px] text-neutral-950 transition-colors placeholder:text-neutral-400 focus:bg-white focus:ring-1 focus:ring-neutral-300 focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+              className={searchField}
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label={t("clearSearch")}
-                className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 text-neutral-400 transition-colors hover:text-neutral-950"
+                className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
               >
-                <XIcon className="size-3.5" />
+                <XIcon className="size-4" />
               </button>
             )}
           </div>
+          {/* `+` denotes more pages available beyond what's loaded. */}
+          <p className="shrink-0 text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase tabular-nums max-sm:hidden">
+            {(() => {
+              const more = cursor ? "+" : ""
+              return isSearching
+                ? t("results", { count: posts.length, more })
+                : t("articles", { count: posts.length, more })
+            })()}
+          </p>
+        </div>
+        {/* Phones: the topic filter and the count share a line */}
+        <div className="flex items-center gap-4">
+          {showTags && (
+            <FilterChips
+              className="max-sm:min-w-0 max-sm:flex-1"
+              label={t("filterLabel")}
+              value={tag ?? ""}
+              onChange={(v) => setTag(v || null)}
+              options={[
+                { value: "", label: t("all") },
+                ...tags.map((name) => ({
+                  value: name,
+                  tone: tagDot(tagColors?.[name]),
+                })),
+              ]}
+            />
+          )}
+          <p className="shrink-0 text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase tabular-nums sm:hidden">
+            {(() => {
+              const more = cursor ? "+" : ""
+              return isSearching
+                ? t("results", { count: posts.length, more })
+                : t("articles", { count: posts.length, more })
+            })()}
+          </p>
         </div>
       </div>
 
       {!searching && posts.length === 0 ? (
-        <div className="rounded-2xl bg-neutral-100 py-20 text-center">
+        <div className="rounded-2xl bg-neutral-100 py-14 text-center sm:py-20">
           <p className="text-lg text-neutral-500">
             {isSearching
               ? t("emptySearch", { query: trimmedQuery })

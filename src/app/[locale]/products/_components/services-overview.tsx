@@ -187,7 +187,7 @@ function SoftwareVisual({ playing, hover }: Readonly<SceneProps>) {
           app/page.tsx
         </span>
       </div>
-      <div className="h-[66px] space-y-1 p-3 [font-family:ui-monospace,monospace] text-[11px] whitespace-pre">
+      <div className="h-[86px] space-y-1 p-3 [font-family:ui-monospace,monospace] text-[11px] leading-[18px] whitespace-pre">
         {code.map((line, i) => {
           const len = line.join("").length
           const shown = Math.max(0, Math.min(len, n - starts[i]))

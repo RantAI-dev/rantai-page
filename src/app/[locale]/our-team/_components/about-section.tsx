@@ -43,11 +43,13 @@ function People({
   extra,
 }: Readonly<{ photos: string[]; extra: number }>) {
   return (
+    // Phones: three bigger faces and the rest as a number, so the faces
+    // read instead of a row of small dots.
     <div className="flex">
       {photos.map((src, i) => (
         <span
           key={src}
-          className="relative -ml-3 size-9 overflow-hidden rounded-full bg-neutral-800 ring-[3px] ring-neutral-100 transition-[margin] duration-500 ease-out group-hover:ml-1 first:ml-0 sm:size-14"
+          className="relative -ml-3 size-12 overflow-hidden rounded-full bg-neutral-800 ring-[3px] ring-neutral-100 transition-[margin] duration-500 ease-out group-hover:ml-1 first:ml-0 max-sm:nth-4:hidden sm:size-14"
           style={{ zIndex: 10 - i }}
         >
           <Image
@@ -61,8 +63,11 @@ function People({
         </span>
       ))}
       {extra > 0 && (
-        <span className="relative -ml-3 grid size-9 place-items-center rounded-full bg-white text-[11px] font-medium text-neutral-500 ring-[3px] ring-neutral-100 transition-[margin] duration-500 ease-out group-hover:ml-1 max-sm:-ml-1.5 sm:size-14 sm:text-[13px]">
-          +{extra}
+        <span className="relative -ml-3 grid size-12 place-items-center rounded-full bg-white text-[13px] font-medium text-neutral-600 ring-[3px] ring-neutral-100 transition-[margin] duration-500 ease-out group-hover:ml-1 sm:size-14">
+          <span className="sm:hidden">
+            +{extra + Math.max(0, photos.length - 3)}
+          </span>
+          <span className="max-sm:hidden">+{extra}</span>
         </span>
       )}
     </div>
@@ -111,11 +116,12 @@ function Books({ covers }: Readonly<{ covers: string[] }>) {
 /** Logos become small white cards on hover, one after another. */
 function Partners({ logos }: Readonly<{ logos: string[] }>) {
   return (
-    <div className="flex flex-col items-center gap-1 transition-[gap] duration-500 ease-out group-hover:gap-2">
+    // Phones: no hover cards; the logos simply run larger.
+    <div className="flex flex-col items-center gap-1 transition-[gap] duration-500 ease-out group-hover:gap-2 max-sm:w-full max-sm:gap-0">
       {logos.slice(0, 3).map((src, i) => (
         <span
           key={src}
-          className="grid h-10 w-[140px] place-items-center rounded-xl ring-1 ring-transparent transition-[background-color,box-shadow,transform] duration-500 ease-out group-hover:bg-white group-hover:shadow-[0_1px_2px_rgba(0,0,0,0.08)] group-hover:ring-black/[0.06] sm:h-12 sm:w-[150px]"
+          className="grid h-10 w-[140px] place-items-center rounded-xl ring-1 ring-transparent transition-[background-color,box-shadow,transform] duration-500 ease-out group-hover:bg-white group-hover:shadow-[0_1px_2px_rgba(0,0,0,0.08)] group-hover:ring-black/[0.06] max-sm:h-12 max-sm:w-full sm:h-12 sm:w-[150px]"
           style={{ transitionDelay: `${i * 80}ms` }}
         >
           <Image
@@ -123,7 +129,7 @@ function Partners({ logos }: Readonly<{ logos: string[] }>) {
             alt=""
             width={160}
             height={60}
-            className="h-10 w-auto max-w-[120px] object-contain opacity-70 brightness-0 transition-opacity duration-500 group-hover:opacity-100"
+            className="h-10 w-auto max-w-[120px] object-contain opacity-70 brightness-0 transition-opacity duration-500 group-hover:opacity-100 max-sm:h-14 max-sm:max-w-full max-sm:scale-125 max-sm:opacity-85"
             style={{ transitionDelay: `${i * 80}ms` }}
           />
         </span>

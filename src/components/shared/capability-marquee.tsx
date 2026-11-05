@@ -13,6 +13,7 @@ import {
 import { useTranslations } from "next-intl"
 
 import { Eyebrow } from "@/components/shared/eyebrow"
+import { ScrollDrivenRow } from "@/components/shared/scroll-driven-row"
 import { SplitReveal } from "@/components/shared/split-reveal"
 import { cn } from "@/lib/utils"
 
@@ -111,7 +112,7 @@ export function CapabilityMarquee() {
     <section
       id="capabilities"
       aria-labelledby="capabilities-heading"
-      className="py-24 lg:py-32"
+      className="py-16 sm:py-24 lg:py-32"
     >
       <div className="mx-auto max-w-[1440px] px-5 sm:px-10 lg:px-14">
         <Eyebrow className="text-neutral-500">{t("eyebrow")}</Eyebrow>
@@ -125,8 +126,9 @@ export function CapabilityMarquee() {
         <Row items={rows[0]} />
         <Row items={rows[1]} reverse />
         {/* Phones: one row the visitor swipes, a card at a time, with the
-            next one peeking in, instead of a moving strip cut at both edges. */}
-        <ul className="flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto overscroll-x-contain px-5 [scrollbar-width:none] sm:scroll-px-10 sm:px-10 md:hidden [&::-webkit-scrollbar]:hidden">
+            next one peeking in, instead of a moving strip cut at both edges.
+            It drifts as the page scrolls, to show it can be swiped. */}
+        <ScrollDrivenRow className="flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto overscroll-x-contain px-5 [scrollbar-width:none] sm:scroll-px-10 sm:px-10 md:hidden [&::-webkit-scrollbar]:hidden">
           {rows.flat().map((item) => (
             <Card
               key={item.id}
@@ -134,7 +136,7 @@ export function CapabilityMarquee() {
               className="w-[80vw] max-w-[340px] snap-start gap-6"
             />
           ))}
-        </ul>
+        </ScrollDrivenRow>
       </div>
     </section>
   )

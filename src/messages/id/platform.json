@@ -42,41 +42,154 @@
   "demos": {
     "agents": {
       "knowledge": "Pengetahuan",
-      "assistant": "Asisten HR",
       "searching": "Mencari di {count} sumber…",
       "placeholder": "Tanyakan apa saja tentang dokumen Anda…",
       "artifact": "Artifact",
       "prompts": [
         {
           "chip": "Kebijakan cuti",
+          "assistant": "Asisten HR",
           "q": "Berapa hari cuti untuk karyawan baru?",
           "a": "Karyawan baru mendapat 12 hari cuti tahunan di tahun pertama, lalu 15 hari setelah dua tahun bekerja.",
           "cite": "Kebijakan HR 2026 · hlm. 4"
         },
         {
           "chip": "Pengadaan",
+          "assistant": "Asisten Pengadaan",
           "q": "Rangkum permintaan pengadaan bulan ini",
-          "a": "42 permintaan bulan ini: 31 disetujui, 8 menunggu review anggaran, 3 dikembalikan karena penawaran kurang.",
+          "a": "42 permintaan bulan ini. Tiga terbesar:",
+          "rows": [
+            {
+              "item": "Laptop karyawan baru",
+              "team": "IT",
+              "amount": "Rp 184 jt",
+              "status": "approved"
+            },
+            {
+              "item": "Perpanjangan sewa kantor",
+              "team": "GA",
+              "amount": "Rp 96 jt",
+              "status": "pending"
+            },
+            {
+              "item": "Kredit cloud",
+              "team": "Data",
+              "amount": "Rp 52 jt",
+              "status": "returned"
+            }
+          ],
+          "summary": "31 disetujui · 8 menunggu · 3 dikembalikan",
           "cite": "Log pengadaan · Okt"
         },
         {
-          "chip": "Balasan vendor",
+          "chip": "Balas vendor",
+          "assistant": "Asisten Vendor",
           "q": "Draf balasan ke vendor soal pengiriman terlambat",
-          "a": "Draf sudah siap: merujuk pasal 7.2 soal ketentuan pengiriman dan mengusulkan tanggal baru 14 November.",
+          "a": "Ini drafnya, merujuk pasal 7.2:",
+          "email": {
+            "to": "PT Sinar Logistik",
+            "subject": "Re: Pengiriman terlambat, PO-2291",
+            "body": "Terima kasih atas kabarnya. Sesuai pasal 7.2, keterlambatan wajib diberitahukan 7 hari sebelumnya. Kami usulkan tanggal baru 14 November."
+          },
           "cite": "Kontrak vendor · §7.2"
         }
-      ]
+      ],
+      "status": {
+        "approved": "Disetujui",
+        "pending": "Menunggu",
+        "returned": "Dikembalikan"
+      },
+      "to": "Kepada",
+      "send": "Kirim",
+      "sent": "Terkirim"
     },
     "claw": {
       "schedule": "Jadwal",
       "channels": "Channel",
-      "connected": "Terhubung",
-      "schedules": ["Hari kerja · 08.00", "Setiap jam", "Jumat · 16.00"]
+      "schedules": ["Hari kerja · 08.00", "Setiap jam", "Jumat · 16.00"],
+      "brief": {
+        "members": "12 anggota",
+        "earlier": "Terima kasih, sampai ketemu di sync.",
+        "today": "Hari ini",
+        "typing": "Claw sedang mengetik…",
+        "intro": "Selamat pagi! Ini ringkasan hari ini:",
+        "items": [
+          "6 meeting · pertama pukul 09.30",
+          "3 email perlu dibalas hari ini",
+          "INV-2291 jatuh tempo Jumat",
+          "Review anggaran Q4 pindah ke Kamis"
+        ],
+        "seen": "Dilihat 5 orang"
+      },
+      "triage": {
+        "inbox": "Inbox",
+        "new": "38 baru",
+        "buckets": {
+          "urgent": "Segera",
+          "later": "Nanti",
+          "archive": "Arsip"
+        },
+        "emails": [
+          {
+            "from": "Billing",
+            "subject": "Pembayaran gagal: INV-2291"
+          },
+          {
+            "from": "AI Weekly",
+            "subject": "Kabar AI minggu ini"
+          },
+          {
+            "from": "IT Helpdesk",
+            "subject": "Password berakhir dalam 30 hari"
+          },
+          {
+            "from": "Rina · Keuangan",
+            "subject": "Anggaran Q4: setujui hari ini"
+          },
+          {
+            "from": "Events",
+            "subject": "Undangan webinar: biaya cloud"
+          },
+          {
+            "from": "Dimas · Sales",
+            "subject": "Catatan kunjungan klien"
+          }
+        ],
+        "sent": "Ringkasan dikirim ke Telegram"
+      },
+      "report": {
+        "pages": "3 halaman",
+        "title": "Laporan mingguan",
+        "meta": "Minggu 45 · 4 sumber",
+        "kpis": [
+          {
+            "label": "Pendapatan",
+            "value": "Rp 1,2 M",
+            "delta": "8%"
+          },
+          {
+            "label": "Tiket selesai",
+            "value": "214",
+            "delta": "12%"
+          }
+        ],
+        "chart": "Pendapatan, 5 minggu terakhir",
+        "highlights": "Sorotan",
+        "points": [
+          "3 deal enterprise baru",
+          "Antrean support turun ke 18 tiket"
+        ],
+        "building": "Menyusun laporan…",
+        "shared": "Dibagikan ke #leadership"
+      }
     },
     "lake": {
       "sql": "SQL otomatis",
       "unit": "Pengunjung (juta)",
       "value": "{v, number, ::.0}",
+      "leader": "Teratas",
+      "peak": "Puncak {month} · {v, number, ::.0} jt",
+      "avg": "Rata-rata {v, number, ::.0} jt",
       "lineage": "Lineage",
       "asks": [
         {
@@ -88,8 +201,22 @@
         {
           "chip": "Bulan tersibuk",
           "q": "Bulan apa yang paling ramai pengunjung tahun lalu?",
-          "title": "Bulan tersibuk · 2024",
-          "labels": ["Agustus", "Juli", "Desember", "Juni", "Oktober"]
+          "title": "Pengunjung per bulan · 2024",
+          "peak": "Agustus",
+          "labels": [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "Mei",
+            "Jun",
+            "Jul",
+            "Agu",
+            "Sep",
+            "Okt",
+            "Nov",
+            "Des"
+          ]
         }
       ]
     },
@@ -100,13 +227,29 @@
       "loss": "Training loss",
       "done": "Selesai · {count} epoch",
       "epoch": "Epoch {n} / {total}",
-      "eval": "Eval · test set Anda",
       "base": "Model dasar",
       "tuned": "Fine-tuned",
       "percent": "{v, number, percent}",
       "endpoint": "Endpoint",
       "live": "Live",
-      "compat": "Kompatibel OpenAI · di GPU Anda"
+      "compat": "Kompatibel OpenAI · di GPU Anda",
+      "support": {
+        "eval": "Eval · prompt sama, dua model",
+        "prompt": "Prompt {n} / {total}",
+        "question": "Tagihan Maret saya terpotong dua kali. Bisa di-refund?",
+        "baseAnswer": "Refund tergantung paket Anda. Baca kebijakan tagihan atau hubungi support.",
+        "tunedAnswer": "Mohon maaf. Tagihan ganda di invoice #2291 sudah kami refund. Dana kembali dalam 3–5 hari kerja.",
+        "judge": "Judge {score, number} / 5",
+        "winner": "Unggul",
+        "winRate": "Unggul di {v, number, percent} dari {total} prompt"
+      },
+      "classifier": {
+        "eval": "Eval · {count} kontrak uji",
+        "baseAcc": "Model dasar {v, number, percent}",
+        "accuracy": "Akurasi",
+        "predicted": "Prediksi",
+        "actual": "Aktual"
+      }
     }
   },
   "journey": {
@@ -120,19 +263,23 @@
       },
       "lake": {
         "name": "RantAI Lakehouse",
-        "line": "Lakehouse merapikannya jadi satu tabel."
+        "line": "Lakehouse merapikannya jadi satu tabel.",
+        "cta": "Rapikan data Anda di Lakehouse"
       },
       "llmops": {
         "name": "RantAI LLMOps",
-        "line": "LLMOps melatih model dengan data Anda."
+        "line": "LLMOps melatih model dengan data Anda.",
+        "cta": "Fine-tune model Anda di LLMOps"
       },
       "claw": {
         "name": "RantAI Claw",
-        "line": "Claw menyusun laporan tiap bulan."
+        "line": "Claw menyusun laporan tiap bulan.",
+        "cta": "Jadwalkan laporan dengan Claw"
       },
       "agents": {
         "name": "RantAI Agents",
-        "line": "Agents menjawab tim Anda seketika."
+        "line": "Agents menjawab tim Anda seketika.",
+        "cta": "Tanya data Anda lewat Agents"
       }
     },
     "scenes": {

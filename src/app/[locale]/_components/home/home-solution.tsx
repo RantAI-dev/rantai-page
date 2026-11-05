@@ -605,9 +605,9 @@ export function HomeSolution() {
       ref={ref}
       id="solution"
       aria-labelledby="solution-heading"
-      className="relative h-[420svh]"
+      className="relative h-[300svh] sm:h-[420svh]"
     >
-      <div className="sticky top-16 flex h-[calc(100svh-4rem)] items-center overflow-x-clip">
+      <div className="sticky top-16 flex h-[calc(100svh-4rem)] items-start overflow-x-clip pt-10 sm:items-center sm:pt-0">
         <div className="mx-auto w-full max-w-[1440px] px-5 sm:px-10 lg:px-14">
           <Eyebrow className="text-neutral-500">{t("eyebrow")}</Eyebrow>
           <h2
@@ -633,7 +633,7 @@ export function HomeSolution() {
             </ScriptContext.Provider>
           </h2>
           <motion.ul
-            className="mt-12 flex flex-wrap items-center gap-2.5"
+            className="mt-10 grid grid-cols-2 gap-2.5 sm:mt-12 sm:flex sm:flex-wrap sm:items-center"
             style={reduce ? undefined : { opacity: linksOpacity, y: linksY }}
           >
             {productLinks.map((link) => (
@@ -641,7 +641,7 @@ export function HomeSolution() {
                 <Link
                   href={link.href}
                   aria-label={`RantAI ${link.label}`}
-                  className="inline-flex h-10 items-center gap-2 rounded-full border border-neutral-200 bg-white pr-4 pl-1.5 text-[15px] font-medium text-neutral-800 transition-colors hover:border-neutral-300 hover:text-neutral-950"
+                  className="flex h-11 w-full items-center gap-2 rounded-full border border-neutral-200 bg-white pr-4 pl-1.5 text-[15px] font-medium text-neutral-800 transition-colors hover:border-neutral-300 hover:text-neutral-950 sm:inline-flex sm:h-10 sm:w-auto"
                 >
                   <ProductTile
                     id={link.id}
@@ -656,10 +656,11 @@ export function HomeSolution() {
               aria-hidden="true"
               className="hidden h-6 w-px bg-neutral-200 sm:block"
             />
-            <li>
+            {/* Phones: a full-width row under the 2×2 grid of products. */}
+            <li className="col-span-2">
               <Link
                 href="#how-we-work"
-                className="group inline-flex h-10 items-center gap-1.5 text-[15px] font-medium text-neutral-900"
+                className="group flex h-11 items-center justify-center gap-1.5 rounded-full border border-neutral-200 text-[15px] font-medium text-neutral-900 sm:inline-flex sm:h-10 sm:border-0"
               >
                 {t("engineers")}
                 <ArrowRight

@@ -46,41 +46,154 @@
   "demos": {
     "agents": {
       "knowledge": "Knowledge",
-      "assistant": "HR Assistant",
       "searching": "Searching {count} sources…",
       "placeholder": "Ask anything about your documents…",
       "artifact": "Artifact",
       "prompts": [
         {
           "chip": "Leave policy",
+          "assistant": "HR Assistant",
           "q": "How many leave days do new staff get?",
           "a": "New staff get 12 days of annual leave in their first year, rising to 15 days after two years of service.",
           "cite": "HR Policy 2026 · p.4"
         },
         {
           "chip": "Procurement",
+          "assistant": "Procurement Assistant",
           "q": "Summarise this month's procurement requests",
-          "a": "42 requests this month: 31 approved, 8 waiting on budget review, and 3 sent back for missing quotes.",
+          "a": "42 requests this month. The three largest:",
+          "rows": [
+            {
+              "item": "Laptops for new hires",
+              "team": "IT",
+              "amount": "Rp 184M",
+              "status": "approved"
+            },
+            {
+              "item": "Office lease renewal",
+              "team": "GA",
+              "amount": "Rp 96M",
+              "status": "pending"
+            },
+            {
+              "item": "Cloud credits",
+              "team": "Data",
+              "amount": "Rp 52M",
+              "status": "returned"
+            }
+          ],
+          "summary": "31 approved · 8 pending · 3 returned",
           "cite": "Procurement log · Oct"
         },
         {
           "chip": "Vendor reply",
+          "assistant": "Vendor Desk",
           "q": "Draft a reply to the vendor about the late delivery",
-          "a": "Drafted a reply citing clause 7.2 on delivery terms and proposing a revised date of 14 November.",
+          "a": "Here's a draft, citing clause 7.2:",
+          "email": {
+            "to": "PT Sinar Logistik",
+            "subject": "Re: Late delivery, PO-2291",
+            "body": "Thank you for the update. Under clause 7.2, a late delivery needs 7 days' notice. We propose 14 November as the new date."
+          },
           "cite": "Vendor contract · §7.2"
         }
-      ]
+      ],
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "returned": "Returned"
+      },
+      "to": "To",
+      "send": "Send",
+      "sent": "Sent"
     },
     "claw": {
       "schedule": "Schedule",
       "channels": "Channels",
-      "connected": "Connected",
-      "schedules": ["Weekdays · 08:00", "Every hour", "Fridays · 16:00"]
+      "schedules": ["Weekdays · 08:00", "Every hour", "Fridays · 16:00"],
+      "brief": {
+        "members": "12 members",
+        "earlier": "Thanks all, see you at the sync.",
+        "today": "Today",
+        "typing": "Claw is typing…",
+        "intro": "Good morning! Here's today's brief:",
+        "items": [
+          "6 meetings · first at 09:30",
+          "3 emails need a reply today",
+          "Invoice INV-2291 due Friday",
+          "Q4 budget review moved to Thu"
+        ],
+        "seen": "Seen by 5"
+      },
+      "triage": {
+        "inbox": "Inbox",
+        "new": "38 new",
+        "buckets": {
+          "urgent": "Urgent",
+          "later": "Later",
+          "archive": "Archive"
+        },
+        "emails": [
+          {
+            "from": "Billing",
+            "subject": "Payment failed: INV-2291"
+          },
+          {
+            "from": "AI Weekly",
+            "subject": "This week in AI"
+          },
+          {
+            "from": "IT Helpdesk",
+            "subject": "Password expires in 30 days"
+          },
+          {
+            "from": "Rina · Finance",
+            "subject": "Q4 budget: sign-off due today"
+          },
+          {
+            "from": "Events",
+            "subject": "Webinar invite: cloud costs"
+          },
+          {
+            "from": "Dimas · Sales",
+            "subject": "Notes from the client visit"
+          }
+        ],
+        "sent": "Summary sent to Telegram"
+      },
+      "report": {
+        "pages": "3 pages",
+        "title": "Weekly report",
+        "meta": "Week 45 · 4 sources",
+        "kpis": [
+          {
+            "label": "Revenue",
+            "value": "Rp 1.2B",
+            "delta": "8%"
+          },
+          {
+            "label": "Tickets closed",
+            "value": "214",
+            "delta": "12%"
+          }
+        ],
+        "chart": "Revenue, last 5 weeks",
+        "highlights": "Highlights",
+        "points": [
+          "3 new enterprise deals signed",
+          "Support backlog down to 18 tickets"
+        ],
+        "building": "Building report…",
+        "shared": "Shared with #leadership"
+      }
     },
     "lake": {
       "sql": "Generated SQL",
       "unit": "Visitors (millions)",
       "value": "{v, number, ::.0}M",
+      "leader": "Leader",
+      "peak": "Peak in {month} · {v, number, ::.0}M",
+      "avg": "Avg {v, number, ::.0}M",
       "lineage": "Lineage",
       "asks": [
         {
@@ -92,8 +205,22 @@
         {
           "chip": "Busiest months",
           "q": "Which months had the most visitors last year?",
-          "title": "Busiest months · 2024",
-          "labels": ["August", "July", "December", "June", "October"]
+          "title": "Visitors by month · 2024",
+          "peak": "August",
+          "labels": [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec"
+          ]
         }
       ]
     },
@@ -104,13 +231,29 @@
       "loss": "Training loss",
       "done": "Done · {count} epochs",
       "epoch": "Epoch {n} / {total}",
-      "eval": "Eval · your test set",
       "base": "Base model",
       "tuned": "Fine-tuned",
       "percent": "{v, number, percent}",
       "endpoint": "Endpoint",
       "live": "Live",
-      "compat": "OpenAI-compatible · on your GPUs"
+      "compat": "OpenAI-compatible · on your GPUs",
+      "support": {
+        "eval": "Eval · same prompt, both models",
+        "prompt": "Prompt {n} / {total}",
+        "question": "I was charged twice for my March invoice. Can I get a refund?",
+        "baseAnswer": "Refunds depend on your plan. Please read our billing policy or contact support.",
+        "tunedAnswer": "Sorry about that. I see the double charge on invoice #2291 and have refunded it. Expect it in 3–5 business days.",
+        "judge": "Judge {score, number} / 5",
+        "winner": "Winner",
+        "winRate": "Wins {v, number, percent} of {total} prompts"
+      },
+      "classifier": {
+        "eval": "Eval · {count} held-out contracts",
+        "baseAcc": "Base model {v, number, percent}",
+        "accuracy": "Accuracy",
+        "predicted": "Predicted",
+        "actual": "Actual"
+      }
     }
   },
   "journey": {
@@ -124,19 +267,23 @@
       },
       "lake": {
         "name": "RantAI Lakehouse",
-        "line": "Lakehouse brings it into one clean table."
+        "line": "Lakehouse brings it into one clean table.",
+        "cta": "Clean up your data in Lakehouse"
       },
       "llmops": {
         "name": "RantAI LLMOps",
-        "line": "LLMOps tunes a model on your numbers."
+        "line": "LLMOps tunes a model on your numbers.",
+        "cta": "Fine-tune your own model in LLMOps"
       },
       "claw": {
         "name": "RantAI Claw",
-        "line": "Claw runs the report every month."
+        "line": "Claw runs the report every month.",
+        "cta": "Schedule your reports with Claw"
       },
       "agents": {
         "name": "RantAI Agents",
-        "line": "Agents answers your team in seconds."
+        "line": "Agents answers your team in seconds.",
+        "cta": "Ask your data with Agents"
       }
     },
     "scenes": {

@@ -144,10 +144,10 @@ export async function Footer({ cta: given }: Readonly<{ cta?: FooterCta }>) {
       className="flex scroll-mt-20 flex-col gap-3 px-3 pb-3 sm:gap-4 sm:px-4 sm:pb-4"
     >
       <FooterCtaCard labelledBy="footer-cta-heading">
-        <div className="mx-auto flex max-w-3xl flex-col items-center px-6 py-24 text-center sm:py-32">
+        <div className="mx-auto flex max-w-3xl flex-col items-center px-6 py-16 text-center max-sm:items-start max-sm:px-8 max-sm:pt-16 max-sm:pb-12 max-sm:text-left sm:py-32">
           {cta.eyebrow && (
             <Reveal>
-              <p className="mb-5 text-xs font-medium tracking-[0.14em] text-white/50 uppercase">
+              <p className="mb-5 text-xs font-medium tracking-[0.14em] text-white/50 uppercase max-sm:mb-4">
                 {cta.eyebrow}
               </p>
             </Reveal>
@@ -159,12 +159,12 @@ export async function Footer({ cta: given }: Readonly<{ cta?: FooterCta }>) {
           />
           {cta.description && (
             <Reveal index={2}>
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-pretty text-white/60 sm:text-lg">
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-pretty text-white/60 max-sm:mt-4 max-sm:max-w-none max-sm:text-[15px] sm:text-lg">
                 {cta.description}
               </p>
             </Reveal>
           )}
-          <Reveal index={3} className="mt-10 w-full">
+          <Reveal index={3} className="mt-10 w-full max-sm:mt-8">
             <FooterPrompt
               label={cta.label}
               subject={cta.subject ?? t("cta.subject")}
@@ -176,7 +176,7 @@ export async function Footer({ cta: given }: Readonly<{ cta?: FooterCta }>) {
             <Reveal index={5}>
               <Link
                 href="/services"
-                className={`mt-8 inline-flex items-center gap-1 text-sm text-white/55 hover:text-white ${linkUnderline}`}
+                className={`mt-8 inline-flex items-center gap-1 text-sm text-white/55 hover:text-white max-sm:mt-6 max-sm:min-h-10 max-sm:bg-none max-sm:text-[15px] ${linkUnderline}`}
               >
                 {t("exploreServices")}
                 <ArrowUpRight className="size-3.5" aria-hidden="true" />

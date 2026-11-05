@@ -19,7 +19,7 @@ export async function HomeInsights() {
     <section
       id="insights"
       aria-labelledby="insights-heading"
-      className="mx-auto max-w-[1440px] px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
+      className="mx-auto max-w-[1440px] px-5 pb-16 sm:px-10 sm:pb-24 lg:px-14 lg:pb-32"
     >
       <MotionInView className="flex flex-col gap-6 border-t border-border pt-16 sm:flex-row sm:items-end sm:justify-between lg:pt-24">
         <div>

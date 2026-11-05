@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion, useReducedMotion } from "motion/react"
 import { useTranslations } from "next-intl"
 
@@ -26,11 +26,34 @@ export function WhyRantAISection({ eyebrow }: Readonly<{ eyebrow?: string }>) {
   const items = whyRantAI
   const reduce = useReducedMotion()
   const [hover, setHover] = useState<number | null>(null)
+  // Touch screens have no hover: the tile in the middle of the screen plays
+  // instead, so the scenes run as you scroll past them.
+  const [centred, setCentred] = useState<number | null>(null)
+  const listRef = useRef<HTMLUListElement>(null)
+  useEffect(() => {
+    const list = listRef.current
+    if (!list || !window.matchMedia("(hover: none)").matches) return
+    const tiles = [...list.children] as HTMLElement[]
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const i = tiles.indexOf(e.target as HTMLElement)
+          if (e.isIntersecting) setCentred(i)
+          else setCentred((c) => (c === i ? null : c))
+        }
+      },
+      // A band across the middle of the screen
+      { rootMargin: "-40% 0px -40% 0px" }
+    )
+    tiles.forEach((t) => io.observe(t))
+    return () => io.disconnect()
+  }, [])
+  const playing = hover ?? centred
   return (
     <section
       id="why-rantai"
       aria-labelledby="why-heading"
-      className="mx-auto max-w-[1440px] px-5 pb-24 sm:px-10 lg:px-14 lg:pb-32"
+      className="mx-auto max-w-[1440px] px-5 pb-16 sm:px-10 sm:pb-24 lg:px-14 lg:pb-32"
     >
       <Eyebrow className="text-muted-foreground">
         {eyebrow ?? t("eyebrow")}
@@ -44,7 +67,10 @@ export function WhyRantAISection({ eyebrow }: Readonly<{ eyebrow?: string }>) {
       {/* grid-cols-1 + min-w-0: tiles may shrink below their content, so the
           endless model marquee (w-max) can't widen the column (on phones it
           made the whole page 1,650px wide). */}
-      <ul className="mt-14 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <ul
+        ref={listRef}
+        className="mt-10 grid grid-cols-1 gap-3 sm:mt-14 sm:grid-cols-2 lg:grid-cols-4"
+      >
         {items.map((item, i) => {
           const Visual = whyRantAIVisuals[i]
           const tone = /#[0-9a-f]{6}/i.exec(item.iconBg)?.[0] ?? "#517fbb"
@@ -71,7 +97,7 @@ export function WhyRantAISection({ eyebrow }: Readonly<{ eyebrow?: string }>) {
                   backgroundSize: "16px 16px",
                 }}
               >
-                {Visual && <Visual hover={hover === i} />}
+                {Visual && <Visual hover={playing === i} />}
               </div>
               <div className="flex items-center gap-3 px-3 pt-4 pb-2">
                 <span
