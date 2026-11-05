@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/RantAI-dev/rantai-page/compare/v2.2.1...v2.3.0) (2026-11-05)
+
+
+### Features
+
+* polish the mobile experience across the site ([65b91e6](https://github.com/RantAI-dev/rantai-page/commit/65b91e6c3d4ec26246434217f80cdb515aaf8d28))
+
 ## [2.2.1](https://github.com/RantAI-dev/rantai-page/compare/v2.2.0...v2.2.1) (2026-11-02)
 
 
