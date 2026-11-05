@@ -483,7 +483,15 @@ function Book({ src }: Readonly<{ src: string }>) {
         style={{ background: pages, ["--dir" as string]: "180deg" }}
       />
       <div className="relative size-full overflow-hidden rounded-l-[3px] rounded-r-[7px] shadow-[0_30px_50px_-24px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.15)]">
-        <Image src={src} alt="" fill sizes="300px" className="object-cover" />
+        {/* In the hero, so load right away rather than lazily */}
+        <Image
+          src={src}
+          alt=""
+          fill
+          sizes="300px"
+          loading="eager"
+          className="object-cover"
+        />
         {/* Spine: a shaded hinge with a crease */}
         <span className="absolute inset-y-0 left-0 w-[18px] bg-gradient-to-r from-black/40 via-white/20 to-transparent" />
         <span className="absolute inset-y-0 left-[13px] w-px bg-black/25" />
@@ -705,8 +713,12 @@ export function PeopleVisual({ people }: Readonly<{ people: Person[] }>) {
         className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.05]"
       />
       <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-3.5 pt-10 pb-3 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <span className="block text-[14px] font-medium">{p.name}</span>
-        <span className="block text-[10.5px] tracking-[0.06em] text-white/70 uppercase">
+        {/* One line each: long names are cut short rather than wrapping
+            over the face */}
+        <span className="block truncate text-[14px] font-medium max-sm:text-[13px]">
+          {p.name}
+        </span>
+        <span className="block truncate text-[10.5px] tracking-[0.06em] text-white/70 uppercase max-sm:text-[9.5px]">
           {p.role}
         </span>
       </figcaption>

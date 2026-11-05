@@ -75,6 +75,9 @@ export function PageHero({
       {description && (
         <motion.p
           {...rise(0.45)}
+          // Starts barely visible rather than hidden, so the browser counts
+          // it as painted on first render (it is often the largest text)
+          {...(reduce ? {} : { initial: { opacity: 0.01, y: 14 } })}
           className="mt-6 max-w-[27rem] text-base leading-relaxed text-balance text-muted-foreground sm:text-lg"
         >
           {description}

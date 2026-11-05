@@ -1,0 +1,86 @@
+{
+  "hero": {
+    "eyebrow": "Kontak",
+    "title": "Ceritakan apa yang\ningin Anda bangun.",
+    "description": "Beberapa kalimat sudah cukup. Kami membaca setiap pesan dan membalas lewat email."
+  },
+  "direct": {
+    "title": "Atau hubungi langsung",
+    "general": "Produk dan engineering",
+    "academy": "Academy dan pelatihan",
+    "call": "Jadwalkan discovery call gratis",
+    "callMeta": "60 menit · tim Anda dan dua engineer kami",
+    "callSubject": "Discovery call",
+    "follow": "Ikuti RantAI"
+  },
+  "form": {
+    "label": "Formulir kontak",
+    "name": "Nama",
+    "namePlaceholder": "Nama Anda",
+    "email": "Email kantor",
+    "emailPlaceholder": "anda@perusahaan.com",
+    "company": "Perusahaan",
+    "optional": "Opsional",
+    "topic": "Tentang apa?",
+    "topics": {
+      "products": "Produk",
+      "engineering": "Engineering",
+      "academy": "Academy",
+      "other": "Lainnya"
+    },
+    "message": "Pesan",
+    "messagePlaceholder": "Workflow, masalah, atau pertanyaan yang Anda pikirkan",
+    "send": "Kirim pesan",
+    "note": "Tombol kirim membuka aplikasi email Anda dengan pesan yang sudah siap.",
+    "opening": "Membuka aplikasi email…",
+    "fallback": "Tidak terbuka? Kirim ke {email}.",
+    "copy": "Salin alamat",
+    "copied": "Tersalin",
+    "required": "Mohon diisi",
+    "invalidEmail": "Masukkan alamat email yang valid",
+    "subject": "{topic} · {name}",
+    "bodyName": "Nama",
+    "bodyEmail": "Email",
+    "bodyCompany": "Perusahaan"
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Yang sering\nditanyakan.",
+    "more": "Ada pertanyaan lain?",
+    "ask": "Tanya kami",
+    "items": [
+      {
+        "q": "Bagaimana proyek dimulai?",
+        "a": "Dengan discovery call gratis selama 60 menit antara tim Anda dan dua engineer RantAI. Kami melihat workflow, data, dan siapa yang akan memakainya, lalu memberi penilaian jujur soal kecocokan dan perkiraan jadwal. Tanpa komitmen."
+      },
+      {
+        "q": "Berapa lama sampai bisa dipakai?",
+        "a": "Biasanya sekitar dua bulan: scope satu halaman di minggu 1, pengerjaan di minggu 2–5, dan pilot dengan pengguna nyata di minggu 6–8. Perbaikan yang lebih kecil, seperti aplikasi yang lambat, sering selesai dalam 3–6 minggu."
+      },
+      {
+        "q": "Bisa berjalan di infrastruktur kami sendiri?",
+        "a": "Bisa. Engineer kami bekerja di repository dan cloud Anda, dan produk kami di-deploy di infrastruktur Anda sendiri, jadi data tetap di tangan Anda."
+      },
+      {
+        "q": "Siapa pemilik kodenya?",
+        "a": "Anda. Kode ada di repository Anda sejak hari pertama, dan saat serah terima tim Anda mendapat runbook, dokumentasi arsitektur, dan pelatihan."
+      },
+      {
+        "q": "Apakah kami terikat pada satu model AI?",
+        "a": "Tidak. Platform kami mendukung lebih dari 100 LLM, jadi Anda bisa berganti penyedia model tanpa membangun ulang. Semuanya dibangun di atas fondasi open source, tanpa dependensi tersembunyi."
+      },
+      {
+        "q": "Apakah sesuai regulasi di Indonesia?",
+        "a": "Ya. Pelindungan data pribadi (UU PDP), data yang tetap di Indonesia, dan audit trail untuk setiap aksi dirancang sejak hari pertama."
+      },
+      {
+        "q": "Apa yang terjadi setelah serah terima?",
+        "a": "Sistemnya milik tim Anda, dan kami tetap siaga dengan dashboard monitoring, alert, dan dukungan setelah go-live."
+      },
+      {
+        "q": "Bisakah Anda melatih tim kami?",
+        "a": "Bisa. RantAI Academy mengadakan kelas praktik untuk engineer, dari prompting sampai agent, dan menulis buku yang dibangun dari data dan use case Anda sendiri."
+      }
+    ]
+  }
+}

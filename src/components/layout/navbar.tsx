@@ -19,7 +19,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { siteConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -116,7 +115,7 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <LanguageSwitcher className="hidden lg:flex" />
           <PillLink
-            href={`mailto:${siteConfig.links.email}`}
+            href="/contact"
             icon="external"
             className="h-10 px-4 lg:h-9"
           >

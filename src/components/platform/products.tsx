@@ -55,7 +55,7 @@ export const products: ProductBase[] = [
     id: "lake",
     name: "RantAI Lakehouse",
     href: "https://lakehouse.rantai.dev/",
-    image: "/products/lake-dashboard.jpg",
+    image: "/products/lake-dashboard.webp",
     hasFlow: true,
   },
 ]

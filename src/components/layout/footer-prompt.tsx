@@ -8,13 +8,28 @@ import { useTranslations } from "next-intl"
 import { siteConfig } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
-/** Types each line out, pauses, deletes it, then moves to the next. */
-function useTypewriter(lines: string[]) {
+/**
+ * Types each line out, pauses, deletes it, then moves to the next. Only
+ * while `ref` is on screen: off screen it would re-render for nothing.
+ */
+function useTypewriter(
+  lines: string[],
+  ref: React.RefObject<HTMLElement | null>
+) {
   const reduce = useReducedMotion()
   const [text, setText] = useState(lines[0] ?? "")
+  const [onScreen, setOnScreen] = useState(false)
 
   useEffect(() => {
-    if (reduce || !lines.length) return
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting))
+    io.observe(el)
+    return () => io.disconnect()
+  }, [ref])
+
+  useEffect(() => {
+    if (reduce || !lines.length || !onScreen) return
     let line = 0
     let length = 0
     let deleting = false
@@ -37,7 +52,7 @@ function useTypewriter(lines: string[]) {
     }
     timer = setTimeout(tick, 800)
     return () => clearTimeout(timer)
-  }, [lines, reduce])
+  }, [lines, reduce, onScreen])
 
   return text
 }
@@ -86,8 +101,8 @@ export function FooterPrompt({
   const prompts = given ?? (t.raw("examples") as string[])
   const [value, setValue] = useState("")
   const [sent, setSent] = useState(false)
-  const placeholder = useTypewriter(prompts)
   const borderRef = useRef<HTMLDivElement>(null)
+  const placeholder = useTypewriter(prompts, borderRef)
   useBorderLight(borderRef)
 
   // Clear the "opening your email app" note after a few seconds.

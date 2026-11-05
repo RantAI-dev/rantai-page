@@ -5,7 +5,7 @@ import { siteConfig } from "@/lib/config"
 import { languageAlternates } from "@/i18n/paths"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const pages = ["", "/products", "/services", "/academy", "/blog", "/our-team"]
+  const pages = ["", "/products", "/services", "/academy", "/blog", "/our-team", "/contact"]
   const posts = await getAllPosts()
   const latest = posts[0]?.date
 

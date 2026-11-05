@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { ServicesVisual } from "@/components/shared/hero-visuals"
 import { PageHero } from "@/components/shared/page-hero"
+import { Faq } from "@/components/shared/faq"
 import { PillLink } from "@/components/shared/pill-link"
 import { SectionNav } from "@/components/layout/section-nav"
 import { SiteShell } from "@/components/layout/site-shell"
@@ -70,6 +71,7 @@ export default async function ServicesPage({
 
       <PartnersSection partners={partners} eyebrow={t("sections.proof")} />
       <WhyRantAISection />
+      <Faq />
       <SectionNav sections={sectionLinks} />
     </SiteShell>
   )
